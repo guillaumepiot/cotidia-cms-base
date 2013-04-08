@@ -1,0 +1,6 @@
+{% extends 'cms/page_meta.html' %}
+{% block main %}
+	<h1>{{page.translated.title}}</h1>
+	{{page.translated.content|safe}}
+	
+{% endblock main %}

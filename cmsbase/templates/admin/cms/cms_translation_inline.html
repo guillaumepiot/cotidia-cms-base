@@ -1,0 +1,135 @@
+{% load i18n admin_static %}
+<div class="module aligned default tab-pane" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <h2>{{ inline_admin_formset.opts.verbose_name_plural|title }}</h2>
+{{ inline_admin_formset.formset.management_form }}
+{{ inline_admin_formset.formset.non_form_errors }}
+
+    <ul class="nav nav-tabs inline-nav-tabs">
+    {% for inline_admin_form in inline_admin_formset %}
+        {% if inline_admin_form.original %}<li class="{% if forloop.first %}active{% endif %}"><a href="#{{ inline_admin_formset.formset.prefix }}-{{ inline_admin_form.original.language_code }}" data-toggle="tab"><img src="/static/admin/img/flags/{{ inline_admin_form.original.language_code }}.png" alt=""></a></li>{% endif %}
+    {% endfor %}
+    </ul>
+    <div class="tab-content">
+    {% for inline_admin_form in inline_admin_formset %}
+
+        <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %} tab-pane {% if inline_admin_form.form.errors %}active{% else %}{% if forloop.first and not errors %}active{% endif %}{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if inline_admin_form.original %}{{ inline_admin_form.original.language_code }}{% else %}empty{% endif %}">
+        {# <span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% else %}#{{ forloop.counter }}{% endif %}</span> #}
+
+        {% if inline_admin_form.form.non_field_errors %}<div class="inner">{{ inline_admin_form.form.non_field_errors }}</div>{% endif %}
+        {% for fieldset in inline_admin_form %}
+            {% include "admin/includes/fieldset-tabbed.html" %}
+        {% endfor %}
+
+        {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+        {{ inline_admin_form.fk_field.field }}
+        {% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}<div class="delete-row">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</div>{% endif %}
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        var rows = "#{{ inline_admin_formset.formset.prefix }}-group .inline-related";
+        var updateInlineLabel = function(row) {
+            $(rows).find(".inline_label").each(function(i) {
+                var count = i + 1;
+                $(this).html($(this).html().replace(/(#\d+)/g, "#" + count));
+            });
+        };
+        var reinitDateTimeShortCuts = function() {
+            // Reinitialize the calendar and clock widgets by force, yuck.
+            if (typeof DateTimeShortcuts != "undefined") {
+                $(".datetimeshortcuts").remove();
+                DateTimeShortcuts.init();
+            }
+        };
+        var updateSelectFilter = function() {
+            // If any SelectFilter widgets were added, instantiate a new instance.
+            if (typeof SelectFilter != "undefined"){
+                $(".selectfilter").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], false, "{% static "admin/" %}");
+                });
+                $(".selectfilterstacked").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], true, "{% static "admin/" %}");
+                });
+            }
+        };
+        var initPrepopulatedFields = function(row) {
+            row.find('.prepopulated_field').each(function() {
+                var field = $(this);
+                var input = field.find('input, select, textarea');
+                var dependency_list = input.data('dependency_list') || [];
+                var dependencies = [];
+                $.each(dependency_list, function(i, field_name) {
+                  dependencies.push('#' + row.find('.form-row .field-' + field_name).find('input, select, textarea').attr('id'));
+                });
+                if (dependencies.length) {
+                    input.prepopulate(dependencies, input.attr('maxlength'));
+                }
+            });
+        };
+        $(rows).formset({
+            prefix: "{{ inline_admin_formset.formset.prefix }}",
+            addText: "+ {% blocktrans with verbose_name=inline_admin_formset.opts.verbose_name|title %}Add translation{% endblocktrans %}",
+            formCssClass: "dynamic-{{ inline_admin_formset.formset.prefix }}",
+            addCssClass: "",
+            deleteCssClass: "inline-deletelink",
+            deleteText: "{% trans "Remove" %}",
+            emptyCssClass: "empty-form",
+            removed: updateInlineLabel,
+            tabbed: true,
+            added: (function(row) {
+                initPrepopulatedFields(row);
+                reinitDateTimeShortCuts();
+                updateSelectFilter();
+                updateInlineLabel(row);
+
+                // Instantiate redactor
+                setup_redactor();
+
+                // Copy over title and slug
+                //$('#{{ inline_admin_formset.formset.prefix }}-group .inline-related [name$="title"]').attr('value', $('#id_title').attr('value'));
+                //$('#{{ inline_admin_formset.formset.prefix }}-group .inline-related [name$="slug"]').attr('value', $('#id_slug').attr('value'));
+
+            })
+        });
+    });
+})(django.jQuery);
+
+function setup_redactor(){
+        new_tab_link = $('.tab-content .nav-tabs li:last').find("a");
+        new_tab_link.tab('show');
+        tab_id = new_tab_link.attr('href');
+        
+        $(tab_id+' [name$="title"]').attr('value', $('#id_title').attr('value'));
+        $(tab_id+' [name$="slug"]').attr('value', $('#id_slug').attr('value'));
+
+
+        var redactor_fields = $(tab_id+' .redactor_box').find('textarea.redactor_content');
+        var redactor_fields_boxes = $(tab_id+' .redactor_box');
+        
+        $.each(redactor_fields, function(i, index){
+            $(redactor_fields_boxes[i]).parent().html(index);
+            $(redactor_fields[i]).redactor({
+                imageUpload: '/uploads/ajax/photos/upload/',
+                imageGetJson: '/uploads/ajax/photos/recent/',
+                fileUpload: '/uploads/ajax/files/upload/',
+                autoresize: false,
+                minHeight:300
+            });
+        });
+        //var redactor_fields = $("textarea.redactor_content");
+        
+
+}
+
+
+
+        
+
+
+</script>

@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block meta_title %}{% if page %}{% if page.translated.meta_title %}{{page.translated.meta_title}}{% else %}{{page.translated.title}}{% endif %}{% else %}Page{% endif %}{% endblock %}
+{% block meta_description %}{% if page %}{{page.translated.meta_description}}{% else %}Page{% endif %}{% endblock %}

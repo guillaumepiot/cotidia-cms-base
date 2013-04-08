@@ -1,0 +1,33 @@
+<div class="module aligned {{ fieldset.classes }} tab-pane" id="{{fieldset.name|slugify}}">
+    {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+    <div class="inner">
+    {% for line in fieldset %}
+        <div class="form-row{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+            {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+            {% for field in line %}
+                <div {% if not line.fields|length_is:'1' %} class="field-box{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}"{% else %}class="control-group control"{% endif %}>
+                    {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                    {% if field.is_checkbox %}
+                    <label class="checkbox">
+                        {{ field.field }} {{ field.label_tag }}
+                    </label>
+                    {% else %}
+                        
+                        <div class="control-label" for="{{field.id}}">{{ field.label_tag }}</div>
+                        <div class="controls">
+                        {% if field.is_readonly %}
+                            <p>{{ field.contents }}</p>
+                        {% else %}
+                            {{ field.field }}
+                        {% endif %}
+                        </div>
+                    {% endif %}
+                    {% if field.field.help_text %}
+                        <p class="help-block">{{ field.field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+</div>
