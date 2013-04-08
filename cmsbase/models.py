@@ -7,7 +7,6 @@ from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
-from curacao.settings import LANGUAGES
 
 PAGE_TEMPLATES = (
 	('cms/page.html', 'Default page'),
@@ -301,7 +300,7 @@ class PageTranslation(MultilingualTranslation):
 		unique_together = ('parent', 'language_code')
 
 	def __unicode__(self):
-		return dict(LANGUAGES).get(self.language_code)
+		return dict(settings.LANGUAGES).get(self.language_code)
 		
 	def save(self):
 

@@ -24,6 +24,10 @@ The Redactor app from Cotidia (please buy your own license please for the Redact
 ###cotidia-filemanager
 Allow file upload for Cotidia redactor.
 	-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager
+
+###django-multilingual-model	
+Default model to manage multiple inline translations
+	-e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model
 	
 ###PIL==1.1.7
 Image processing and validating.

@@ -12,8 +12,8 @@ from multilingual_model.admin import TranslationInline
 
 from redactor.widgets import RedactorEditor
 
-from cms.models import *
-from cms.widgets import AdminImageWidget, AdminCustomFileWidget
+from cmsbase.models import *
+from cmsbase.widgets import AdminImageWidget, AdminCustomFileWidget
 
 
 class PublishingWorkflowAdmin(admin.ModelAdmin):
@@ -177,7 +177,7 @@ class PageTranslationInline(TranslationInline):
 	form = PageTranslationInlineFormAdmin
 	extra = 0
 	prepopulated_fields = {'slug': ('title',)}
-	template = 'admin/cms/cms_translation_inline.html'
+	template = 'admin/cmsbase/cms_translation_inline.html'
 
 	# fieldsets = (
 	# 	('Language', {
@@ -216,16 +216,16 @@ class PageFormAdmin(forms.ModelForm):
 		# self.fields['category'].choices = CATEGORY_CHOICES
 
 
-class ImageInlineForm(forms.ModelForm):
-	image = forms.ImageField(widget=AdminImageWidget)
-	class Meta:
-		model=PageImage
+# class ImageInlineForm(forms.ModelForm):
+# 	image = forms.ImageField(widget=AdminImageWidget)
+# 	class Meta:
+# 		model=PageImage
 
-class ListingImageInline(admin.TabularInline):
-	form = ImageInlineForm
-	model = PageImage
-	extra = 0
-	template = 'admin/cms/page/images-inline.html'
+# class ListingImageInline(admin.TabularInline):
+# 	form = ImageInlineForm
+# 	model = PageImage
+# 	extra = 0
+# 	template = 'admin/cms/page/images-inline.html'
 
 class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin):
 	
@@ -235,7 +235,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 	list_filter = ["approval_needed"]
 	# search_fields = ['title']
 	# prepopulated_fields = {'slug': ('title',)}
-	inlines = (PageTranslationInline, ListingImageInline) 
+	inlines = (PageTranslationInline, ) #ListingImageInline
 
 	mptt_indent_field = 'title'
 
