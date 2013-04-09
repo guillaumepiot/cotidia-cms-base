@@ -1,5 +1,0 @@
-cotidia_cms_base.egg-info/PKG-INFO
-cotidia_cms_base.egg-info/SOURCES.txt
-cotidia_cms_base.egg-info/dependency_links.txt
-cotidia_cms_base.egg-info/requires.txt
-cotidia_cms_base.egg-info/top_level.txt

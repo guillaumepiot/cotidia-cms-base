@@ -55,8 +55,6 @@ def get_page(request, slug=False, preview=False):
 
 def page(request, slug=False):
 
-	context = {}
-
 	preview = request.GET.get('preview', False)
 
 	is_preview = False
@@ -78,61 +76,16 @@ def page(request, slug=False):
 	if page.redirect_to:
 		return HttpResponseRedirect(page.redirect_to.get_absolute_url())
 
-	context['page'] = page
-
 	if not is_preview:
 		page_original = page.published_from
 	else:
-
 		page_original = page
 
-	# page_original.get_default_url(slug)
 
-	# if len(slugs) == 2:
-	# 	navigation =  page_original.parent.get_descendants(include_self=False)
-	# elif len(slugs) == 3:
-	# 	navigation =  page_original.parent.parent.get_descendants(include_self=False)
-	# elif len(slugs) == 4:
-	# 	navigation =  page_original.parent.parent.parent.get_descendants(include_self=False)
-	# else:
-	# 	navigation =  page_original.get_children()
-	# navigation =  page_original.get_children()
-	# print page_original
+	# Get the root page and then all its descendants, including self
+	nodes = page_original.get_root().get_descendants(include_self=True)
 
-	parents = page_original.get_ancestors(ascending=False, include_self=False)
-
-
-	# print page_original.get_ancestors()
-	navigation = []
-
-	if parents:
-		for parent in parents:
-			if parent.is_root_node() == False:
-				categories = parent.get_siblings(include_self=True)
-
-				# Loop through
-				for category in categories:
-					# Only get Published objects
-					if category.get_published():
-						navigation.append(category)
-
-					for child in category.get_children():
-						if  parent == category:
-						# print child
-							navigation.append(child)
-	else:
-		navigation =  page_original.get_children()
-
-	context['navigation'] = navigation
-
-	children = page_original.get_children()
-	context['children'] = children
-
-	featured_events = Event.published.filter(featured=True)[:3]
-	context['featured_events'] = featured_events
-
-
-	return render_to_response(page.template, context, context_instance=RequestContext(request))
+	return render_to_response(page.template, {'page':page, 'nodes':nodes,}, context_instance=RequestContext(request))
 
 
 def search(request, directory=False):

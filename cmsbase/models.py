@@ -29,7 +29,7 @@ class Page(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
 	published = models.BooleanField(_('Active'))
 	approval_needed = models.BooleanField()
-	template = models.CharField(max_length=250, choices=PAGE_TEMPLATES)
+	template = models.CharField(max_length=250, choices=PAGE_TEMPLATES, default='cms/page.html')
 
 	#MPTT parent
 	parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
@@ -38,14 +38,7 @@ class Page(MPTTModel, MultilingualModel):
 	published_from = models.ForeignKey('self', blank=True, null=True)
 
 	# title = models.CharField(max_length=100)
-	slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier")
-
-	#content = models.TextField(blank=True)
-
-	#Meta data
-	meta_title = models.CharField(max_length=100, blank=True)
-	meta_keywords = models.CharField(max_length=100, blank=True)
-	meta_description = models.TextField(blank=True)
+	slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier", blank=True, null=True)
 
 	# Ordering
 	order_id = models.IntegerField(blank=True, null=True)
@@ -133,7 +126,6 @@ class Page(MPTTModel, MultilingualModel):
 		page.slug = self.slug
 		#page.content = self.content
 		page.meta_title = self.meta_title
-		page.meta_keywords = self.meta_keywords
 		page.meta_description = self.meta_description
 		page.order_id = 0
 		page.redirect_to = self.redirect_to
@@ -165,47 +157,74 @@ class Page(MPTTModel, MultilingualModel):
 
 
 	def get_absolute_url(self):
-
 		from django.utils import translation
-
 		current_language = translation.get_language()
 
-
 		if self.home:
-			url = reverse('home')
+			url = reverse('cms:home')
 		else:
-			# if self.parent:
-			# 	slug = "%s/%s" % (self.parent.slug, self.slug)
-
-			# set the default language to the current language
 			slug = ''
 
 			# If is original
 			if self.get_published():
+				# Go through the ancestor to get slugs
 				for ancestor in self.get_ancestors():
-					translation = PageTranslation.objects.filter(parent=ancestor.get_published().id, language_code=current_language)
-					if translation.count()>0:
+					# Get the ancestor's slugs
+					translation = PageTranslation.objects.filter(parent=ancestor.id, language_code=current_language)
 
-						slug = "%s%s/" % (slug, translation[0].slug)
+					# If no translation available in the current language
+					if not translation.count()>0:
+						translation = PageTranslation.objects.get(parent=ancestor.id, language_code=settings.DEFAULT_LANGUAGE)
 					else:
-						slug = slug + '%s/' % (ancestor.get_published().slug)
+						translation = translation[0]
+					
+					slug = "%s%s/" % (slug, translation.slug)
 
-				translation = PageTranslation.objects.filter(parent=self.get_published().id, language_code=current_language)
-
-				if translation.count()>0:
-					slug = "%s%s" % (slug, translation[0].slug)
-
+				translation = PageTranslation.objects.filter(parent=self.id, language_code=current_language)
+				
+				if not translation.count()>0:
+					translation = PageTranslation.objects.get(parent=self.id, language_code=settings.DEFAULT_LANGUAGE)
 				else:
-					slug = "%s%s" % (slug, self.get_published().slug)
-			# Else if it is the published version
-			else:
-				if self.published_from != None:
-					for ancestor in self.published_from.get_ancestors():
-						slug = slug + '%s/' % (ancestor.get_published().slug)
-					slug = "%s%s" % (slug, self.slug)
-				else:
-					slug = "%s%s" % (slug, self.slug)
+					translation = translation[0]
+
+				slug = "%s%s" % (slug, translation.slug)
+
+			# else:
+			# 	if self.published_from != None:
+			# 		for ancestor in self.published_from.get_ancestors():
+			# 			slug = slug + '%s/' % (ancestor.get_published().slug)
+			# 		slug = "%s%s" % (slug, self.slug)
+			# 	else:
+			# 		slug = "%s%s" % (slug, self.slug)
+
+			# 	# If is original
+			# 	if self.get_published():
+			# 		for ancestor in self.get_ancestors():
+			# 			translation = PageTranslation.objects.filter(parent=ancestor.get_published().id, language_code=current_language)
+			# 			if translation.count()>0:
+
+			# 				slug = "%s%s/" % (slug, translation[0].slug)
+			# 			else:
+			# 				slug = slug + '%s/' % (ancestor.get_published().slug)
+
+			# 		translation = PageTranslation.objects.filter(parent=self.get_published().id, language_code=current_language)
+
+			# 		if translation.count()>0:
+			# 			slug = "%s%s" % (slug, translation[0].slug)
+			# 		else:
+			# 			slug = "%s%s" % (slug, self.get_published().slug)
+			# 	# Else if it is the published version
+			# 	else:
+			# 		if self.published_from != None:
+			# 			for ancestor in self.published_from.get_ancestors():
+			# 				slug = slug + '%s/' % (ancestor.get_published().slug)
+			# 			slug = "%s%s" % (slug, self.slug)
+			# 		else:
+			# 			slug = "%s%s" % (slug, self.slug)
+				
+			# 	# Create the full url based on the pattern
 			url = reverse('cms:page', kwargs={'slug':slug})
+			print url
 
 		return url
 
@@ -301,7 +320,6 @@ class PageTranslation(MultilingualTranslation):
 
 	#Meta data
 	meta_title = models.CharField(max_length=100, blank=True)
-	meta_keywords = models.CharField(max_length=100, blank=True)
 	meta_description = models.TextField(blank=True)
 
 	class Meta:
@@ -346,7 +364,6 @@ class PageTranslation(MultilingualTranslation):
 
 			#Meta data
 			new_translation.meta_title = self.meta_title
-			new_translation.meta_keywords = self.meta_keywords
 			new_translation.meta_description = self.meta_description
 
 			new_translation.save()

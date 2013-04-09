@@ -5,6 +5,7 @@ from django.contrib.admin.widgets import AdminFileWidget
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django import forms
+from django.conf import settings
 
 from mptt.admin import MPTTModelAdmin
 
@@ -149,8 +150,11 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 	is_active.short_description = 'Active'
 
 	def title(self, obj):
-		for t in obj.get_translations():
-			return t.title
+		translation = PageTranslation.objects.filter(parent=obj, language_code=settings.DEFAULT_LANGUAGE)
+		if translation.count() > 0:
+			return translation[0].title
+		else:
+			return _('No translation available for default language')
 
 
 	def languages(self, obj):
@@ -177,9 +181,9 @@ class PageTranslationInlineFormAdmin(forms.ModelForm):
 class PageTranslationInline(TranslationInline):
 	model = PageTranslation
 	form = PageTranslationInlineFormAdmin
-	extra = 0
+	extra = 1
 	prepopulated_fields = {'slug': ('title',)}
-	template = 'admin/cmsbase/cms_translation_inline.html'
+	#template = 'admin/cmsbase/cms_translation_inline.html'
 
 	# fieldsets = (
 	# 	('Language', {
@@ -208,14 +212,7 @@ class PageFormAdmin(forms.ModelForm):
 		super(PageFormAdmin, self).__init__(*args, **kwargs)
 
 		redirect_to = self.fields['redirect_to']
-		# redirect_to.queryset = Page.objects.get_published_original()
 
-		# CATEGORY_CHOICES = ()
-		# for category in ContactCategory.objects.filter(account=self.acc).order_by('id'):
-		# 	CATEGORY_CHOICES = CATEGORY_CHOICES + ((category.id, category.name),)
-		# #print CATEGORY_CHOICES
-
-		# self.fields['category'].choices = CATEGORY_CHOICES
 
 
 # class ImageInlineForm(forms.ModelForm):
@@ -234,7 +231,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 	form = PageFormAdmin
 
 	list_display = ["title","is_published", "is_active", "home_icon", "approval", 'order_id', 'template', 'languages']
-	list_filter = ["approval_needed"]
+	#list_filter = ["approval_needed"]
 	# search_fields = ['title']
 	# prepopulated_fields = {'slug': ('title',)}
 	inlines = (PageTranslationInline, ) #ListingImageInline
@@ -248,31 +245,23 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 	# FIELDSETS
 
 	fieldsets = (
-		('Basic details', {
-			'description':_('Inheritance, template and title'),
+
+		('Sitemap', {
+			'description':_('The page hierarchy'),
 			'classes': ('default', 'active', ),
-			'fields': ('parent',  'template','slug','order_id', 'home',)
+			'fields': ('parent', 'home',)
 		}),
-		('Redirection', {
-			'description':_('Redirect this page to another'),
+		('Layout', {
+			'description':_('The page template'),
 			'classes': ('default',),
-			'fields': (  'redirect_to',)
+			'fields': (  'template',)
 		}),
-		# ('Meta data', {
-		# 	'description':_('Make active, mark as new or featured'),
-		# 	'classes': ('default collapse',),
-		# 	'fields': ('meta_title', 'meta_keywords', 'meta_description', )
-		# }),
-		('Publishing', {
-			'description':_('Manage content publishing'),
-			'classes': ('blue',),
-			'fields': ('published', 'publish',)
+		('Options', {
+			'description':_('The extra bits'),
+			'classes': ('default',),
+			'fields': (  'slug', 'redirect_to', )
 		}),
-		('Approval', {
-			'description':_('Request content publishing approval'),
-			'classes': ('blue',),
-			'fields': ('approve',)
-		}),
+
 	)
 
 
