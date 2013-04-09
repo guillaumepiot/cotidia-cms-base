@@ -1,7 +1,7 @@
 import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-# from django.core.urlresolvers import reverse 
+# from django.core.urlresolvers import reverse
 from localeurl.models import reverse
 from django.conf import settings
 
@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 
 PAGE_TEMPLATES = (
 	('cms/page.html', 'Default page'),
-)  
+)
 
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 
@@ -36,7 +36,7 @@ class Page(MPTTModel, MultilingualModel):
 
 	# Publish version key
 	published_from = models.ForeignKey('self', blank=True, null=True)
-	
+
 	# title = models.CharField(max_length=100)
 	slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier")
 
@@ -54,8 +54,8 @@ class Page(MPTTModel, MultilingualModel):
 	publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'))
 	approve = models.BooleanField(_('Submit for approval'))
 
-	date_created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
-	date_updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
+	date_created = models.DateTimeField()
+	date_updated = models.DateTimeField()
 
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
@@ -65,9 +65,17 @@ class Page(MPTTModel, MultilingualModel):
 	def get_content_type(self):
 		content_type = ContentType.objects.get_for_model(Page)
 		return content_type
-	
+
 	def __unicode__(self):
 		return self.unicode_wrapper('title', default='Unnamed')
+
+	def save(self, *args, **kwargs):
+		if not self.date_created:
+			self.date_created = datetime.datetime.now()
+
+		self.date_updated = datetime.datetime.now()
+
+		super(Page, self).save(*args, **kwargs)
 
 	class Meta:
 		#ordering = ()
@@ -89,7 +97,7 @@ class Page(MPTTModel, MultilingualModel):
 
 	def translated(self):
 		from django.utils.translation import get_language
-		try: 
+		try:
 			translation = PageTranslation.objects.get(language_code=get_language(), parent=self)
 			return translation
 		except:
@@ -155,14 +163,14 @@ class Page(MPTTModel, MultilingualModel):
 			version.delete()
 		super(Page, self).delete()
 
-	
+
 	def get_absolute_url(self):
 
 		from django.utils import translation
 
 		current_language = translation.get_language()
-		
-		
+
+
 		if self.home:
 			url = reverse('home')
 		else:
@@ -171,7 +179,7 @@ class Page(MPTTModel, MultilingualModel):
 
 			# set the default language to the current language
 			slug = ''
-			
+
 			# If is original
 			if self.get_published():
 				for ancestor in self.get_ancestors():
@@ -181,9 +189,9 @@ class Page(MPTTModel, MultilingualModel):
 						slug = "%s%s/" % (slug, translation[0].slug)
 					else:
 						slug = slug + '%s/' % (ancestor.get_published().slug)
-					
+
 				translation = PageTranslation.objects.filter(parent=self.get_published().id, language_code=current_language)
-				
+
 				if translation.count()>0:
 					slug = "%s%s" % (slug, translation[0].slug)
 
@@ -208,7 +216,7 @@ class Page(MPTTModel, MultilingualModel):
 			# if self.parent:
 			# 	slug = "%s/%s" % (self.parent.slug, self.slug)
 			breadcrumbs = []
-			
+
 			# If is original
 			if self.get_published():
 				for ancestor in self.get_ancestors():
@@ -244,7 +252,7 @@ class Page(MPTTModel, MultilingualModel):
 	# 		return False
 
 	def get_default_url(self, slug=False):
-		
+
 		from django.utils import translation
 
 		current_language = translation.get_language()
@@ -264,7 +272,7 @@ class Page(MPTTModel, MultilingualModel):
 						page = PageTranslation.objects.filter(language_code=current_language, parent=uri_page)
 
 						uri = uri_page.slug
-						
+
 						if page.count() > 0:
 							uri = page[0].slug
 
@@ -278,12 +286,12 @@ class Page(MPTTModel, MultilingualModel):
 				# if translation.count() > 0:
 
 					# uri = translation[0].slug
-				
+
 				# new_slug.append(uri)
-			
+
 		str = '/'
 		print str.join(new_slug)
-		return str.join(new_slug)		
+		return str.join(new_slug)
 
 class PageTranslation(MultilingualTranslation):
 	parent = models.ForeignKey('Page', related_name='translations')
@@ -301,7 +309,7 @@ class PageTranslation(MultilingualTranslation):
 
 	def __unicode__(self):
 		return dict(settings.LANGUAGES).get(self.language_code)
-		
+
 	def save(self):
 
 		published_page = Page.objects.filter(published_from=self.parent)
@@ -314,7 +322,7 @@ class PageTranslation(MultilingualTranslation):
 		except:
 			pass
 
-			
+
 
 
 		super(PageTranslation, self).save()
@@ -329,7 +337,7 @@ class PageTranslation(MultilingualTranslation):
 			except:
 				new_translation = PageTranslation()
 
-		
+
 			new_translation.parent = published_page
 			new_translation.language_code = self.language_code
 			new_translation.title = self.title

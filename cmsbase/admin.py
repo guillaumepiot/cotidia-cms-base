@@ -17,7 +17,7 @@ from cmsbase.widgets import AdminImageWidget, AdminCustomFileWidget
 
 
 class PublishingWorkflowAdmin(admin.ModelAdmin):
-	
+
 	def get_fieldsets(self, request, obj=None):
 		new_fieldset = []
 		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
@@ -32,6 +32,8 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			return new_fieldset
 
 	def save_model(self, request, obj, form, change):
+		if not obj.id:
+			Page.tree.insert_node(obj, obj.parent)
 
 		obj.save()
 
@@ -55,7 +57,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			obj.publish_inlines = False
 			messages.warning(request, 'The %s "%s" has been submitted for approval.' % (obj_name, obj))
 
-		else: 
+		else:
 			obj.approval_needed = 1
 			obj.save()
 			obj.publish_inlines = False
@@ -88,7 +90,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 				obj.save()
 				obj.publish_version()
 				obj.publish_translations()
-				
+
 
 	make_published.short_description = "Approve & Publish"
 
@@ -149,11 +151,11 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 	def title(self, obj):
 		for t in obj.get_translations():
 			return t.title
-			
+
 
 	def languages(self, obj):
 		ts=[]
-		for t in obj.get_translations():    
+		for t in obj.get_translations():
 			ts.append(u'<img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s">' % (t.language_code, t.__unicode__()))
 		return ' '.join(ts)
 
@@ -168,7 +170,7 @@ class PageTranslationInlineFormAdmin(forms.ModelForm):
 		model = PageTranslation
 
 	def has_changed(self):
-		""" Should returns True if data differs from initial. 
+		""" Should returns True if data differs from initial.
 		By always returning true even unchanged inlines will get validated and saved."""
 		return True
 
@@ -204,10 +206,10 @@ class PageFormAdmin(forms.ModelForm):
 
 	def __init__(self, *args, **kwargs):
 		super(PageFormAdmin, self).__init__(*args, **kwargs)
-		
+
 		redirect_to = self.fields['redirect_to']
 		# redirect_to.queryset = Page.objects.get_published_original()
-		
+
 		# CATEGORY_CHOICES = ()
 		# for category in ContactCategory.objects.filter(account=self.acc).order_by('id'):
 		# 	CATEGORY_CHOICES = CATEGORY_CHOICES + ((category.id, category.name),)
@@ -228,7 +230,7 @@ class PageFormAdmin(forms.ModelForm):
 # 	template = 'admin/cms/page/images-inline.html'
 
 class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin):
-	
+
 	form = PageFormAdmin
 
 	list_display = ["title","is_published", "is_active", "home_icon", "approval", 'order_id', 'template', 'languages']
@@ -273,5 +275,5 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 		}),
 	)
 
-	
+
 admin.site.register(Page, PageAdmin)

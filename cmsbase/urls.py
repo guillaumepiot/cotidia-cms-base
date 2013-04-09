@@ -1,6 +1,6 @@
-from django.conf.urls.defaults import * 
+from django.conf.urls.defaults import *
 
-urlpatterns = patterns('cms', 
+urlpatterns = patterns('cmsbase',
 
 	#url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
 	url(r'^$', 'views.page', name="home"),

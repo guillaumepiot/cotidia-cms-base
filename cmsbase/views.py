@@ -2,18 +2,16 @@ import json
 
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, Http404
-from django.shortcuts import render_to_response, get_object_or_404 
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
-from django.core.urlresolvers import reverse 
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.conf import settings
-
-from cms.models import *
-from cms.forms import SearchForm
-from directory.models import * 
-from agenda.models import Event, EventTranslation
-from twitterfeed import user_timeline, twitter_search
-from pinterestfeed import pinterest_feed
 from django.utils import translation
+
+from cmsbase.models import *
+from cmsbase.forms import SearchForm
+
 
 def get_page(request, slug=False, preview=False):
 
@@ -31,16 +29,15 @@ def get_page(request, slug=False, preview=False):
 
 		if preview:
 			translation = PageTranslation.objects.filter(slug=last_slug, parent__published_from=None)
-			
+
 			if translation.count() > 0:
 				published.append(translation[0].parent)
 		else:
-
 			translation = PageTranslation.objects.filter(slug=last_slug).exclude(parent__published_from=None)
-			
+
 			if translation.count() > 0:
 				published.append(translation[0].parent)
-			
+
 	else:
 		if preview:
 			published = Page.objects.filter(home=True, published_from=None)
@@ -57,8 +54,6 @@ def get_page(request, slug=False, preview=False):
 
 
 def page(request, slug=False):
-	
-	from django.core.cache import cache
 
 	context = {}
 
@@ -66,9 +61,8 @@ def page(request, slug=False):
 
 	is_preview = False
 
-	if not preview == False:
-		if request.user.is_authenticated():
-			is_preview = True
+	if request.user.is_authenticated() and preview:
+		is_preview = True
 
 	if slug:
 		slugs = slug.split('/')
@@ -78,59 +72,8 @@ def page(request, slug=False):
 		slugs = []
 		page = get_page(request=request, preview=is_preview)
 
-	# Get discover content for the home page
-	discover = get_page(request=request, slug='discover', preview=is_preview)
-	context['discover'] = discover
-
-			# Get gallery content for the home page
-	gallery = get_page(request=request, slug='gallery', preview=is_preview)
-	context['gallery'] = gallery
-	# Get event content for the home page
-	event_home = get_page(request=request, slug='event-home', preview=is_preview)
-	context['event_home'] = event_home
-	# Get social content for the home page
-	social_home = get_page(request=request, slug='share', preview=is_preview)
-	context['social_home'] = social_home
-			
-	# Get Twitter feed
-
-	# statuses = []
-	if cache.get('twitter_statuses'):
-		statuses = cache.get('twitter_statuses')
-		
-	else:
-		# try:
-		statuses = user_timeline('CuracaoTravel', 1)
-		cache.set('twitter_statuses', statuses, 1800)
-	
-	context['statuses'] = json.loads(statuses)
-
-		# except Exception, e:		
-		# statuses = []
-	
-	# context['statuses'] = statuses
-
-	# Get Twitter Hashtag feed
-	if cache.get('hashtag_status'):
-		hashtag_status = cache.get('hashtag_status')
-	else:
-		hashtag_status = twitter_search('#curacao', 3)
-		cache.set('hashtag_status', hashtag_status, 1800)
-
-	context['hashtag_status'] = json.loads(hashtag_status)
-
-	# Get Pinterest feed
-	if cache.get('pinterest_feed'):
-		pins = cache.get('pinterest_feed')
-		context['pins'] = pins
-	else:
-		pins = pinterest_feed('http://pinterestapi.co.uk/curacao/pins')
-		cache.set('pinterest_feed', pins, 1800)
-		context['pins'] = pins
-
 	if not page:
-		raise Http404 
-
+		raise Http404('Not Found')
 
 	if page.redirect_to:
 		return HttpResponseRedirect(page.redirect_to.get_absolute_url())
@@ -142,10 +85,8 @@ def page(request, slug=False):
 	else:
 
 		page_original = page
-	
-	# page_original.get_default_url(slug)
 
-	
+	# page_original.get_default_url(slug)
 
 	# if len(slugs) == 2:
 	# 	navigation =  page_original.parent.get_descendants(include_self=False)
@@ -166,15 +107,15 @@ def page(request, slug=False):
 
 	if parents:
 		for parent in parents:
-			if parent.is_root_node() == False:		
+			if parent.is_root_node() == False:
 				categories = parent.get_siblings(include_self=True)
-				
-				# Loop through 
+
+				# Loop through
 				for category in categories:
 					# Only get Published objects
 					if category.get_published():
 						navigation.append(category)
-					
+
 					for child in category.get_children():
 						if  parent == category:
 						# print child
@@ -202,7 +143,7 @@ def search(request, directory=False):
 	from django.contrib.contenttypes.models import ContentType
 	template = 'cms/search.html'
 	results_objects = []
-	
+
 	query = False
 	root = False
 	if request.POST:
@@ -213,7 +154,7 @@ def search(request, directory=False):
 			#print "Selected language: %s" % language_code
 			query = form.cleaned_data['query']
 			ix = open_dir(settings.SEARCH_INDEX_PATH)
-			
+
 			with ix.searcher() as s:
 				parser = QueryParser("content", ix.schema)
 				myquery = parser.parse(query)
@@ -242,8 +183,8 @@ def search(request, directory=False):
 					obj_class = ct.model_class()
 					obj = obj_class.objects.get(id=r['id'])
 
-				
-					
+
+
 					if r['content_type'].lower() == 'event':
 						result = {'title':obj.translated().title, 'url':obj.get_absolute_url(), 'breadcrumbs':obj.get_breadcrumbs(), 'content': obj.translated().description, 'content_type':r['content_type']}
 					else:
@@ -267,6 +208,10 @@ def set_language(request):
 	from django.utils.translation import check_for_language
 	from localeurl import utils
 
+	from agenda.models import Event, EventTranslation
+	from twitterfeed import user_timeline, twitter_search
+	from pinterestfeed import pinterest_feed
+
 	"""
 	Redirect to a given url while changing the locale in the path
 	The url and the locale code need to be specified in the
@@ -277,20 +222,20 @@ def set_language(request):
 	next = request.REQUEST.get('next', None)
 
 
-	
+
 	if not next:
 		next = urlsplit(request.META.get('HTTP_REFERER', None))[2]
 	if not next:
 			next = '/'
 	_, path = utils.strip_path(next)
 	if request.method == 'POST':
-	
+
 		locale = request.POST.get('locale', None)
 		if locale and check_for_language(locale):
 			path = utils.locale_path(path, locale)
-	
+
 	# Set the language to the language selected
-		
+
 	slug = next = request.REQUEST.get('next', None)
 	response = http.HttpResponseRedirect(next)
 
@@ -299,7 +244,7 @@ def set_language(request):
 	else:
 		response.set_cookie(settings.LANGUAGE_COOKIE_NAME, locale)
 		# translation.activate(lang)
-	
+
 	translation.activate(locale)
 
 	# Split the uri to individuals to compare the languages
@@ -313,7 +258,7 @@ def set_language(request):
 		parent_slug = slugs[len(slugs)-2]
 
 	published = []
-	
+
 	object_translation = request.REQUEST.get('section', None)
 	# Search through the database to find the slug that matches the last part of url
 	translations = False
@@ -323,35 +268,35 @@ def set_language(request):
 	elif object_translation == 'Category':
 		translations = CategoryTranslation.objects.filter(slug=last_slug, parent__published_from=None)
 	elif object_translation == 'Event':
-		
+
 		translations = EventTranslation.objects.filter(slug=last_slug)
 		# print translations
 		# url = '/%s/dont-miss'%locale
 		# return http.HttpResponseRedirect(next)
 
 	page_original = False
-	
+
 	if translations != False:
 		if translations.count() > 0 :
 			page_original = translations[0].parent
-	
+
 	# When the page has been found.....
 
 	if page_original != False:
 		# Loop through database to find all tranlation for the page
 		page_translation = page_original.get_translations()
-		
+
 		# Loop through all the transation and find the match it with the language asked, then redirect to the new language
 		for page in page_translation:
 			if page.language_code == locale:
 				print page.parent.get_absolute_url()
 				return http.HttpResponseRedirect(page.parent.get_absolute_url())
-		
+
 		# Redirect to same page but with default language
 
 		return http.HttpResponseRedirect(page_original.get_absolute_url())
 	else:
-		
+
 		url = '/%s'%locale
 
 		return http.HttpResponseRedirect(url)
