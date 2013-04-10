@@ -36,3 +36,10 @@ It first get the root of the current page instance, then look up it root node an
 	{{node.get_published.translated.title}}
 	
 The "translated" method automatically lookup the current language set in your session to render the right translation.
+
+Get the full tree
+-----------------
+
+You can use the template tage to get the full tree for a specific model:
+
+{% full_tree_for_model cmsbase.Page as pages %}

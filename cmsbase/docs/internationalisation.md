@@ -39,3 +39,34 @@ Or as a simple select box:
 	        <input type="submit" value="Set" />
 	    </noscript>
 	</form>
+	
+Settings
+--------
+
+Here's the default settings:
+
+	LANGUAGES = (
+	    ('en', 'English'),
+	    # ('nl', 'Dutch'),
+	    # ('es', 'Spanish'),
+	    # ('pt', 'Portuguese'),
+	    # ('de', 'German'),
+	)
+	DEFAULT_LANGUAGE = LANGUAGES[0][0]
+
+	LOCALE_INDEPENDENT_PATHS = (
+	    r'^/admin/',
+	    r'^/uploads/',
+	)
+	PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) == 1 else True
+
+
+The LANGUAGES define all the supported languages for the application.
+
+If the list equals 1, there's only one language and therefore the site is not multilingual, so we set the following value automatically:
+
+	# Define wether or not to display the url prefix
+	# False if we have only one language supported
+	PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) == 1 else True
+	
+The LOCALE_INDEPENDENT_PATHS specify the urls that doesn't require localeurl support. Useful for the admin or api call such as the ajax file upload the Redactor text editor.

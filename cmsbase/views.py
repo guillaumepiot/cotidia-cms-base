@@ -15,6 +15,7 @@ from cmsbase.forms import SearchForm
 
 def get_page(request, slug=False, preview=False):
 
+	# Deconstruct the slug to get the last element corresponding to the page we are looking for
 	if slug:
 		slugs = slug.split('/')
 
@@ -42,7 +43,6 @@ def get_page(request, slug=False, preview=False):
 		if preview:
 			published = Page.objects.filter(home=True, published_from=None)
 		else:
-			# translation = PageTranslation.objects.filter()
 			published = Page.objects.filter(published=True, home=True).exclude(published_from=None)
 
 	if len(published)> 0:
@@ -55,37 +55,47 @@ def get_page(request, slug=False, preview=False):
 
 def page(request, slug=False):
 
+	# Check if the preview variable is in the path
 	preview = request.GET.get('preview', False)
 
+	# Set preview to False by default
 	is_preview = False
 
-	if request.user.is_authenticated() and preview:
+	# Make sure the user has the right to see the preview
+	if request.user.is_authenticated() and not preview == False:
 		is_preview = True
 
+	# Is it home page or not?
 	if slug:
 		slugs = slug.split('/')
 		page = get_page(request=request, slug=slug, preview=is_preview)
-		discover = None
 	else:
 		slugs = []
 		page = get_page(request=request, preview=is_preview)
 
+	# Raise a 404 if the page can't be found
 	if not page:
 		raise Http404('Not Found')
 
+	# Hard redirect if specified in page attributes
 	if page.redirect_to:
 		return HttpResponseRedirect(page.redirect_to.get_absolute_url())
 
-	if not is_preview:
-		page_original = page.published_from
-	else:
-		page_original = page
 
+	# When you switch language it will load the right translation but stay on the same slug
+	# So we need to redirect tio the right translated slug if not on it already
+	page_url = page.get_absolute_url()
+
+	if not page_url == request.path:
+		return HttpResponseRedirect(page_url)
 
 	# Get the root page and then all its descendants, including self
-	nodes = page_original.get_root().get_descendants(include_self=True)
+	if page.published_from == None:
+		nodes = page.get_root().get_descendants(include_self=True)
+	else:
+		nodes = page.published_from.get_root().get_descendants(include_self=True)
 
-	return render_to_response(page.template, {'page':page, 'nodes':nodes,}, context_instance=RequestContext(request))
+	return render_to_response(page.template, {'page':page, 'nodes':nodes, 'is_preview':is_preview}, context_instance=RequestContext(request))
 
 
 def search(request, directory=False):
@@ -154,109 +164,3 @@ def search(request, directory=False):
 	return render_to_response(template, {'query':query, 'results':results_objects, 'form':form, }, context_instance=RequestContext(request))
 
 
-def set_language(request):
-
-	from urlparse import urlsplit
-	from django import http
-	from django.utils.translation import check_for_language
-	from localeurl import utils
-
-	from agenda.models import Event, EventTranslation
-	from twitterfeed import user_timeline, twitter_search
-	from pinterestfeed import pinterest_feed
-
-	"""
-	Redirect to a given url while changing the locale in the path
-	The url and the locale code need to be specified in the
-	request parameters.
-	"""
-
-	# Default function from django-localurl
-	next = request.REQUEST.get('next', None)
-
-
-
-	if not next:
-		next = urlsplit(request.META.get('HTTP_REFERER', None))[2]
-	if not next:
-			next = '/'
-	_, path = utils.strip_path(next)
-	if request.method == 'POST':
-
-		locale = request.POST.get('locale', None)
-		if locale and check_for_language(locale):
-			path = utils.locale_path(path, locale)
-
-	# Set the language to the language selected
-
-	slug = next = request.REQUEST.get('next', None)
-	response = http.HttpResponseRedirect(next)
-
-	if hasattr(request, 'session'):
-		request.session['django_language'] = locale
-	else:
-		response.set_cookie(settings.LANGUAGE_COOKIE_NAME, locale)
-		# translation.activate(lang)
-
-	translation.activate(locale)
-
-	# Split the uri to individuals to compare the languages
-	slugs = slug.split('/')
-
-	if len(slugs) == 1:
-		last_slug = slugs[len(slugs)-2]
-		parent_slug = False
-	elif len(slugs) > 1:
-		last_slug = slugs[len(slugs)-2]
-		parent_slug = slugs[len(slugs)-2]
-
-	published = []
-
-	object_translation = request.REQUEST.get('section', None)
-	# Search through the database to find the slug that matches the last part of url
-	translations = False
-
-	if object_translation == 'page':
-		translations = PageTranslation.objects.filter(slug=last_slug, parent__published_from=None)
-	elif object_translation == 'Category':
-		translations = CategoryTranslation.objects.filter(slug=last_slug, parent__published_from=None)
-	elif object_translation == 'Event':
-
-		translations = EventTranslation.objects.filter(slug=last_slug)
-		# print translations
-		# url = '/%s/dont-miss'%locale
-		# return http.HttpResponseRedirect(next)
-
-	page_original = False
-
-	if translations != False:
-		if translations.count() > 0 :
-			page_original = translations[0].parent
-
-	# When the page has been found.....
-
-	if page_original != False:
-		# Loop through database to find all tranlation for the page
-		page_translation = page_original.get_translations()
-
-		# Loop through all the transation and find the match it with the language asked, then redirect to the new language
-		for page in page_translation:
-			if page.language_code == locale:
-				print page.parent.get_absolute_url()
-				return http.HttpResponseRedirect(page.parent.get_absolute_url())
-
-		# Redirect to same page but with default language
-
-		return http.HttpResponseRedirect(page_original.get_absolute_url())
-	else:
-
-		url = '/%s'%locale
-
-		return http.HttpResponseRedirect(url)
-
-	if not slug:
-		slug = request.META.get('HTTP_REFERER', None)
-	if not slug:
-		slug = '/'
-
-    	return http.HttpResponseRedirect(next)

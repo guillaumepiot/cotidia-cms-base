@@ -8,6 +8,7 @@ from django import forms
 from django.conf import settings
 
 from mptt.admin import MPTTModelAdmin
+from mptt.forms import TreeNodeChoiceField
 
 from multilingual_model.admin import TranslationInline
 
@@ -33,7 +34,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			return new_fieldset
 
 	def save_model(self, request, obj, form, change):
-		if not obj.id:
+		if not obj.id and obj.parent:
 			Page.tree.insert_node(obj, obj.parent)
 
 		obj.save()
@@ -131,7 +132,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 		else:
 			return '<i class="icon-ok"></i>'
 	approval.allow_tags = True
-	approval.short_description = 'Approval'
+	approval.short_description = 'Approved'
 
 	def is_published(self, obj):
 		if obj.has_published_version:
@@ -167,7 +168,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 	languages.short_description = 'Translations'
 
 class PageTranslationInlineFormAdmin(forms.ModelForm):
-	slug = forms.SlugField()
+	slug = forms.SlugField(label=_('Page URL'))
 	content = forms.CharField(widget=RedactorEditor(redactor_css="/static/css/redactor-editor.css"), required=False)
 
 	class Meta:
@@ -185,25 +186,33 @@ class PageTranslationInline(TranslationInline):
 	prepopulated_fields = {'slug': ('title',)}
 	#template = 'admin/cmsbase/cms_translation_inline.html'
 
-	# fieldsets = (
-	# 	('Language', {
-	# 		'classes': ('green',),
-	# 		'fields': ('language_code',)
-	# 	}),
-	# 	('Content', {
-	# 		'classes': ('default',),
-	# 		'fields': ('title', 'slug', 'content' )
-	# 	}),
 
-	# 	('Meta data', {
-	# 		'classes': ('default collapse',),
-	# 		'fields': ('meta_title', 'meta_keywords', 'meta_description', )
-	# 	}),
-	# )
+	# if settings.PREFIX_DEFAULT_LOCALE:
+	# 	fieldsets = (
+	# 		('Content', {
+	# 			'classes': ('default',),
+	# 			'fields': ('language_code','title', 'slug', 'content' )
+	# 		}),
+	# 		('Meta data', {
+	# 			'classes': ('default collapse',),
+	# 			'fields': ('meta_title', 'meta_description', )
+	# 		}),
+	# 	)
+	# else:
+	# 	fieldsets = (
+	# 		('Content', {
+	# 			'classes': ('default',),
+	# 			'fields': ('language_code','title', 'slug', 'content' )
+	# 		}),
+	# 		('Meta data', {
+	# 			'classes': ('default collapse',),
+	# 			'fields': ('meta_title', 'meta_description', )
+	# 		}),
+	# 	)
 
 
 class PageFormAdmin(forms.ModelForm):
-	#content = forms.CharField(widget=RedactorEditor(redactor_css="/static/css/redactor-editor.css"), required=False)
+	redirect_to = TreeNodeChoiceField(queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
 
 	class Meta:
 		model = Page
@@ -212,6 +221,21 @@ class PageFormAdmin(forms.ModelForm):
 		super(PageFormAdmin, self).__init__(*args, **kwargs)
 
 		redirect_to = self.fields['redirect_to']
+		self.obj = kwargs.get('instance', False)
+		
+
+	def clean_slug(self):
+		slug = self.cleaned_data['slug']
+
+		pages = [page.slug for page in Page.objects.all()]
+
+
+		if self.obj and slug in pages and slug != self.obj.slug and slug != '':
+			raise forms.ValidationError(_('The unique page identifier must be unique 1')) 
+		elif not self.obj and slug in pages and slug != '':
+			raise forms.ValidationError(_('The unique page identifier must be unique 2')) 
+		else:
+			return slug
 
 
 
@@ -230,7 +254,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 
 	form = PageFormAdmin
 
-	list_display = ["title","is_published", "is_active", "home_icon", "approval", 'order_id', 'template', 'languages']
+	list_display = ["title", "home_icon", "is_published", "approval", 'template', 'languages']
 	#list_filter = ["approval_needed"]
 	# search_fields = ['title']
 	# prepopulated_fields = {'slug': ('title',)}
@@ -246,20 +270,11 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 
 	fieldsets = (
 
-		('Sitemap', {
-			'description':_('The page hierarchy'),
-			'classes': ('default', 'active', ),
-			'fields': ('parent', 'home',)
-		}),
-		('Layout', {
-			'description':_('The page template'),
+		
+		('Settings', {
+			#'description':_('The page template'),
 			'classes': ('default',),
-			'fields': (  'template',)
-		}),
-		('Options', {
-			'description':_('The extra bits'),
-			'classes': ('default',),
-			'fields': (  'slug', 'redirect_to', )
+			'fields': ( 'home', 'parent', 'template', 'redirect_to', 'slug', )
 		}),
 
 	)

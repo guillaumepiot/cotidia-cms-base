@@ -1,1 +1,65 @@
 {% extends 'admin/change_form.html' %}
+{% load i18n admin_static admin_modify admin_urls %}
+
+{% block content %}<div id="content-main" class="">
+
+<form enctype="multipart/form-data" action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form" class="form">{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="alert alert-danger">
+    {% blocktrans count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+{% block field_sets %}
+<div class="row-fluid">
+	<div class="span9">
+		<div class="inner">
+		{% for inline_admin_formset in inline_admin_formsets %}
+		    {% include inline_admin_formset.opts.template %}
+		{% endfor %}
+		</div>
+	</div>
+	<div class="span3">	
+		
+		<div class="inner">
+		{% for fieldset in adminform %}
+			{% include "admin/includes/fieldset.html" %}
+		{% endfor %}
+		<div class="form-actions">
+			<div class="row-fluid">
+				<div class="span12">
+					<input type="submit" value="{% trans 'Save' %}" class="default" name="_save" {{ onclick_attrib }}/>
+					&nbsp; <a href="{% url opts|admin_urlname:'changelist' %}" class="small gray">{% trans "Cancel" %}</a>
+					{% if original %}<a href="delete/" class="deletelink btn btn-danger float-right">{% trans "Delete" %}</a>{% endif %}
+				</div>
+			</div>
+
+		</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block inline_field_sets %}
+
+{% endblock %}
+
+
+
+{% block submit_buttons_bottom %}{% endblock %}
+
+{% if adminform and add %}
+   <script type="text/javascript">document.getElementById("{{ adminform.first_field.id_for_label }}").focus();</script>
+{% endif %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
+{% endblock %}

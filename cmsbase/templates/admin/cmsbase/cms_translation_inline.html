@@ -4,11 +4,7 @@
 {{ inline_admin_formset.formset.management_form }}
 {{ inline_admin_formset.formset.non_form_errors }}
 
-    <ul class="nav nav-tabs inline-nav-tabs">
-    {% for inline_admin_form in inline_admin_formset %}
-        {% if inline_admin_form.original %}<li class="{% if forloop.first %}active{% endif %}"><a href="#{{ inline_admin_formset.formset.prefix }}-{{ inline_admin_form.original.language_code }}" data-toggle="tab"><img src="/static/admin/img/flags/{{ inline_admin_form.original.language_code }}.png" alt=""></a></li>{% endif %}
-    {% endfor %}
-    </ul>
+
     <div class="tab-content">
     {% for inline_admin_form in inline_admin_formset %}
 
