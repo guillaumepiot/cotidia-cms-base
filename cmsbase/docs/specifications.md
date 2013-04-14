@@ -83,3 +83,9 @@ Options should include
 A typical fab command would look like:
 
 	$ fab createproject:name=my_project,db=sqlite3,multilingual=False
+	
+	
+Asset management
+----------------
+
+The deployment should use Bower to manage asset packages such as Twitter Bootstrap, jQuery

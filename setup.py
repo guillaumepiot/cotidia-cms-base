@@ -32,7 +32,7 @@ root_dir = os.path.dirname(__file__)
 if root_dir:
     os.chdir(root_dir)
 
-for dirpath, dirnames, filenames in os.walk('admin_tools'):
+for dirpath, dirnames, filenames in os.walk('cmsbase'):
     # Ignore dirnames that start with '.'
     for i, dirname in enumerate(dirnames):
         if dirname.startswith('.'): del dirnames[i]
@@ -42,7 +42,7 @@ for dirpath, dirnames, filenames in os.walk('admin_tools'):
             pkg = pkg.replace(os.path.altsep, '.')
         packages.append(pkg)
     elif filenames:
-        prefix = dirpath[12:] # Strip "admin_tools/" or "admin_tools\"
+        prefix = dirpath[12:] # Strip "cmsbase/" or "cmsbase\"
         for f in filenames:
             data_files.append(os.path.join(prefix, f))
 

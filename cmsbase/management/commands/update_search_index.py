@@ -40,24 +40,4 @@ class Command(BaseCommand):
 				writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
                     id=u"%s" % page.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
 
-		# Directory data
-		for category in Category.objects.get_published_live():
-			content_type = ContentType.objects.get_for_model(Category)
-			for translation in category.get_translations():
-				writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
-                    id=u"%s" % category.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
-
-		for listing in Listing.objects.get_published_live():
-			content_type = ContentType.objects.get_for_model(Listing)
-			for translation in listing.get_translations():
-				writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
-                    id=u"%s" % listing.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
-
-		# Event data
-		for event in Event.published.all():
-			content_type = ContentType.objects.get_for_model(Event)
-			for translation in event.get_translations():
-				writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
-                    id=u"%s" % event.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.description))
-
 		writer.commit()

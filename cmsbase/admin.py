@@ -184,7 +184,7 @@ class PageTranslationInline(TranslationInline):
 	form = PageTranslationInlineFormAdmin
 	extra = 1
 	prepopulated_fields = {'slug': ('title',)}
-	#template = 'admin/cmsbase/cms_translation_inline.html'
+	template = 'admin/cmsbase/cms_translation_inline.html'
 
 
 	# if settings.PREFIX_DEFAULT_LOCALE:
