@@ -20,67 +20,236 @@ Install CMS Base (which will also install all depencies)
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
 
+Create a Django project
+-----------------------
+
+	$ django-admin.py startproject myproject
+
+Setup the settings
+------------------
+
+First we set a staging/production settings method:
+
+	$ cd myproject/myproject
+	$ mkdir settings
+	$ cp settings.py settings/__init__.py
+	$ rm settings.py
+	$ cd settings
+	$ echo "from myproject.settings import *" > staging.py
+	$ echo "from myproject.settings import *" > production.py
+
+> This way we can call the adequate settings file in the server setup depeneding if we are in staging or production mode, while all settings organised.
 
 
+Settings configuration
+----------------------
 
+To facilitate our multiple path settings, we first get the project path:
 
+	import os
 
-TO-DO: a fab file that run basic installation
+	PROJECT_DIR = os.path.dirname(__file__) 
 
+Setup the local database, we recommend to use sqlite locally but feel free to any other database you may prefer.
 
-Admin tools
------------
+	DATABASES = {
+	    'default': {
+	        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+	        'NAME': 'dev/myproject.db',                      # Or path to database file if using sqlite3.
+	    }
+	}
 
-Follow the setup instructions for the admin tools: https://bitbucket.org/guillaumepiot/cotidia-admin-tools
+Set the folder to contain the database, and make sure your path are correct whichever one you choose.
 
-In settings:
+	$ mkdir dev
 
-- ADMIN_TOOLS_INDEX_DASHBOARD = 'cotidiacms.dashboard.CustomIndexDashboard'
-- ADMIN_TOOLS_MENU = 'cotidiacms.menu.CustomMenu'
+New in Django 1.5, setup a list ol allowed hosts for production environment:
+
+	ALLOWED_HOSTS = ['.mydomain.com']
+
+	# .mydomain.com is a wildcard for mydomain.com and all its sub-domains
+
+More info on Django's website: [https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts](https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts)
+
+Setup the media folder and url (where all uploaded will go), if any.
+
+	MEDIA_ROOT = os.path.join(PROJECT_DIR, '../../media/')
+	MEDIA_URL = '/media/'
+
+We comment the STATIC_ROOT as we will using STATICFILES_DIRS instead.
+
+	# STATIC_ROOT = ''
+
+	STATIC_URL = '/static/'
+
+	STATICFILES_DIRS = (
+	    os.path.join(PROJECT_DIR, "../static"),
+	)
+
+We insert the localeurl at the start of our middlewares, this will automatically add url language suffix if required.
+
+	MIDDLEWARE_CLASSES = (
+    	'localeurl.middleware.LocaleURLMiddleware',
+    	...
+    )
 
 
 Context processor
 -----------------
 
-Create a default context processor: https://gist.github.com/guillaumepiot/5338169
+Create a default context processor, download a sample here [https://gist.github.com/guillaumepiot/5338169](https://gist.github.com/guillaumepiot/5338169) or enter the following command in the app folder of the same name as the project:
 
-And add it to your TEMPLATE_CONTEXT_PROCESSORS
+	$ curl https://gist.github.com/guillaumepiot/5338169/raw/9a7c956166b1f87a1b15d3f634f0218c2ea3fa9b/gistfile1.txt > context_processor.py
+
+And add it to  TEMPLATE_CONTEXT_PROCESSORS
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-	    ...
-	    "cotidiacms.context_processor.website_settings"
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.core.context_processors.request",
+    "django.contrib.messages.context_processors.messages",
+
+    "myproject.context_processor.website_settings"
+)
+
+> Please note that "django.core.context_processors.request" is necessary to pass the request to the admin tools template tags.
+
+
+Apps
+----
+
+Include the required apps.
+
+	INSTALLED_APPS = (
+
+	    'admin_tools',
+	    'admin_tools.menu',
+	    'admin_tools.dashboard',
+	    'admin_tools.liststyle',
+
+	    'django.contrib.auth',
+	    'django.contrib.contenttypes',
+	    'django.contrib.sessions',
+	    'django.contrib.sites',
+	    'django.contrib.messages',
+	    'django.contrib.staticfiles',
+	    'django.contrib.admin',
+
+	    'cmsbase',
+	    'reversion',
+	    'mptt',
+	    'south',
+	    'sorl.thumbnail',
+	    'redactor',
+	    'filemanager'
+	)
+
+Setup the templates path
+------------------------
+
+	TEMPLATE_DIRS = (
+	    os.path.join(PROJECT_DIR, '../templates/')
 	)
 
 
+Admin panel settings
+--------------------
 
-Settings
---------
+Is it recommended to set the following variable to create a notice in the admin footer:
 
-In settings.py, you will need to set the following settings that relates to your project:
+	AUTHOR_URL = 'http://mydomain.com'
+	AUTHOR = 'My project'
+	#GOOGLE_SITE_VERIFICATION : Google webmaster verification code (optional)
 
-- AUTHOR_URL = 'http://cotidia.com'
-- AUTHOR = 'Cotidia Ltd'
-- GOOGLE_SITE_VERIFICATION : Google webmaster verification code (optional)
+Then, we must hook our menu and dashboard classes to generate the custom admin tools:
+
+	ADMIN_TOOLS_INDEX_DASHBOARD = 'myproject.dashboard.CustomIndexDashboard'
+	ADMIN_TOOLS_MENU = 'myproject.menu.CustomMenu'
+
+Pull the default files from GIST automatically:
+
+	$ curl https://gist.github.com/guillaumepiot/5391705/raw/ec10eda52976618f6f6e0a1a6efd54c95dfe2ce8/gistfile1.py > menu.py
+	$ curl https://gist.github.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py
+
+> You can follow the setup instructions for the admin tools: https://bitbucket.org/guillaumepiot/cotidia-admin-tools
 
 
-In the database, you will need to setup the site name & domain.
+Multilingual settings
+---------------------
 
-- site.name
-- site.domain
+Include a tuple of enabled languages.
 
-Add the following context processors:
+> Please note that if you include only one language, then the multilingual features will be disabled.
 
-	TEMPLATE_CONTEXT_PROCESSORS = (
-	    "django.contrib.auth.context_processors.auth",
-	    "django.core.context_processors.debug",
-	    "django.core.context_processors.i18n",
-	    "django.core.context_processors.media",
-	    "django.core.context_processors.static",
-	    "django.core.context_processors.tz",
-	    "django.core.context_processors.request",
-	    "django.contrib.messages.context_processors.messages",
-	    "cotidiacms.context_processor.website_settings"
+	LANGUAGES = (
+	    ('en', 'English'),
+	    # ('nl', 'Dutch'),
+	    # ('es', 'Spanish'),
+	    # ('pt', 'Portuguese'),
+	    # ('de', 'German'),
 	)
-	
-Please note that "django.core.context_processors.request" is necessary to pass the request to the admin tools template tags.
+	DEFAULT_LANGUAGE = LANGUAGES[0][0]
+
+Include a list of URLs that doesn't require the language prefix
+
+	LOCALE_INDEPENDENT_PATHS = (
+	    r'^/admin/',
+	    r'^/uploads/',
+	)
+
+	# Define wether or not to display the url prefix
+	# False if we have only one language supported
+	PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) <= 1 else True
+
+Default URLS
+------------
+
+We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py)
+
+	$ curl https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py > urls.py
+
+Or copy and paste the following code:
+
+	from django.conf.urls import patterns, include, url
+	from django.conf import settings
+	from django.contrib import admin
+	admin.autodiscover()
+
+	urlpatterns = patterns('',
+	    # URL language management
+	    (r'^localeurl/', include('localeurl.urls')),
+	    # Language switcher management
+	    (r'^i18n/', include('django.conf.urls.i18n')),
+
+
+	    # Admin
+	    url(r'^admin/', include(admin.site.urls)),
+	    # Text editor file uploads
+	    url(r'^uploads/', include('filemanager.urls')),
+
+	    # CMS base
+	    url(r'^', include('cmsbase.urls', namespace='cms')),
+	)
+
+	if settings.DEBUG:
+	    urlpatterns = patterns('',
+	        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+	    ) + urlpatterns
+
+Sync the database
+-----------------
+
+	$ python manage.py syncdb
+	$ python manage.py migrate --all
+
+Set the site name and domain once logged in the admin.
+
+That's it, now just start the site:
+
+	$ python manage.py runserver
+
 

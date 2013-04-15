@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% load admin_static %}
+
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/admin.theme.css" %}" />
+{% endblock %}
+
+{# The meta title of the admin #}
+{% block meta_site_name %}Ancillary deployment{% endblock %}
+
+{# The header title above the navigation bar #}
+{% block site_name %}Ancillary deployment{% endblock %}
+
+{# Please note, if you pass 'site_name' in your context processor, you will not need to use those two blocks, as the site_name variable will be used instead #}
+
+{% block author_link %}<a href="http://viva-aspire.com">VIVA Aspire</a>{% endblock %}
+
+{# Please note, if you pass 'author' & 'author_url' in your context processor, you will not need to use those two blocks, as those variables will be used instead #}
