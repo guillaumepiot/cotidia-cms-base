@@ -250,7 +250,7 @@ class PageFormAdmin(forms.ModelForm):
 # 	extra = 0
 # 	template = 'admin/cms/page/images-inline.html'
 
-class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin):
+class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin):
 
 	form = PageFormAdmin
 

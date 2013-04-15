@@ -194,6 +194,9 @@ Include a tuple of enabled languages.
 	)
 	DEFAULT_LANGUAGE = LANGUAGES[0][0]
 
+	# Set the django language code to the default language
+	LANGUAGE_CODE = DEFAULT_LANGUAGE
+
 Include a list of URLs that doesn't require the language prefix
 
 	LOCALE_INDEPENDENT_PATHS = (
@@ -251,5 +254,15 @@ Set the site name and domain once logged in the admin.
 That's it, now just start the site:
 
 	$ python manage.py runserver
+
+
+Know reversion issue
+--------------------
+
+When saving the page model instance, you may encounter the following error:
+
+	reversion_version.object_repr may not be NULL
+
+The best fix so far is to allow `object_repr` to be NULL in the database table. Though, it worth investigating why this is happening in the first place.
 
 
