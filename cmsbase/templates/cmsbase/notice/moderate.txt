@@ -1,0 +1,4 @@
+	{% extends 'notice/base.txt' %}{% load i18n %}
+	{% block content %}
+		
+	{% endblock %}

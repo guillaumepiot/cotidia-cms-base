@@ -1,6 +1,30 @@
 Installation
 ============
 
+Create a new folder for your project
+------------------------------------
+
+	$ mkdir myproject
+	$ cd myproject
+
+Create and start a virtual environment (higly recommended)
+----------------------------------------------------------
+
+	$ virtualenv .
+	$ source bin/activate
+	
+Install CMS Base (which will also install all depencies)
+--------------------------------------------------------
+
+	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cms-base.git#egg=cmsbase
+	
+> Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
+
+
+
+
+
+
 TO-DO: a fab file that run basic installation
 
 
