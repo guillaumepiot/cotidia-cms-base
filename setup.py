@@ -15,13 +15,16 @@ CLASSIFIERS = [
 
 install_requires = [
     'django==1.5',
-    # 'django-reversion==1.6.3',
-    # 'PIL==1.1.7',
-    # 'sorl-thumbnail==11.12',
-    # 'south==0.7.6',
-    # '-e git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git',
-    # '-e git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git',
-    # '-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
+    'django-mptt==0.5.5',
+    'django-reversion==1.7',
+    'django-localeurl==1.5',
+    'PIL==1.1.7',
+    'sorl-thumbnail==11.12',
+    'south==0.7.6',
+    '-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
+    '-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',
+    '-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager',
+    '-e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model',
 ]
 
 # taken from django-registration
