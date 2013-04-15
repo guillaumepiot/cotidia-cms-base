@@ -21,7 +21,7 @@ install_requires = [
     'PIL==1.1.7',
     'sorl-thumbnail==11.12',
     'south==0.7.6',
-    # The following must be installed manually until they are package accordingly
+    # The following must be installed manually until they are packaged adequately
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager',
