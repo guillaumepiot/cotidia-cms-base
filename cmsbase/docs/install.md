@@ -103,18 +103,18 @@ Create a default context processor, download a sample here [https://gist.github.
 
 And add it to  TEMPLATE_CONTEXT_PROCESSORS
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
+	TEMPLATE_CONTEXT_PROCESSORS = (
+	    "django.contrib.auth.context_processors.auth",
+	    "django.core.context_processors.debug",
+	    "django.core.context_processors.i18n",
+	    "django.core.context_processors.media",
+	    "django.core.context_processors.static",
+	    "django.core.context_processors.tz",
+	    "django.core.context_processors.request",
+	    "django.contrib.messages.context_processors.messages",
 
-    "myproject.context_processor.website_settings"
-)
+	    "myproject.context_processor.website_settings"
+	)
 
 > Please note that "django.core.context_processors.request" is necessary to pass the request to the admin tools template tags.
 
@@ -256,13 +256,13 @@ That's it, now just start the site:
 	$ python manage.py runserver
 
 
-Know reversion issue
---------------------
+Possible issues
+---------------
 
 When saving the page model instance, you may encounter the following error:
 
 	reversion_version.object_repr may not be NULL
 
-The best fix so far is to allow `object_repr` to be NULL in the database table. Though, it worth investigating why this is happening in the first place.
+This will happen if the Django LANGUAGE_CODE settings is not the same as the first available LANGUAGES. For example you may have 'en-us' and 'en' which don't match and will cause the page object to lack a unicode representation (which is normal made of the default language).
 
 
