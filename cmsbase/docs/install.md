@@ -13,8 +13,8 @@ Create and start a virtual environment (higly recommended)
 	$ virtualenv .
 	$ source bin/activate
 	
-Install CMS Base (which will also install all depencies)
---------------------------------------------------------
+Install CMS Base (which will also install all dependencies)
+-----------------------------------------------------------
 
 	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cms-base.git#egg=cmsbase
 	
@@ -38,19 +38,19 @@ First we set a staging/production settings method:
 	$ echo "from myproject.settings import *" > staging.py
 	$ echo "from myproject.settings import *" > production.py
 
-> This way we can call the adequate settings file in the server setup depeneding if we are in staging or production mode, while all settings organised.
+> This way we can call the adequate settings file in the server setup depending if we are in staging or production mode, while keeping all settings organised.
 
 
 Settings configuration
 ----------------------
 
-To facilitate our multiple path settings, we first get the project path:
+To facilitate our several path settings, we set the project path variable:
 
 	import os
 
 	PROJECT_DIR = os.path.dirname(__file__) 
 
-Setup the local database, we recommend to use sqlite locally but feel free to any other database you may prefer.
+Setup the local database, we recommend to use sqlite locally but feel free to any other database type.
 
 	DATABASES = {
 	    'default': {
@@ -159,7 +159,7 @@ Setup the templates path
 Admin panel settings
 --------------------
 
-Is it recommended to set the following variable to create a notice in the admin footer:
+Is it recommended to set the following variables to create a copyright notice in the admin footer:
 
 	AUTHOR_URL = 'http://mydomain.com'
 	AUTHOR = 'My project'
@@ -175,7 +175,7 @@ Pull the default files from GIST automatically:
 	$ curl https://gist.github.com/guillaumepiot/5391705/raw/ec10eda52976618f6f6e0a1a6efd54c95dfe2ce8/gistfile1.py > menu.py
 	$ curl https://gist.github.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py
 
-> You can follow the setup instructions for the admin tools: https://bitbucket.org/guillaumepiot/cotidia-admin-tools
+> You can follow the setup instructions for the admin tools here: [https://bitbucket.org/guillaumepiot/cotidia-admin-tools](https://bitbucket.org/guillaumepiot/cotidia-admin-tools)
 
 
 Multilingual settings
@@ -263,6 +263,6 @@ When saving the page model instance, you may encounter the following error:
 
 	reversion_version.object_repr may not be NULL
 
-The best fix so far is to allow `object_repr` to be NULL in the database table. Though, it worth investigating why this is happening in the first place.
+The best fix so far is to allow `object_repr` to be NULL in the database table. Though, it's worth investigating why this is happening in the first place.
 
 
