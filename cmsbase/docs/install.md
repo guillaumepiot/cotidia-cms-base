@@ -274,7 +274,7 @@ When saving the page model instance, you may encounter the following error:
 
 	reversion_version.object_repr may not be NULL
 
-This will happen if the Django LANGUAGE_CODE settings is not the same as the first available LANGUAGES. For example you may have 'en-us' and 'en' which don't match and will cause the page object to lack a unicode representation (which is normal made of the default language).
+This will happen if the Django LANGUAGE_CODE settings is not the same as the first available LANGUAGES. For example you may have 'en-us' and 'en' which don't match and will cause the page object to lack a unicode representation.
 
 
 
