@@ -78,10 +78,14 @@ Setup the media folder and url (where all uploaded will go), if any.
 
 We comment the STATIC_ROOT as we will using STATICFILES_DIRS instead.
 
-	# STATIC_ROOT = ''
+	# Static root will be used for collecting static files for production deployment
+	# Use the command: python manage.py collectstatic
+	STATIC_ROOT = os.path.join(PROJECT_DIR, '../../static/')
 
 	STATIC_URL = '/static/'
 
+	# Here's where we save the project static files
+	# Not be served in production mode
 	STATICFILES_DIRS = (
 	    os.path.join(PROJECT_DIR, "../static"),
 	)
