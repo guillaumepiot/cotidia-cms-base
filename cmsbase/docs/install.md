@@ -13,12 +13,19 @@ Create and start a virtual environment (higly recommended)
 	$ virtualenv .
 	$ source bin/activate
 	
-Install CMS Base (which will also install all dependencies)
+Install CMS Base (which will also install some dependencies)
 -----------------------------------------------------------
 
 	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cms-base.git#egg=cmsbase
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
+
+Also install the dependencies underdevelopment:
+
+	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools
+    $ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor
+    $ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager
+    $ pip install -e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model
 
 Create a Django project
 -----------------------
