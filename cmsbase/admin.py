@@ -33,6 +33,14 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 					new_fieldset.append(fieldset)
 			return new_fieldset
 
+	def get_list_display(self, request, obj=None):
+		if not settings.PREFIX_DEFAULT_LOCALE:
+			return ["title", "home_icon", "is_published", "approval", 'template']
+		else:
+			return ["title", "home_icon", "is_published", "approval", 'template', 'languages']
+
+
+
 	def save_model(self, request, obj, form, change):
 		if not obj.id and obj.parent:
 			Page.tree.insert_node(obj, obj.parent)
@@ -254,7 +262,7 @@ class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin)
 
 	form = PageFormAdmin
 
-	list_display = ["title", "home_icon", "is_published", "approval", 'template', 'languages']
+	#list_display = ["title", "home_icon", "is_published", "approval", 'template', 'languages']
 	#list_filter = ["approval_needed"]
 	# search_fields = ['title']
 	# prepopulated_fields = {'slug': ('title',)}
