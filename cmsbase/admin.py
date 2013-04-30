@@ -182,7 +182,7 @@ class PageTranslationInlineFormAdmin(forms.ModelForm):
 class PageTranslationInline(TranslationInline):
 	model = PageTranslation
 	form = PageTranslationInlineFormAdmin
-	extra = 1
+	extra = 0
 	prepopulated_fields = {'slug': ('title',)}
 	template = 'admin/cmsbase/cms_translation_inline.html'
 
@@ -231,9 +231,9 @@ class PageFormAdmin(forms.ModelForm):
 
 
 		if self.obj and slug in pages and slug != self.obj.slug and slug != '':
-			raise forms.ValidationError(_('The unique page identifier must be unique 1')) 
+			raise forms.ValidationError(_('The unique page identifier must be unique')) 
 		elif not self.obj and slug in pages and slug != '':
-			raise forms.ValidationError(_('The unique page identifier must be unique 2')) 
+			raise forms.ValidationError(_('The unique page identifier must be unique')) 
 		else:
 			return slug
 
