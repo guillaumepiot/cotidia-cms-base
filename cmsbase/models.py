@@ -14,7 +14,7 @@ PAGE_TEMPLATES = (
 
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 
-class CMSManager(models.Manager):
+class PageManager(models.Manager):
 
     def get_published_live(self):
         return Page.objects.filter(published=True).exclude(published_from=None)
@@ -25,7 +25,7 @@ class CMSManager(models.Manager):
     def get_originals(self):
         return Page.objects.filter(published_from=None)
 
-class Page(MPTTModel, MultilingualModel):
+class BasePage(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
 	published = models.BooleanField(_('Active'))
 	approval_needed = models.BooleanField()
@@ -53,10 +53,10 @@ class Page(MPTTModel, MultilingualModel):
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
 
-	objects = CMSManager()
+	objects = PageManager()
 
 	def get_content_type(self):
-		content_type = ContentType.objects.get_for_model(Page)
+		content_type = ContentType.objects.get_for_model(self.__class__)
 		return content_type
 
 	def __unicode__(self):
@@ -69,21 +69,23 @@ class Page(MPTTModel, MultilingualModel):
 
 		self.date_updated = datetime.datetime.now()
 
-		super(Page, self).save(*args, **kwargs)
+		super(BasePage, self).save(*args, **kwargs)
 
 	class Meta:
 		#ordering = ()
-		verbose_name = _('page')
-		verbose_name_plural = _('pages')
 		permissions = (
 			("can_publish", "Can publish"),
 		)
+
+		# Make this class a reference only with no database, all models must be subclass from this
+		abstract = True
 
 	# class MPTTMeta:
 	# 	order_insertion_by = ['order_id']
 
 	def get_published(self):
-		published = Page.objects.filter(published_from=self)
+		cls = self.__class__
+		published = cls.objects.filter(published_from=self)
 		if published.count() > 0:
 			return published[0]
 		else:
@@ -110,44 +112,48 @@ class Page(MPTTModel, MultilingualModel):
 
 	def publish_version(self):
 
+		cls = self.__class__
+
+		# Fields to ignore in duplication
+		ignore_fields = ['id', 'approval_needed', 'parent_id', 'published_from_id', 'order_id', 'publish', 'approve', 'lft', 'rght', 'tree_id', 'level', 'page_ptr_id']
+
 		# Check if the page exist already
 		try:
-			page = Page.objects.get(published_from=self)
+			obj = cls.objects.get(published_from=self)
 		except:
-			page = Page()
+			obj = cls()
 
-		# Update data
-		page.home = self.home
-		page.published = self.published
-		page.template = self.template
-		page.parent = None
-		page.published_from = self
+		# Update fields which are not ignored
+		for field in cls._meta.fields:
+			#print dir(field)
+			if field.attname not in ignore_fields:
+				obj.__dict__[field.attname] = self.__dict__[field.attname]
 
-		# page.title = self.title
-		page.slug = self.slug
-		#page.content = self.content
-		page.meta_title = self.meta_title
-		page.meta_description = self.meta_description
-		page.order_id = 0
-		page.redirect_to = self.redirect_to
-		page.save()
+		# Override fields that are part of the publishing process
+		obj.parent = None
+		obj.published_from = self
+		obj.order_id = 0
+		
+		obj.save()
 
-		return page
+		return obj
 
 	def unpublish_version(self):
 
+		cls = self.__class__
+
 		# Check if the page exist already
 		try:
-			page = Page.objects.get(published_from=self)
+			obj = cls.objects.get(published_from=self)
 		except:
-			page = None
+			obj = None
 
-		if page:
+		if obj:
 			# Update data
-			page.published = False
-			page.save()
+			obj.published = False
+			obj.save()
 
-		return page
+		return obj
 
 	def delete(self):
 
@@ -226,7 +232,7 @@ class Page(MPTTModel, MultilingualModel):
 	@property
 	def has_published_version(self):
 		try:
-			page = Page.objects.get(published_from=self, published=True)
+			page = self.__class__.objects.get(published_from=self, published=True)
 			return True
 		except:
 			return False
@@ -288,7 +294,7 @@ class Page(MPTTModel, MultilingualModel):
 		print str.join(new_slug)
 		return str.join(new_slug)
 
-class PageTranslation(MultilingualTranslation):
+class BasePageTranslation(MultilingualTranslation):
 	parent = models.ForeignKey('Page', related_name='translations')
 	title = models.CharField(_('Page title'), max_length=100)
 	slug = models.SlugField(max_length=60)
@@ -300,15 +306,15 @@ class PageTranslation(MultilingualTranslation):
 
 	class Meta:
 		unique_together = ('parent', 'language_code')
-		verbose_name=_('Content')
-		verbose_name_plural=_('Content')
+		# Make this class a reference only with no database, all models must be subclass from this
+		abstract = True
 
 	def __unicode__(self):
 		return dict(settings.LANGUAGES).get(self.language_code)
 
 	def save(self):
 
-		published_page = Page.objects.filter(published_from=self.parent)
+		published_page = self.parent.__class__.objects.filter(published_from=self.parent)
 
 		#print "Saving related"
 
@@ -318,20 +324,26 @@ class PageTranslation(MultilingualTranslation):
 		except:
 			pass
 
-
-
-
-		super(PageTranslation, self).save()
+		super(BasePageTranslation, self).save()
 
 	def publish_version(self):
 
-		published_page = Page.objects.filter(published_from=self.parent)
+		parent_cls = self.parent.__class__
+		cls = self.__class__
+
+		published_page = parent_cls.objects.filter(published_from=self.parent)
 		if len(published_page)>0:
 			published_page = published_page[0]
 			try:
-				new_translation = PageTranslation.objects.get(language_code=self.language_code, parent=published_page)
+				new_translation = cls.objects.get(language_code=self.language_code, parent=published_page)
 			except:
-				new_translation = PageTranslation()
+				new_translation = cls()
+
+			# Update fields which are not ignored
+			for field in cls._meta.fields:
+				print field.attname
+				#if field.attname not in ignore_fields:
+					#obj.__dict__[field.attname] = self.__dict__[field.attname]
 
 
 			new_translation.parent = published_page
@@ -345,6 +357,20 @@ class PageTranslation(MultilingualTranslation):
 			new_translation.meta_description = self.meta_description
 
 			new_translation.save()
+
+
+
+# Create the working models
+
+class Page(BasePage):
+	class Meta:
+		verbose_name=_('Page')
+		verbose_name_plural=_('Pages')
+
+class PageTranslation(BasePageTranslation):
+	class Meta:
+		verbose_name=_('Translation')
+		verbose_name_plural=_('Translations')
 
 # class PageImage(models.Model):
 

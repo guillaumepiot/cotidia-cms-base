@@ -190,9 +190,10 @@ class PageTranslationInlineFormAdmin(forms.ModelForm):
 class PageTranslationInline(TranslationInline):
 	model = PageTranslation
 	form = PageTranslationInlineFormAdmin
-	extra = 0
+	extra = 0 if settings.PREFIX_DEFAULT_LOCALE else 1
 	prepopulated_fields = {'slug': ('title',)}
 	template = 'admin/cmsbase/cms_translation_inline.html'
+
 
 
 	# if settings.PREFIX_DEFAULT_LOCALE:
