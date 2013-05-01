@@ -1,0 +1,31 @@
+form .span9 h3 {
+  margin-bottom: 0;
+}
+form .span9 .module {
+  padding-top: 0px;
+}
+form .span9 .module .field-title input[type=text] {
+  max-width: 606px;
+  width: 90%;
+  font-size: 18px;
+  padding: 10px;
+}
+form .span9 .module .field-meta_title input[type=text] {
+  max-width: 606px;
+  width: 90%;
+}
+form .span9 .module .field-content {
+  clear: both;
+  margin-bottom: 20px;
+}
+form .span9 .module .field-language_code {
+  padding: 10px 0 0 14px;
+  margin-bottom: 10px;
+  background-color: #666;
+}
+form .span9 .module .field-language_code .control-label {
+  color: #fff;
+  float: left;
+  margin-top: 5px;
+  margin-right: 10px;
+}
