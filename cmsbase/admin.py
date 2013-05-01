@@ -159,9 +159,9 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 	is_active.short_description = 'Active'
 
 	def title(self, obj):
-		translation = PageTranslation.objects.filter(parent=obj, language_code=settings.DEFAULT_LANGUAGE)
-		if translation.count() > 0:
-			return translation[0].title
+		translation = obj.translated() #PageTranslation.objects.filter(parent=obj, language_code=settings.DEFAULT_LANGUAGE)
+		if translation:
+			return translation.title
 		else:
 			return _('No translation available for default language')
 
@@ -274,7 +274,6 @@ class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin)
 	mptt_level_indent = 20
 
 
-
 	# FIELDSETS
 
 	fieldsets = (
@@ -287,6 +286,12 @@ class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin)
 		}),
 
 	)
+
+	class Media:
+		css = {
+			"all": ("admin/css/page.css",)
+		}
+		js = ("admin/js/page.js",)
 
 
 admin.site.register(Page, PageAdmin)

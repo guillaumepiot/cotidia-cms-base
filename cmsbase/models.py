@@ -14,16 +14,6 @@ PAGE_TEMPLATES = (
 
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 
-class PageManager(models.Manager):
-
-    def get_published_live(self):
-        return Page.objects.filter(published=True).exclude(published_from=None)
-
-    def get_published_original(self):
-        return Page.objects.filter(published=True, published_from=None)
-
-    def get_originals(self):
-        return Page.objects.filter(published_from=None)
 
 class BasePage(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
@@ -52,8 +42,6 @@ class BasePage(MPTTModel, MultilingualModel):
 
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
-
-	objects = PageManager()
 
 	def get_content_type(self):
 		content_type = ContentType.objects.get_for_model(self.__class__)
@@ -93,18 +81,19 @@ class BasePage(MPTTModel, MultilingualModel):
 
 	def translated(self):
 		from django.utils.translation import get_language
+
 		try:
-			translation = PageTranslation.objects.get(language_code=get_language(), parent=self)
+			translation = self.translation_class.objects.get(language_code=get_language(), parent=self)
 			return translation
 		except:
-			return PageTranslation.objects.get(language_code=settings.LANGUAGE_CODE, parent=self)
+			return self.translation_class.objects.get(language_code=settings.LANGUAGE_CODE, parent=self)
 
 	def get_translations(self):
-		return PageTranslation.objects.filter(parent=self)
+		return self.translation_class.objects.filter(parent=self)
 
 	def publish_translations(self):
 		# Get translations
-		for translation in PageTranslation.objects.filter(parent=self):
+		for translation in self.translation_class.objects.filter(parent=self):
 			translation.publish_version()
 
 	# Publish method
@@ -183,11 +172,11 @@ class BasePage(MPTTModel, MultilingualModel):
 			# Go through the ancestor to get slugs
 			for ancestor in ancestors:
 				# Get the ancestor's slugs
-				translation = PageTranslation.objects.filter(parent=ancestor.id, language_code=current_language)
+				translation = self.translation_class.objects.filter(parent=ancestor.id, language_code=current_language)
 
 				# If no translation available in the current language
 				if not translation.count()>0:
-					translation = PageTranslation.objects.get(parent=ancestor.id, language_code=settings.DEFAULT_LANGUAGE)
+					translation = self.translation_class.objects.get(parent=ancestor.id, language_code=settings.DEFAULT_LANGUAGE)
 				else:
 					translation = translation[0]
 				
@@ -195,10 +184,10 @@ class BasePage(MPTTModel, MultilingualModel):
 				if not ancestor.home:
 					slug = "%s%s/" % (slug, translation.slug)
 
-			translation = PageTranslation.objects.filter(parent=self.id, language_code=current_language)
+			translation = self.translation_class.objects.filter(parent=self.id, language_code=current_language)
 			
 			if not translation.count()>0:
-				translation = PageTranslation.objects.get(parent=self.id, language_code=settings.DEFAULT_LANGUAGE)
+				translation = self.translation_class.objects.get(parent=self.id, language_code=settings.DEFAULT_LANGUAGE)
 			else:
 				translation = translation[0]
 
@@ -264,13 +253,13 @@ class BasePage(MPTTModel, MultilingualModel):
 			new_slug = []
 
 			for s in slugs:
-				pages = PageTranslation.objects.filter(slug=s)
+				pages = self.translation_class.objects.filter(slug=s)
 
 				for p in pages:
 					if p.parent.published_from == None:
 						uri_page = p.parent
 
-						page = PageTranslation.objects.filter(language_code=current_language, parent=uri_page)
+						page = self.translation_class.objects.filter(language_code=current_language, parent=uri_page)
 
 						uri = uri_page.slug
 
@@ -280,7 +269,7 @@ class BasePage(MPTTModel, MultilingualModel):
 
 						new_slug.append(uri)
 
-				# translation = PageTranslation.objects.filter(language_code=current_language)
+				# translation = self.translation_class.objects.filter(language_code=current_language)
 
 				# for t in translation:
 				# 	print t.slug, t.id
@@ -291,32 +280,16 @@ class BasePage(MPTTModel, MultilingualModel):
 				# new_slug.append(uri)
 
 		str = '/'
-		print str.join(new_slug)
+
 		return str.join(new_slug)
 
-class BasePageTranslation(MultilingualTranslation):
-	parent = models.ForeignKey('Page', related_name='translations')
-	title = models.CharField(_('Page title'), max_length=100)
-	slug = models.SlugField(max_length=60)
-	content = models.TextField(blank=True)
 
-	#Meta data
-	meta_title = models.CharField(max_length=100, blank=True)
-	meta_description = models.TextField(blank=True)
-
-	class Meta:
-		unique_together = ('parent', 'language_code')
-		# Make this class a reference only with no database, all models must be subclass from this
-		abstract = True
-
-	def __unicode__(self):
-		return dict(settings.LANGUAGES).get(self.language_code)
+# Handle the publisinh workflow of a translation model
+class PublishTranslation(object):
 
 	def save(self):
 
 		published_page = self.parent.__class__.objects.filter(published_from=self.parent)
-
-		#print "Saving related"
 
 		try:
 			if self.parent.publish_inlines:
@@ -324,7 +297,7 @@ class BasePageTranslation(MultilingualTranslation):
 		except:
 			pass
 
-		super(BasePageTranslation, self).save()
+		super(PageTranslation, self).save()
 
 	def publish_version(self):
 
@@ -360,17 +333,66 @@ class BasePageTranslation(MultilingualTranslation):
 
 
 
+
+	
+
+
+
 # Create the working models
 
+
+# And the translation model
+
+class PageTranslation(MultilingualTranslation, PublishTranslation):
+	parent = models.ForeignKey('Page', related_name='translations')
+	title = models.CharField(_('Page title'), max_length=100)
+	slug = models.SlugField(max_length=60)
+	content = models.TextField(blank=True)
+
+	#Meta data
+	meta_title = models.CharField(max_length=100, blank=True)
+	meta_description = models.TextField(blank=True)
+
+	class Meta:
+		unique_together = ('parent', 'language_code')
+
+		if len(settings.LANGUAGES) > 1:
+			verbose_name=_('Translation')
+			verbose_name_plural=_('Translations')
+		else:
+			verbose_name=_('Content')
+			verbose_name_plural=_('Content')
+
+	def __unicode__(self):
+		return dict(settings.LANGUAGES).get(self.language_code)
+
+
+class PageManager(models.Manager):
+
+    def get_published_live(self):
+        return Page.objects.filter(published=True).exclude(published_from=None)
+
+    def get_published_original(self):
+        return Page.objects.filter(published=True, published_from=None)
+
+    def get_originals(self):
+        return Page.objects.filter(published_from=None)
+
 class Page(BasePage):
+
+	objects = PageManager()
+
+	# Indicate which Translation class to use for content
+	translation_class = PageTranslation
+
 	class Meta:
 		verbose_name=_('Page')
 		verbose_name_plural=_('Pages')
 
-class PageTranslation(BasePageTranslation):
-	class Meta:
-		verbose_name=_('Translation')
-		verbose_name_plural=_('Translations')
+		
+
+
+
 
 # class PageImage(models.Model):
 
