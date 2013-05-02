@@ -11,3 +11,13 @@ Page blocks:
 - {% block meta_title %}{% endblock %}: the meta title of page
 - {% block meta_description %}{% endblock %}: the meta description of the page
 - {% block google_site_verification %}{% endblock %}: the google webmaster verification code
+
+Custom page templates
+---------------------
+
+You can add you own set of page templates by using the CMS_PAGE_TEMPLATES settings.
+
+	CMS_PAGE_TEMPLATES = (
+		('cmsbase/page.html', 'Default page'), # By default and mandatory, if no templates supplied, the page will not save
+		('cmsbase/home.html', 'Home page'), # Optional project specific template
+	)

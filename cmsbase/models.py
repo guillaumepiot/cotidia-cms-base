@@ -8,9 +8,8 @@ from django.conf import settings
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-PAGE_TEMPLATES = (
-	('cmsbase/page.html', 'Default page'),
-)
+
+from cmsbase import settings as cms_settings
 
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 
@@ -19,7 +18,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
 	published = models.BooleanField(_('Active'))
 	approval_needed = models.BooleanField()
-	template = models.CharField(max_length=250, choices=PAGE_TEMPLATES, default='cms/page.html')
+	template = models.CharField(max_length=250, choices=cms_settings.CMS_PAGE_TEMPLATES, default='cms/page.html')
 
 	#MPTT parent
 	parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
