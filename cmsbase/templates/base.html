@@ -1,4 +1,4 @@
-<!doctype html>
+{% load i18n mptt_tags %}<!doctype html>
 
 <!--[if lt IE 7 ]> <html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"> <![endif]-->
 <!--[if IE 7 ]>    <html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"> <![endif]-->
@@ -14,7 +14,7 @@
 	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	
-	<title>{{SITE_NAME}}{% block meta_title %}{% endblock %}</title>
+	<title>{{SITE_NAME}} | {% block meta_title %}No title set for this page{% endblock %}</title>
 	<meta name="description" content="{% block meta_description %}{% endblock %}" />
 	<meta name="google-site-verification" content="{% block google_site_verification %}{% endblock %}" />
 	<meta name="author" content="{{AUTHOR}}" />
@@ -30,20 +30,21 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	-->
 
-	<link rel="shortcut icon" href="_/img/favicon.ico" />
+	<!-- <link rel="shortcut icon" href="/static/img/favicon.ico" /> -->
 	<!-- This is the traditional favicon.
 		 - size: 16x16 or 32x32
 		 - transparency is OK
 		 - see wikipedia for info on browser support: http://mky.be/favicon/ -->
 		 
-	<link rel="apple-touch-icon" href="_/img/apple-touch-icon.png" />
+	<!-- <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png" /> -->
 	<!-- The is the icon for iOS's Web Clip.
 		 - size: 57x57 for older iPhones, 72x72 for iPads, 114x114 for iPhone4's retina display (IMHO, just go ahead and use the biggest one)
 		 - To prevent iOS from applying its styles to the icon name it thusly: apple-touch-icon-precomposed.png
 		 - Transparency is not recommended (iOS will put a black BG behind the icon) -->
 	
 	<!-- concatenate and minify for production -->
-	<link rel="stylesheet" href="/static/css/style.css" />
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.load.min.js"></script>
 	
 
 </head>
@@ -51,35 +52,63 @@
 <body>
 
 <div class="container">
+	{% if is_preview %}<div class="alert">{% trans "You are in preview mode" %}</div>{% endif %}
 
-	<header>
-		
-		<h1><a href="/">{{SITE_NAME}}</a></h1>
-	
+	<header class="row-fluid">
+		<div class="span6">
+			<h1><a href="/">{{SITE_NAME}}</a></h1>
+		</div>
+		<div class="span6">
+			<br>
+			<div class="btn-group pull-right">
+			  <span class="btn"><img src="/static/admin/img/flags/{{LANGUAGE_CODE}}.png" alt=""></span>
+			  <button class="btn dropdown-toggle" data-toggle="dropdown">
+			    {% trans "Language" %} &nbsp; <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu">
+			    {% for lang in LANGUAGES %}
+				<li class="">
+			    	<form class="locale_switcher" method="POST" action="{% url 'localeurl_change_locale' %}" style="margin:0;">{% csrf_token %}
+						<input type="hidden" name="locale" value="{{ lang.0 }}" />
+					</form>
+					<a href="#" onclick="$(this).prev().submit()">{% ifequal lang.0 LANGUAGE_CODE %} <i class="icon-ok pull-right"></i> {% endifequal %}{{ lang.1 }}</a>
+				</li>
+				{% endfor %} 
+			  </ul>
+			</div>
+			
+			
+
+		</div>
 	</header>
 	
-	<nav>
-		
-		<ol>
-			<li><a href="">Nav Link 1</a></li>
-			<li><a href="">Nav Link 2</a></li>
-			<li><a href="">Nav Link 3</a></li>
-		</ol>
+	<div class="row-fluid">
 	
-	</nav>
-	
-	<article>
+		<nav class="span4">
+			<ul class="nav nav-list">
+			
+			{% full_tree_for_model cmsbase.Page as pages %}
+			
+		    {% recursetree pages %}
+		        {% if node.get_published %}<li class="{% if request.path == node.get_absolute_url %}active{% endif %}">
+		            <a href="{{node.get_absolute_url}}">{{node.get_published.translated.title}}</a>
+		            {% if not node.is_leaf_node %}
+		                <ul class="children">
+		                    {{ children }}
+		                </ul>
+		            {% endif %}
+		        </li>{% endif %}
+		    {% endrecursetree %}
+			</ul>
+		</nav>
 		
-		<h1>Article Header</h1>
+		<article class="span8">
+			
+			{% block main %}{% endblock %}
 		
-		<p>Etiam pretium odio eu mi convallis vitae varius neque pharetra. Nulla vestibulum nisi ut sem cursus sed mattis nisi egestas.</p>
+		</article>
 		
-		<h2>Article Subhead</h2>
-		
-		<p>Vestibulum lacus erat, volutpat vel dignissim at, fringilla ut felis.</p>
-	
-	</article>
-
+	</div>
 	
 	<footer>
 		
@@ -89,7 +118,11 @@
 
 </div>
 
-
+<script>
+	head.js('/static/js/jquery-1.9.1.min.js', '/static/js/bootstrap.min.js', function(){
+		// JS loaded
+	})
+</script>
   
 </body>
 </html>

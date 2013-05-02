@@ -9,7 +9,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 PAGE_TEMPLATES = (
-	('cms/page.html', 'Default page'),
+	('cmsbase/page.html', 'Default page'),
 )
 
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
