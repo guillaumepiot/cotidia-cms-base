@@ -36,14 +36,14 @@ function select_language(){
 	// Switch flag accordingly
 	$('.field-language_code select').change(function(e){
 		name = $(this).attr('name').replace('-language_code','');
-		$('#'+name+' h3 img').attr('src','/static/admin/img/flags/'+$(this).val()+'.png');
+		if($(this).val()) $('#'+name+' h3 img').attr('src','/static/admin/img/flags/'+$(this).val()+'.png');
 	})
 }
 
 function set_flag(){
 	$.each($('.field-language_code select'), function(i, index){
 		name = $(index).attr('name').replace('-language_code','');
-		$('#'+name+' h3 img').attr('src','/static/admin/img/flags/'+$(this).val()+'.png');
+		if($(this).val()) $('#'+name+' h3 img').attr('src','/static/admin/img/flags/'+$(this).val()+'.png');
 	})
 }
 
