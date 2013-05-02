@@ -304,32 +304,27 @@ class PublishTranslation(object):
 		parent_cls = self.parent.__class__
 		cls = self.__class__
 
+		# Fields to ignore in duplication
+		ignore_fields = ['id', 'parent_id', ]
+
+
 		published_page = parent_cls.objects.filter(published_from=self.parent)
 		if len(published_page)>0:
 			published_page = published_page[0]
 			try:
-				new_translation = cls.objects.get(language_code=self.language_code, parent=published_page)
+				obj = cls.objects.get(language_code=self.language_code, parent=published_page)
 			except:
-				new_translation = cls()
+				obj = cls()
 
 			# Update fields which are not ignored
 			for field in cls._meta.fields:
-				print field.attname
-				#if field.attname not in ignore_fields:
-					#obj.__dict__[field.attname] = self.__dict__[field.attname]
+				if field.attname not in ignore_fields:
+					obj.__dict__[field.attname] = self.__dict__[field.attname]
 
 
-			new_translation.parent = published_page
-			new_translation.language_code = self.language_code
-			new_translation.title = self.title
-			new_translation.slug = self.slug
-			new_translation.content = self.content
+			obj.parent = published_page
 
-			#Meta data
-			new_translation.meta_title = self.meta_title
-			new_translation.meta_description = self.meta_description
-
-			new_translation.save()
+			obj.save()
 
 
 
