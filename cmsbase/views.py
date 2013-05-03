@@ -13,6 +13,8 @@ from cmsbase.models import *
 from cmsbase.forms import SearchForm
 
 
+# Function to retrieve page object depending on previwe mode and language
+
 def get_page(request, slug=False, preview=False):
 
 	# Deconstruct the slug to get the last element corresponding to the page we are looking for
@@ -53,41 +55,52 @@ def get_page(request, slug=False, preview=False):
 	return published
 
 
-def page(request, slug=False):
+# Page decorator
+# Cover the basic handling such as page object lookup, redirect, 404, preview mode, language switching url switching
 
-	# Check if the preview variable is in the path
-	preview = request.GET.get('preview', False)
+def page_processor(f):
+	def wrapper(request, slug=False):
 
-	# Set preview to False by default
-	is_preview = False
+		# Check if the preview variable is in the path
+		preview = request.GET.get('preview', False)
 
-	# Make sure the user has the right to see the preview
-	if request.user.is_authenticated() and not preview == False:
-		is_preview = True
+		# Set preview to False by default
+		is_preview = False
 
-	# Is it home page or not?
-	if slug:
-		slugs = slug.split('/')
-		page = get_page(request=request, slug=slug, preview=is_preview)
-	else:
-		slugs = []
-		page = get_page(request=request, preview=is_preview)
+		# Make sure the user has the right to see the preview
+		if request.user.is_authenticated() and not preview == False:
+			is_preview = True
 
-	# Raise a 404 if the page can't be found
-	if not page:
-		raise Http404('Not Found')
+		# Is it home page or not?
+		if slug:
+			slugs = slug.split('/')
+			page = get_page(request=request, slug=slug, preview=is_preview)
+		else:
+			slugs = []
+			page = get_page(request=request, preview=is_preview)
 
-	# Hard redirect if specified in page attributes
-	if page.redirect_to:
-		return HttpResponseRedirect(page.redirect_to.get_absolute_url())
+		# Raise a 404 if the page can't be found
+		if not page:
+			raise Http404('Not Found')
+
+		# Hard redirect if specified in page attributes
+		if page.redirect_to:
+			return HttpResponseRedirect(page.redirect_to.get_absolute_url())
+
+		# When you switch language it will load the right translation but stay on the same slug
+		# So we need to redirect tio the right translated slug if not on it already
+		page_url = page.get_absolute_url()
+
+		if not page_url == request.path:
+			return HttpResponseRedirect(page_url)
+
+		return f(request, page, is_preview)
+	return wrapper
 
 
-	# When you switch language it will load the right translation but stay on the same slug
-	# So we need to redirect tio the right translated slug if not on it already
-	page_url = page.get_absolute_url()
 
-	if not page_url == request.path:
-		return HttpResponseRedirect(page_url)
+@page_processor
+def page(request, page, is_preview):
 
 	# Get the root page and then all its descendants, including self
 	if page.published_from == None:
