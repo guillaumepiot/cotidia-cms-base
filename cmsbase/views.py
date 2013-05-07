@@ -50,8 +50,6 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 			# If no page is checked as home, return the first one in the list
 			if not published:
 				published = model_class.objects.filter(published=True).exclude(published_from=None)[:1]
-				if len(published) == 0:
-					raise Exception('No published entry could be found for %s' % model_class.__name__)
 
 	if len(published)> 0:
 		published = published[0]
