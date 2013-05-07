@@ -8,6 +8,25 @@ We will use the example of a blog as demonstration.
 Models
 ------
 
+When extending the CMSBase model structure, you will need to create a new model class that inherit from `BasePage`.
+
+You will need to supply some extra meta variables using the CMSMeta class:
+
+	class CMSMeta:
+	
+		# A tuple of templates paths and names
+		templates = blog_settings.BLOG_TEMPLATES
+		
+		# Indicate which Translation class to use for content
+		translation_class = ArticleTranslation
+		
+		# Provide the url name to create a url for that model
+		model_url_name = 'blog:article'
+
+
+Here's an example of a model extension for the blog app:
+
+
 	from django.db import models
 	from django.utils.translation import ugettext as _
 	from django.conf import settings
@@ -64,32 +83,46 @@ Models
 		# Manager
 		objects = ArticleManager()
 
-		# Indicate which Translation class to use for content
-		translation_class = ArticleTranslation
+		
 
 		class Meta:
 			verbose_name=_('Article')
 			verbose_name_plural=_('Articles')
+	
+		class CMSMeta:
+		
+			# A tuple of templates paths and names
+			templates = blog_settings.BLOG_TEMPLATES
+			
+			# Indicate which Translation class to use for content
+			translation_class = ArticleTranslation
+			
+			# Provide the url name to create a url for that model
+			model_url_name = 'blog:article'
 
 
 Admin
 -----
 
+	import reversion
+
 	from django.contrib import admin
 	from django import forms
 	from django.utils.translation import ugettext as _
 	from django.conf import settings
+	from django.contrib.admin.views.main import ChangeList
 
+	from mptt.admin import MPTTModelAdmin
 	from multilingual_model.admin import TranslationInline
 
 	from redactor.widgets import RedactorEditor
 
-	from cmsbase.admin import PageAdmin, PageFormAdmin
+	from cmsbase.admin import PageAdmin, PageFormAdmin, PublishingWorkflowAdmin
 
-	from blog.models import Article, ArticleTranslation
+	from blog.models import *
 
 
-	# Translation
+	# Article translation
 
 	class ArticleTranslationInlineFormAdmin(forms.ModelForm):
 		slug = forms.SlugField(label=_('Article URL'))
@@ -116,15 +149,24 @@ Admin
 
 
 	class ArticleAdminForm(PageFormAdmin):
+		categories = forms.ModelMultipleChoiceField(queryset=Category.objects.filter(), widget=forms.CheckboxSelectMultiple)
 		class Meta:
 			model = Article
 
-	class ArticleAdmin(PageAdmin):
+
+
+	class ArticleAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin):
 		form = ArticleAdminForm
-
-		list_display = ["title", "is_published", "approval", 'template', 'languages']
-
+		
 		inlines = (ArticleTranslationInline, )
+		ordering = ['-publish_date'] 
+
+		# Override the list display from PublishingWorkflowAdmin
+		def get_list_display(self, request, obj=None):
+			if not settings.PREFIX_DEFAULT_LOCALE:
+				return ['title', 'is_published', 'approval', 'publish_date', 'template']
+			else:
+				return ['title', 'is_published', 'approval', 'publish_date', 'template', 'languages']
 
 		fieldsets = (
 
@@ -132,7 +174,7 @@ Admin
 			('Settings', {
 				#'description':_('The page template'),
 				'classes': ('default',),
-				'fields': ('template', 'publish_date', 'slug', )
+				'fields': ('template', 'publish_date', 'slug', 'categories')
 			}),
 
 		)
@@ -150,3 +192,44 @@ Eg:
 		blog/
 			article/
 				change_form.html
+				
+				
+Views
+-----
+
+You can extend the views from CMSBase by using the `@page_processor` decorator.
+
+`@page_processor(model_class, translation_class)` will do the fundamental following actions:
+
+- Check whether the page is in preview mode or not
+- Retrieve the model entry based on the `slug` and the `model_class` & `translation_class`
+- Return a 404 error if the model entry can't be retrieved
+- Redirect the page to another if set this way in the database using the `redirect_to` attribute
+- Redirect to the right translated slug in the case of a language switch
+
+The `@page_processor` decorator takes 2 arguments:
+	- model_class: the model class for the main model
+	- translation_class: the model translation class corresponsing the main model
+	
+By default, the arguments are set as `Page` and  `PageTranslation`:
+
+	def page_processor(model_class=Page, translation_class=PageTranslation):
+		...
+		
+The `@page_processor` will pass 3 arguments to the function it is annotated from:
+
+- `request`: the Django request object
+- `page`: the model entry instance
+- `slug`: the current page slug
+
+Example extension for the blog app:
+
+	...
+	from cmsbase.views import page_processor
+
+	from blog.models import Article, ArticleTranslation
+
+	@page_processor(model_class=Article, translation_class=ArticleTranslation)
+	def article(request, page, slug):
+		return render_to_response(page.template, {'page':page,}, context_instance=RequestContext(request))
+

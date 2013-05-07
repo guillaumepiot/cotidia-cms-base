@@ -18,7 +18,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
 	published = models.BooleanField(_('Active'))
 	approval_needed = models.BooleanField()
-	template = models.CharField(max_length=250, choices=cms_settings.CMS_PAGE_TEMPLATES, default='cms/page.html')
+	template = models.CharField(max_length=250, choices=[], default='cms/page.html')
 
 	#MPTT parent
 	parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
@@ -58,6 +58,13 @@ class BasePage(MPTTModel, MultilingualModel):
 
 		super(BasePage, self).save(*args, **kwargs)
 
+	# def __init__(self, *args, **kwargs):
+	# 	# Set the templates choices base on the CMSMeta templates
+	# 	self._meta.get_field_by_name('template')[0]._choices = self.CMSMeta.templates
+	# 	print 'test'
+
+	# 	super(BasePage, self).__init__(*args, **kwargs)
+
 	class Meta:
 		#ordering = ()
 		permissions = (
@@ -66,6 +73,12 @@ class BasePage(MPTTModel, MultilingualModel):
 
 		# Make this class a reference only with no database, all models must be subclass from this
 		abstract = True
+
+	class CMSMeta:
+		templates = cms_settings.CMS_PAGE_TEMPLATES
+		# Must be provided on model extension
+		#translation_class = PageTranslation
+		model_url_name = 'cms:page'
 
 	# class MPTTMeta:
 	# 	order_insertion_by = ['order_id']
@@ -82,17 +95,17 @@ class BasePage(MPTTModel, MultilingualModel):
 		from django.utils.translation import get_language
 
 		try:
-			translation = self.translation_class.objects.get(language_code=get_language(), parent=self)
+			translation = self.CMSMeta.translation_class.objects.get(language_code=get_language(), parent=self)
 			return translation
 		except:
-			return self.translation_class.objects.get(language_code=settings.LANGUAGE_CODE, parent=self)
+			return self.CMSMeta.translation_class.objects.get(language_code=settings.LANGUAGE_CODE, parent=self)
 
 	def get_translations(self):
-		return self.translation_class.objects.filter(parent=self)
+		return self.CMSMeta.translation_class.objects.filter(parent=self)
 
 	def publish_translations(self):
 		# Get translations
-		for translation in self.translation_class.objects.filter(parent=self):
+		for translation in self.CMSMeta.translation_class.objects.filter(parent=self):
 			translation.publish_version()
 
 	# Publish method
@@ -171,11 +184,11 @@ class BasePage(MPTTModel, MultilingualModel):
 			# Go through the ancestor to get slugs
 			for ancestor in ancestors:
 				# Get the ancestor's slugs
-				translation = self.translation_class.objects.filter(parent=ancestor.id, language_code=current_language)
+				translation = self.CMSMeta.translation_class.objects.filter(parent=ancestor.id, language_code=current_language)
 
 				# If no translation available in the current language
 				if not translation.count()>0:
-					translation = self.translation_class.objects.get(parent=ancestor.id, language_code=settings.DEFAULT_LANGUAGE)
+					translation = self.CMSMeta.translation_class.objects.get(parent=ancestor.id, language_code=settings.DEFAULT_LANGUAGE)
 				else:
 					translation = translation[0]
 				
@@ -183,17 +196,17 @@ class BasePage(MPTTModel, MultilingualModel):
 				if not ancestor.home:
 					slug = "%s%s/" % (slug, translation.slug)
 
-			translation = self.translation_class.objects.filter(parent=self.id, language_code=current_language)
+			translation = self.CMSMeta.translation_class.objects.filter(parent=self.id, language_code=current_language)
 			
 			if not translation.count()>0:
-				translation = self.translation_class.objects.get(parent=self.id, language_code=settings.DEFAULT_LANGUAGE)
+				translation = self.CMSMeta.translation_class.objects.get(parent=self.id, language_code=settings.DEFAULT_LANGUAGE)
 			else:
 				translation = translation[0]
 
 			slug = "%s%s" % (slug, translation.slug)
 
 			# Create the full url based on the pattern
-			url = reverse('cms:page', kwargs={'slug':slug})
+			url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug})
 
 
 		return url
@@ -252,13 +265,13 @@ class BasePage(MPTTModel, MultilingualModel):
 			new_slug = []
 
 			for s in slugs:
-				pages = self.translation_class.objects.filter(slug=s)
+				pages = self.CMSMeta.translation_class.objects.filter(slug=s)
 
 				for p in pages:
 					if p.parent.published_from == None:
 						uri_page = p.parent
 
-						page = self.translation_class.objects.filter(language_code=current_language, parent=uri_page)
+						page = self.CMSMeta.translation_class.objects.filter(language_code=current_language, parent=uri_page)
 
 						uri = uri_page.slug
 
@@ -268,7 +281,7 @@ class BasePage(MPTTModel, MultilingualModel):
 
 						new_slug.append(uri)
 
-				# translation = self.translation_class.objects.filter(language_code=current_language)
+				# translation = self.CMSMeta.translation_class.objects.filter(language_code=current_language)
 
 				# for t in translation:
 				# 	print t.slug, t.id
@@ -283,7 +296,7 @@ class BasePage(MPTTModel, MultilingualModel):
 		return str.join(new_slug)
 
 
-# Handle the publisinh workflow of a translation model
+# Handle the publising workflow of a translation model
 class PublishTranslation(object):
 
 	def save(self):
@@ -340,7 +353,7 @@ class PublishTranslation(object):
 class PageTranslation(MultilingualTranslation, PublishTranslation):
 	parent = models.ForeignKey('Page', related_name='translations')
 	title = models.CharField(_('Page title'), max_length=100)
-	slug = models.SlugField(max_length=60)
+	slug = models.SlugField(max_length=100)
 	content = models.TextField(blank=True)
 
 	#Meta data
@@ -376,14 +389,19 @@ class Page(BasePage):
 
 	objects = PageManager()
 
-	# Indicate which Translation class to use for content
-	translation_class = PageTranslation
+	
 
 	class Meta:
 		verbose_name=_('Page')
 		verbose_name_plural=_('Pages')
 
-		
+	class CMSMeta:
+		# A tuple of templates paths and names
+		templates = cms_settings.CMS_PAGE_TEMPLATES
+		# Indicate which Translation class to use for content
+		translation_class = PageTranslation
+		# Provide the url name to create a url for that model
+		model_url_name = 'cms:page'
 
 
 

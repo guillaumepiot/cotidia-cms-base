@@ -3,6 +3,7 @@ Menus
 
 Menus are generated from the MPTT tree, using the MPTT template tag.
 
+
 How to use it
 -------------
 
@@ -36,6 +37,7 @@ It first get the root of the current page instance, then look up it root node an
 	{{node.get_published.translated.title}}
 	
 The "translated" method automatically lookup the current language set in your session to render the right translation.
+
 
 Get the full tree
 -----------------

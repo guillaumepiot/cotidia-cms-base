@@ -91,6 +91,12 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			kwargs["queryset"] = db_field.rel.to.objects.filter(published_from=None)
 		return super(PublishingWorkflowAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+	# Set the templates variable based on CMSMeta
+	def formfield_for_dbfield(self, db_field, **kwargs):
+		if db_field.name == "template":
+			db_field._choices = self.model.CMSMeta.templates
+		return super(PublishingWorkflowAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
 	# Custom actions
 	def make_published(modeladmin, request, queryset):
 		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:

@@ -52,7 +52,7 @@
 <body>
 
 <div class="container">
-	{% if is_preview %}<div class="alert">{% trans "You are in preview mode" %}</div>{% endif %}
+	{% if request.is_preview %}<div class="alert">{% trans "You are in preview mode" %}</div>{% endif %}
 
 	<header class="row-fluid">
 		<div class="span6">
