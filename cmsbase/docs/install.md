@@ -16,7 +16,7 @@ Create and start a virtual environment (higly recommended)
 Install CMS Base (which will also install some dependencies)
 -----------------------------------------------------------
 
-	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cms-base.git#egg=cmsbase
+	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-cms-base.git#egg=cmsbase
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
 
