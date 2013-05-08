@@ -295,6 +295,12 @@ class BasePage(MPTTModel, MultilingualModel):
 
 		return str.join(new_slug)
 
+	# Since the MPTT method get_siblings doesn't include self by default
+	# We need to use this method to all siblings including self in a template view
+	@property
+	def siblings(self):
+		return self.get_siblings(include_self=True)
+
 
 # Handle the publising workflow of a translation model
 class PublishTranslation(object):
