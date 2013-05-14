@@ -238,20 +238,25 @@ class BasePage(MPTTModel, MultilingualModel):
 		except:
 			return False
 
-	# def images(self):
-	# 	if self.published_from:
-	# 		images = PageImage.objects.filter(page=self.published_from).order_by('order_id')
-	# 	else:
-	# 		images = PageImage.objects.filter(page=self).order_by('order_id')
-	# 	return images
+	def images(self):
+		if cms_settings.CMS_PAGE_IMAGES:
+			if self.published_from:
+				images = self.CMSMeta.image_class.objects.filter(page=self.published_from).order_by('order_id')
+			else:
+				images = self.CMSMeta.image_class.objects.filter(page=self).order_by('order_id')
+			return images
+		else:
+			return None
 
-	# def feature_image(self):
-	# 	images = self.images()
-	# 	#print images
-	# 	if images.count() > 0:
-	# 		return images[0].image
-	# 	else:
-	# 		return False
+	def feature_image(self):
+		if cms_settings.CMS_PAGE_IMAGES:
+			images = self.images()
+			if images.count() > 0:
+				return images[0].image
+			else:
+				return False
+		else:
+			return None
 
 	def get_default_url(self, slug=False):
 
@@ -380,16 +385,43 @@ class PageTranslation(MultilingualTranslation, PublishTranslation):
 		return dict(settings.LANGUAGES).get(self.language_code)
 
 
+class PageImage(models.Model):
+
+	def call_naming(self, instance=None):
+		from cmsbase .widgets import get_media_upload_to
+
+		# return get_media_upload_to(self.page.slug, 'pages')
+		location = "cms/%s"%(self.page.slug)
+		return get_media_upload_to(location, instance)
+
+	page = models.ForeignKey('Page')
+	image = models.ImageField(upload_to=call_naming, max_length=100)
+	# Ordering
+	order_id = models.IntegerField(blank=True, null=True)
+
+	class Meta:
+		ordering = ('order_id',)
+		verbose_name = _('Image')
+		verbose_name_plural = _('Images')
+
+	def delete(self, *args, **kwargs):
+		from sorl.thumbnail import get_thumbnail
+		storage, path = self.image.storage, self.image.path
+		super(PageImage, self).delete(*args, **kwargs)
+		# Physically delete the file
+		storage.delete(path)
+
+
 class PageManager(models.Manager):
 
-    def get_published_live(self):
-        return Page.objects.filter(published=True).exclude(published_from=None)
+	def get_published_live(self):
+		return Page.objects.filter(published=True).exclude(published_from=None)
 
-    def get_published_original(self):
-        return Page.objects.filter(published=True, published_from=None)
+	def get_published_original(self):
+		return Page.objects.filter(published=True, published_from=None)
 
-    def get_originals(self):
-        return Page.objects.filter(published_from=None)
+	def get_originals(self):
+		return Page.objects.filter(published_from=None)
 
 class Page(BasePage):
 
@@ -408,32 +440,8 @@ class Page(BasePage):
 		translation_class = PageTranslation
 		# Provide the url name to create a url for that model
 		model_url_name = 'cms:page'
+		# Provide the inline image model if necessary
+		if cms_settings.CMS_PAGE_IMAGES:
+			image_class = PageImage
 
 
-
-
-# class PageImage(models.Model):
-
-# 	def call_naming(self, instance=None):
-# 		from cms.widgets import get_media_upload_to
-
-# 		# return get_media_upload_to(self.page.slug, 'pages')
-# 		location = "cms/%s"%(self.page.slug)
-# 		return get_media_upload_to(location, instance)
-
-# 	page = models.ForeignKey(Page)
-# 	image = models.ImageField(upload_to=call_naming, max_length=100)
-# 	# Ordering
-# 	order_id = models.IntegerField(blank=True, null=True)
-
-# 	class Meta:
-# 		ordering = ('order_id',)
-# 		verbose_name = _('Image')
-# 		verbose_name_plural = _('Images')
-
-# 	def delete(self, *args, **kwargs):
-# 		from sorl.thumbnail import get_thumbnail
-# 		storage, path = self.image.storage, self.image.path
-# 		super(PageImage, self).delete(*args, **kwargs)
-# 		# Physically delete the file
-# 		storage.delete(path)

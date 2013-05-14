@@ -1,5 +1,5 @@
 from django.contrib.sitemaps import Sitemap
-from cms.models import Page
+from cmsbase.models import Page
 
 class CMSSitemap(Sitemap):
     changefreq = "monthly"

@@ -16,6 +16,7 @@ from redactor.widgets import RedactorEditor
 
 from cmsbase.models import *
 from cmsbase.widgets import AdminImageWidget, AdminCustomFileWidget
+from cmsbase import settings as cms_settings
 
 
 class PublishingWorkflowAdmin(admin.ModelAdmin):
@@ -83,6 +84,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 		Remove the published version of the pages
 		"""
 		qs = super(PublishingWorkflowAdmin, self).queryset(request)
+
 		return qs.filter(published_from=None)
 
 	#Custom queryset for the parent foreign key
@@ -133,7 +135,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	# Custom result list
 	def home_icon(self, obj):
-		if obj.home:
+		if hasattr(obj, 'home') and obj.home:
 			return '<i class="icon-home"></i>'
 		else:
 			return ''
@@ -254,26 +256,30 @@ class PageFormAdmin(forms.ModelForm):
 
 
 
-# class ImageInlineForm(forms.ModelForm):
-# 	image = forms.ImageField(widget=AdminImageWidget)
-# 	class Meta:
-# 		model=PageImage
+class ImageInlineForm(forms.ModelForm):
+	image = forms.ImageField(widget=AdminImageWidget)
+	class Meta:
+		model=PageImage
 
-# class ListingImageInline(admin.TabularInline):
-# 	form = ImageInlineForm
-# 	model = PageImage
-# 	extra = 0
-# 	template = 'admin/cms/page/images-inline.html'
+class ListingImageInline(admin.TabularInline):
+	form = ImageInlineForm
+	model = PageImage
+	extra = 0
+	template = 'admin/cmsbase/page/images-inline.html'
 
-class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin):
+class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin):
 
 	form = PageFormAdmin
 
 	#list_display = ["title", "home_icon", "is_published", "approval", 'template', 'languages']
 	#list_filter = ["approval_needed"]
-	# search_fields = ['title']
+	#search_fields = ['slug']
 	# prepopulated_fields = {'slug': ('title',)}
-	inlines = (PageTranslationInline, ) #ListingImageInline
+
+	inlines = (PageTranslationInline, )
+
+	if cms_settings.CMS_PAGE_IMAGES:
+		inlines += (ListingImageInline,)
 
 	mptt_indent_field = 'title'
 

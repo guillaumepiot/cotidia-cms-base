@@ -22,6 +22,10 @@ You will need to supply some extra meta variables using the CMSMeta class:
 		
 		# Provide the url name to create a url for that model
 		model_url_name = 'blog:article'
+		
+		# Provide the inline image model if necessary
+		if cms_settings.CMS_PAGE_IMAGES:
+			image_class = PageImage
 
 
 Here's an example of a model extension for the blog app:
@@ -99,6 +103,10 @@ Here's an example of a model extension for the blog app:
 			
 			# Provide the url name to create a url for that model
 			model_url_name = 'blog:article'
+			
+			# Provide the inline image model if necessary
+			if cms_settings.CMS_PAGE_IMAGES:
+				image_class = PageImage
 
 
 Admin
