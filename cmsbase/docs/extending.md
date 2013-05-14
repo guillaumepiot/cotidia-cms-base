@@ -67,28 +67,12 @@ Here's an example of a model extension for the blog app:
 			return dict(settings.LANGUAGES).get(self.language_code)
 
 
-	class ArticleManager(models.Manager):
-
-	    def get_published_live(self):
-	        return Article.objects.filter(published=True).exclude(published_from=None)
-
-	    def get_published_original(self):
-	        return Article.objects.filter(published=True, published_from=None)
-
-	    def get_originals(self):
-	        return Article.objects.filter(published_from=None)
-
 	# Subclass the Page model to create the article model
 
 	class Article(BasePage):
 		# Extra fields
 		publish_date = models.DateTimeField()
-
-		# Manager
-		objects = ArticleManager()
-
 		
-
 		class Meta:
 			verbose_name=_('Article')
 			verbose_name_plural=_('Articles')

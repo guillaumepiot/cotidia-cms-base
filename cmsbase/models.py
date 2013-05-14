@@ -14,6 +14,18 @@ from cmsbase import settings as cms_settings
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 
 
+class BasePageManager(models.Manager):
+
+	def get_published_live(self):
+		return self.model.objects.filter(published=True).exclude(published_from=None)
+
+	def get_published_original(self):
+		return self.model.objects.filter(published=True, published_from=None)
+
+	def get_originals(self):
+		return self.model.objects.filter(published_from=None)
+
+
 class BasePage(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
 	published = models.BooleanField(_('Active'))
@@ -41,6 +53,8 @@ class BasePage(MPTTModel, MultilingualModel):
 
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
+
+	objects = BasePageManager()
 
 	def get_content_type(self):
 		content_type = ContentType.objects.get_for_model(self.__class__)
@@ -412,22 +426,7 @@ class PageImage(models.Model):
 		storage.delete(path)
 
 
-class PageManager(models.Manager):
-
-	def get_published_live(self):
-		return Page.objects.filter(published=True).exclude(published_from=None)
-
-	def get_published_original(self):
-		return Page.objects.filter(published=True, published_from=None)
-
-	def get_originals(self):
-		return Page.objects.filter(published_from=None)
-
 class Page(BasePage):
-
-	objects = PageManager()
-
-	
 
 	class Meta:
 		verbose_name=_('Page')
