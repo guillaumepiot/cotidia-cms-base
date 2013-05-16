@@ -5,7 +5,6 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.utils import translation
 

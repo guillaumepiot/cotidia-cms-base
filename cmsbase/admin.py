@@ -175,9 +175,13 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 
 	def languages(self, obj):
+		available_ts = {}
 		ts=[]
 		for t in obj.get_translations():
-			ts.append(u'<img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s">' % (t.language_code, t.__unicode__()))
+			available_ts[t.language_code] = u'<img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s">' % (t.language_code, t.__unicode__())
+		for language in settings.LANGUAGES:
+			if available_ts.get(language[0], False):
+				ts.append(available_ts[language[0]])
 		return ' '.join(ts)
 
 	languages.allow_tags = True
