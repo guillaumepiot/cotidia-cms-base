@@ -62,7 +62,7 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 # Cover the basic handling such as page object lookup, redirect, 404, preview mode, language switching url switching
 def page_processor(model_class=Page, translation_class=PageTranslation):
 	def wrap(f):
-		def wrapper(request, slug=False):
+		def wrapper(request, slug=False, *args, **kwargs):
 
 			# Check if the preview variable is in the path
 			preview = request.GET.get('preview', False)
@@ -100,13 +100,19 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 			# Assign is_preview to the request object for cleanliness
 			request.is_preview = is_preview
 
-			return f(request, page, slug)
+			return f(request, page, slug, *args, **kwargs)
 		return wrapper
 	return wrap
 
 
 @page_processor(model_class=Page, translation_class=PageTranslation)
-def page(request, page, slug):
+def page(request, page, slug, *args, **kwargs):
+
+	context = {'page':page}
+
+	# Process kwargs to be passed back to the page context
+	for key, value in kwargs.iteritems():
+		context[key] = value
 
 	# Get the root page and then all its descendants, including self
 	if page.published_from == None:
@@ -114,7 +120,9 @@ def page(request, page, slug):
 	else:
 		nodes = page.published_from.get_root().get_descendants(include_self=True)
 
-	return render_to_response(page.template, {'page':page, 'nodes':nodes}, context_instance=RequestContext(request))
+	context['nodes'] = nodes
+
+	return render_to_response(page.template, context, context_instance=RequestContext(request))
 
 
 def search(request, directory=False):
