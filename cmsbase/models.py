@@ -42,7 +42,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier", blank=True, null=True)
 
 	# Ordering
-	order_id = models.IntegerField(blank=True, null=True)
+	order_id = models.IntegerField(default=0)
 
 	# Publishing
 	publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'))
