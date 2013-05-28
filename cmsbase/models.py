@@ -88,6 +88,10 @@ class BasePage(MPTTModel, MultilingualModel):
 		# Make this class a reference only with no database, all models must be subclass from this
 		abstract = True
 
+	class MPTTMeta:
+		#level_attr = 'mptt_level'
+		order_insertion_by=['order_id']
+
 	class CMSMeta:
 		templates = cms_settings.CMS_PAGE_TEMPLATES
 		# Must be provided on model extension
