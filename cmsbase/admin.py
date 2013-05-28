@@ -36,17 +36,21 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	def get_list_display(self, request, obj=None):
 		if not settings.PREFIX_DEFAULT_LOCALE:
-			return ["title", "home_icon", "is_published", "approval", 'template']
+			return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template']
 		else:
-			return ["title", "home_icon", "is_published", "approval", 'template', 'languages']
+			return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template', 'languages']
 
 
 
 	def save_model(self, request, obj, form, change):
 		if not obj.id and obj.parent:
-			Page.tree.insert_node(obj, obj.parent)
+			obj.__class__.tree.insert_node(obj, obj.parent)
+
 
 		obj.save()
+
+		# Rebuild the tree
+		obj.__class__.tree.rebuild()
 
 		obj_name = u'%s' % obj._meta.verbose_name
 
@@ -298,7 +302,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 		('Settings', {
 			#'description':_('The page template'),
 			'classes': ('default',),
-			'fields': ( 'home', 'parent', 'template', 'redirect_to', 'slug', )
+			'fields': ( 'home', 'parent', 'template', 'redirect_to', 'slug', 'order_id' )
 		}),
 
 	)

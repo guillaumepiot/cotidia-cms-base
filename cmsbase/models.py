@@ -42,7 +42,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier", blank=True, null=True)
 
 	# Ordering
-	order_id = models.IntegerField(blank=True, null=True)
+	order_id = models.IntegerField(default=0)
 
 	# Publishing
 	publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'))
@@ -87,6 +87,10 @@ class BasePage(MPTTModel, MultilingualModel):
 
 		# Make this class a reference only with no database, all models must be subclass from this
 		abstract = True
+
+	class MPTTMeta:
+		#level_attr = 'mptt_level'
+		order_insertion_by=['order_id']
 
 	class CMSMeta:
 		templates = cms_settings.CMS_PAGE_TEMPLATES
