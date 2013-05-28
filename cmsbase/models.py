@@ -253,14 +253,16 @@ class BasePage(MPTTModel, MultilingualModel):
 			return False
 
 	def images(self):
+		images = []
 		if cms_settings.CMS_PAGE_IMAGES:
 			if self.published_from:
-				images = self.CMSMeta.image_class.objects.filter(page=self.published_from).order_by('order_id')
+				if hasattr(self.CMSMeta, 'image_class'):
+					images = self.CMSMeta.image_class.objects.filter(page=self.published_from).order_by('order_id')
 			else:
-				images = self.CMSMeta.image_class.objects.filter(page=self).order_by('order_id')
-			return images
-		else:
-			return None
+				if hasattr(self.CMSMeta, 'image_class'):
+					images = self.CMSMeta.image_class.objects.filter(page=self).order_by('order_id')
+
+		return images
 
 	def feature_image(self):
 		if cms_settings.CMS_PAGE_IMAGES:
