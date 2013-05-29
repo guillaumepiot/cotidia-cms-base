@@ -53,6 +53,9 @@ class BasePage(MPTTModel, MultilingualModel):
 
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
+	
+	# Navigation
+	hide_from_nav = models.BooleanField(_('Hide from navigation'), blank=True)
 
 	objects = BasePageManager()
 
@@ -175,11 +178,11 @@ class BasePage(MPTTModel, MultilingualModel):
 		return obj
 
 	def delete(self):
-
-		published_version = Page.objects.filter(published_from=self)
+		cls = self.__class__
+		published_version = cls.objects.filter(published_from=self)
 		for version in published_version:
 			version.delete()
-		super(Page, self).delete()
+		super(cls, self).delete()
 
 
 	def get_absolute_url(self):
@@ -240,13 +243,25 @@ class BasePage(MPTTModel, MultilingualModel):
 			# If is original
 			if self.get_published():
 				for ancestor in self.get_ancestors():
-					breadcrumbs.append(ancestor.get_published().translated().title)
+					breadcrumbs.append(ancestor.get_published())
 			# Else if it is the published version
 			else:
 				# if self.published_from != None:
 				for ancestor in self.published_from.get_ancestors():
-					breadcrumbs.append(ancestor.get_published().translated().title)
+					breadcrumbs.append(ancestor.get_published())
 		return breadcrumbs
+
+	def get_child_pages(self, include_self=False):
+		if self.get_published():
+			return self.get_descendants(include_self=include_self)
+		else:
+			return self.published_from.get_descendants(include_self=include_self)
+
+	def get_root_page(self):
+		if self.get_published():
+			return self.get_root()
+		else:
+			return self.published_from.get_root()
 
 	@property
 	def has_published_version(self):
@@ -362,12 +377,8 @@ class PublishTranslation(object):
 				if field.attname not in ignore_fields:
 					obj.__dict__[field.attname] = self.__dict__[field.attname]
 
-
 			obj.parent = published_page
-
 			obj.save()
-
-
 
 
 	

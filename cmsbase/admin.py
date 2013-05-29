@@ -113,6 +113,8 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 				obj.publish_version()
 				obj.publish_translations()
 
+			# Rebuild the tree
+			obj.__class__.tree.rebuild()
 
 	make_published.short_description = "Approve & Publish"
 
@@ -122,6 +124,10 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 				obj.published = False
 				obj.save()
 				obj.unpublish_version()
+
+			# Rebuild the tree
+			obj.__class__.tree.rebuild()
+
 	make_unpublished.short_description = "Un-publish"
 
 	#Assign those actions
@@ -302,7 +308,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 		('Settings', {
 			#'description':_('The page template'),
 			'classes': ('default',),
-			'fields': ( 'home', 'parent', 'template', 'redirect_to', 'slug', 'order_id' )
+			'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'slug', 'order_id' )
 		}),
 
 	)

@@ -1,6 +1,8 @@
 from django import template
 register = template.Library()
 
+from cmsbase.views import get_page
+
 # Truncate chars but leaving last word complete
 @register.filter("smart_truncate_chars")
 def smart_truncate_chars(value, max_length):
@@ -14,3 +16,31 @@ def smart_truncate_chars(value, max_length):
 			truncd_val = truncd_val[:truncd_val.rfind(" ")]
 		return  truncd_val + "..."
 	return value
+
+
+
+class PageBySlugNode(template.Node):
+    def __init__(self, slug, varname):
+    	if slug[0] in ('"', "'"):
+    		self.slug = slug[1:-1]
+    		self.is_template_var = False
+    	else:
+    		self.slug = template.Variable(slug)
+    		self.is_template_var = True
+        self.varname = varname
+    def render(self, context):
+    	if self.is_template_var:
+    		self.slug = self.slug.resolve(context)
+    	self.page = page = get_page(context['request'], slug=self.slug)
+    	context[self.varname] = self.page
+    	return ''
+
+@register.tag
+def get_page_by_slug(parser, token):
+    try:
+        # split_contents() knows not to split quoted strings.
+        tag_name, slug, conjonction, varname  = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag must be in the following format: {% get_page_by_slug 'page-slug' as pagevar %}" % token.contents.split()[0])
+    
+    return PageBySlugNode(slug, varname)

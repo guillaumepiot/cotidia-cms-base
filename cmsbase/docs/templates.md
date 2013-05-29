@@ -23,8 +23,8 @@ You can add you own set of page templates by using the CMS_PAGE_TEMPLATES settin
 	)
 	
 	
-Translation in templates
-------------------------
+Access translations
+-------------------
 
 In order to retrieve the right translated content depending on the current site language settings, you must call the `translated` method to retrieve the translated value.
 
@@ -32,3 +32,15 @@ For example:
 
 	{{page.translated.title}}
 	{{page.translated.content}}
+	
+	
+Tags
+----
+
+`{% get_page_by_slug 'page-slug' as pagevar %}`: Add the page matching the slug in the current language as `pagevar` in the template context.
+
+
+Filters
+-------
+
+`{{var|smart_truncate_chars}}`: Truncates by number of character without splitting whole words, and add '...' in the end if longer. 

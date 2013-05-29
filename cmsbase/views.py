@@ -18,14 +18,15 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 
 	# Deconstruct the slug to get the last element corresponding to the page we are looking for
 	if slug:
+
 		slugs = slug.split('/')
 
 		if len(slugs) == 1:
 			last_slug = slugs[len(slugs)-1]
-			parent_slug = False
 		elif len(slugs) > 1:
 			last_slug = slugs[len(slugs)-1]
-			parent_slug = slugs[len(slugs)-2]
+		else:
+			last_slug = slugs[0]
 
 		published = []
 
@@ -35,8 +36,7 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 			if translation.count() > 0:
 				published.append(translation[0].parent)
 		else:
-			translation = translation_class.objects.filter(slug=last_slug).exclude(parent__published_from=None)
-
+			translation = translation_class.objects.filter(slug=last_slug, parent__published=True).exclude(parent__published_from=None)
 			if translation.count() > 0:
 				published.append(translation[0].parent)
 
