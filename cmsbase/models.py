@@ -252,10 +252,14 @@ class BasePage(MPTTModel, MultilingualModel):
 		return breadcrumbs
 
 	def get_child_pages(self, include_self=False):
-		if self.get_published():
-			return self.get_descendants(include_self=include_self)
+		if self.published_from:
+			children = []
+			for child in self.published_from.get_descendants(include_self=include_self):
+				if child.published == True:
+					children.append(child)
+			return children
 		else:
-			return self.published_from.get_descendants(include_self=include_self)
+			return self.get_descendants(include_self=include_self)
 
 	def get_root_page(self):
 		if self.get_published():
