@@ -161,7 +161,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 	approval.short_description = 'Approved'
 
 	def is_published(self, obj):
-		if obj.has_published_version:
+		if obj.published:
 			return '<i class="icon-ok"></i>'
 		else:
 			return '<i class="icon-minus-sign"></i>'
