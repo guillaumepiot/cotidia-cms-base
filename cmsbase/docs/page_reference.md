@@ -30,6 +30,9 @@ Method
 
 `BasePage.get_child_pages(include_self=False)`: Returns all the child pages of any given page. Return the current object as well if `include_self` equals `True`
 
+- If the page object is original, all descendants are returned included un-published pages
+- If the page object is a live version, only published descendants are returnes
+
 `BasePage.get_root_page()`: Returns the root page from the ancestor tree of a given page.
 
 `BasePage.images()`: Returns all the inline images of the original image. Please note that currently inline images are not part of the publishing workflow. Any uploaded images will be directly available from the published version as well.
