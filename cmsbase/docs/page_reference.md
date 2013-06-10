@@ -4,7 +4,7 @@ Page reference
 Properties
 ----------
 
-`BasePage.siblings`: returns all siblings from a given page (original not published version) including itself.
+`BasePage.siblings`: Returns all siblings from a given page (original not published version) including itself.
 
 
 Method
@@ -32,3 +32,6 @@ Method
 
 `BasePage.get_root_page()`: Returns the root page from the ancestor tree of a given page.
 
+`BasePage.images()`: Returns all the inline images of the original image. Please note that currently inline images are not part of the publishing workflow. Any uploaded images will be directly available from the published version as well.
+
+`BasePage.feature_image()`: Returns the first image depending on the order_id. If no order_id has been specified, then the oldest image uploaded will be returned.

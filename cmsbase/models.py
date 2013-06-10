@@ -293,48 +293,6 @@ class BasePage(MPTTModel, MultilingualModel):
 		else:
 			return None
 
-	def get_default_url(self, slug=False):
-
-		from django.utils import translation
-
-		current_language = translation.get_language()
-
-		if slug:
-			slugs = slug.split('/')
-
-			new_slug = []
-
-			for s in slugs:
-				pages = self.CMSMeta.translation_class.objects.filter(slug=s)
-
-				for p in pages:
-					if p.parent.published_from == None:
-						uri_page = p.parent
-
-						page = self.CMSMeta.translation_class.objects.filter(language_code=current_language, parent=uri_page)
-
-						uri = uri_page.slug
-
-						if page.count() > 0:
-							uri = page[0].slug
-
-
-						new_slug.append(uri)
-
-				# translation = self.CMSMeta.translation_class.objects.filter(language_code=current_language)
-
-				# for t in translation:
-				# 	print t.slug, t.id
-				# if translation.count() > 0:
-
-					# uri = translation[0].slug
-
-				# new_slug.append(uri)
-
-		str = '/'
-
-		return str.join(new_slug)
-
 	# Since the MPTT method get_siblings doesn't include self by default
 	# We need to use this method to all siblings including self in a template view
 	@property
