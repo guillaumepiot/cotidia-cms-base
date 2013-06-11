@@ -34,6 +34,8 @@ class PageBySlugNode(template.Node):
     	self.pages = Page.objects.filter(slug=self.slug)
         if self.pages.count() > 0:
     	   context[self.varname] = self.pages[0]
+        else:
+            context[self.varname] = False
     	return ''
 
 @register.tag
