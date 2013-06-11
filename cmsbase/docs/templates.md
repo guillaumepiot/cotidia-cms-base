@@ -37,7 +37,7 @@ For example:
 Tags
 ----
 
-`{% get_page_by_slug 'page-slug' as pagevar %}`: Add the page matching the slug in the current language as `pagevar` in the template context.
+`{% get_page_by_unique_identifier 'page-slug' as pagevar %}`: Add the page matching the unique page identifier in the current language as `pagevar` in the template context. Returns the published version of the page.
 
 
 Filters

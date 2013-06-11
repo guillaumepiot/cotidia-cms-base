@@ -1,7 +1,7 @@
 from django import template
 register = template.Library()
 
-from cmsbase.views import get_page
+from cmsbase.models import Page
 
 # Truncate chars but leaving last word complete
 @register.filter("smart_truncate_chars")
@@ -31,12 +31,13 @@ class PageBySlugNode(template.Node):
     def render(self, context):
     	if self.is_template_var:
     		self.slug = self.slug.resolve(context)
-    	self.page = page = get_page(context['request'], slug=self.slug)
-    	context[self.varname] = self.page
+    	self.pages = Page.objects.filter(slug=self.slug)
+        if self.pages.count() > 0:
+    	   context[self.varname] = self.pages[0]
     	return ''
 
 @register.tag
-def get_page_by_slug(parser, token):
+def get_page_by_unique_identifier(parser, token):
     try:
         # split_contents() knows not to split quoted strings.
         tag_name, slug, conjonction, varname  = token.split_contents()
