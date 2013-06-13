@@ -48,8 +48,11 @@ function set_flag(){
 }
 
 function set_prepopulate(){
-	$('.field-title input').keyup(function(){
-		$(this).parent().parent().parent().next().find('input').val(URLify($(this).val(), 100));
-	})
+	if(!$('body').hasClass('action-change')){
+		$('.field-title input').keyup(function(){
+			$(this).parent().parent().parent().next().find('input').val(URLify($(this).val(), 100));
+		})
+	}
+	
 	
 }
