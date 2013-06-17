@@ -16,7 +16,7 @@ Method
 
 `BasePage.get_translations()`: Returns all translation objects from a given page.
 
-`BasePage.publish_translations()`: Publish transaltions of a given original page.
+`BasePage.publish_translations()`: Publish translations of a given original page.
 
 `BasePage.publish_version()`: Publish a given original page
 
