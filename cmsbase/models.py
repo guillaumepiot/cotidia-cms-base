@@ -277,25 +277,24 @@ class BasePage(MPTTModel, MultilingualModel):
 
 	def images(self):
 		images = []
-		if cms_settings.CMS_PAGE_IMAGES:
-			if self.published_from:
-				if hasattr(self.CMSMeta, 'image_class'):
-					images = self.CMSMeta.image_class.objects.filter(page=self.published_from).order_by('order_id')
-			else:
-				if hasattr(self.CMSMeta, 'image_class'):
-					images = self.CMSMeta.image_class.objects.filter(page=self).order_by('order_id')
+
+		if self.published_from:
+			if hasattr(self.CMSMeta, 'image_class'):
+				images = self.CMSMeta.image_class.objects.filter(parent=self.published_from).order_by('order_id')
+		else:
+			if hasattr(self.CMSMeta, 'image_class'):
+				images = self.CMSMeta.image_class.objects.filter(parent=self).order_by('order_id')
 
 		return images
 
 	def feature_image(self):
-		if cms_settings.CMS_PAGE_IMAGES:
-			images = self.images()
-			if images.count() > 0:
-				return images[0].image
-			else:
-				return False
+
+		images = self.images()
+		if images.count() > 0:
+			return images[0].image
 		else:
-			return None
+			return False
+
 
 	# Since the MPTT method get_siblings doesn't include self by default
 	# We need to use this method to all siblings including self in a template view
@@ -387,7 +386,7 @@ class PageImage(models.Model):
 		location = "cms/%s"%(self.page.slug)
 		return get_media_upload_to(location, instance)
 
-	page = models.ForeignKey('Page')
+	parent = models.ForeignKey('Page')
 	image = models.ImageField(upload_to=call_naming, max_length=100)
 	# Ordering
 	order_id = models.IntegerField(blank=True, null=True)
