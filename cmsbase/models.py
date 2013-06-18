@@ -381,7 +381,7 @@ class PageTranslation(MultilingualTranslation, PublishTranslation):
 class PageImage(models.Model):
 
 	def call_naming(self, instance=None):
-		from cmsbase .widgets import get_media_upload_to
+		from cmsbase.widgets import get_media_upload_to
 
 		# return get_media_upload_to(self.page.slug, 'pages')
 		location = "cms/%s"%(self.page.slug)

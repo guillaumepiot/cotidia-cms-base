@@ -271,11 +271,11 @@ class PageFormAdmin(forms.ModelForm):
 
 
 class ImageInlineForm(forms.ModelForm):
-	image = forms.ImageField(widget=AdminImageWidget)
+	image = forms.ImageField(label=_('Image'), widget=AdminImageWidget)
 	class Meta:
 		model=PageImage
 
-class ListingImageInline(admin.TabularInline):
+class PageImageInline(admin.TabularInline):
 	form = ImageInlineForm
 	model = PageImage
 	extra = 0
@@ -293,7 +293,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 	inlines = (PageTranslationInline, )
 
 	if cms_settings.CMS_PAGE_IMAGES:
-		inlines += (ListingImageInline,)
+		inlines += (PageImageInline,)
 
 	mptt_indent_field = 'title'
 
