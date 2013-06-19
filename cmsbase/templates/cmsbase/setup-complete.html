@@ -1,0 +1,26 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>{% trans "Congratulations!" %} | CMS Base</title>
+	<!-- concatenate and minify for production -->
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+	<style>
+	center{
+		margin: 40px auto;
+		width:300px;
+	}
+	</style>
+</head>
+
+<body>
+	<center class="well">
+		<h2>{% trans "Congratulations!" %}</h2>
+		<br>
+		<p>{% trans "You have successfully setup <strong>CMS Base</strong> but there is no published pages yet to display." %}</p>
+		<br>
+		<p><a href="/admin/cmsbase/page/add" class="btn btn-success">{% trans "Add the first page" %}</a></p>
+	</center>
+</body>
+</html>

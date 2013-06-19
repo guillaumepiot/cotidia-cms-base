@@ -82,20 +82,30 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 				slugs = []
 				page = get_page(request=request, model_class=model_class, translation_class=translation_class, preview=is_preview)
 
-			# Raise a 404 if the page can't be found
+			# Check if any page exists at all
+			# Then Raise a 404 if no page can be found
 			if not page:
-				raise Http404('Not Found')
+				# Any pages at all?
+				if not model_class.objects.filter(published=True):
+					# Show CMS setup congratulations
+					page = model_class()
+					page.template = 'cmsbase/setup-complete.html'
+				else:
+					raise Http404('Not Found')
 
-			# Hard redirect if specified in page attributes
-			if page.redirect_to:
-				return HttpResponseRedirect(page.redirect_to.get_absolute_url())
+			else:
 
-			# When you switch language it will load the right translation but stay on the same slug
-			# So we need to redirect tio the right translated slug if not on it already
-			page_url = page.get_absolute_url()
+				# Hard redirect if specified in page attributes
+				if page.redirect_to:
+					return HttpResponseRedirect(page.redirect_to.get_absolute_url())
 
-			if not page_url == request.path and slug:
-				return HttpResponseRedirect(page_url)
+				# When you switch language it will load the right translation but stay on the same slug
+				# So we need to redirect tio the right translated slug if not on it already
+				page_url = page.get_absolute_url()
+
+				if not page_url == request.path and slug:
+					return HttpResponseRedirect(page_url)
+
 
 			# Assign is_preview to the request object for cleanliness
 			request.is_preview = is_preview
