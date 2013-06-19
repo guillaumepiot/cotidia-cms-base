@@ -96,7 +96,7 @@
 			{% full_tree_for_model cmsbase.Page as pages %}
 			
 		    {% recursetree pages %}
-		        {% if node.get_published %}<li class="{% if request.path == node.get_absolute_url %}active{% endif %}">
+		        {% if node.get_published and not node.get_published.hide_from_nav %}<li class="{% if request.path == node.get_absolute_url %}active{% endif %}">
 		            <a href="{{node.get_absolute_url}}">{{node.get_published.translated.title}}</a>
 		            {% if not node.is_leaf_node %}
 		                <ul class="children">

@@ -268,6 +268,21 @@ class PageFormAdmin(forms.ModelForm):
 		else:
 			return slug
 
+	def clean_home(self):
+		home = self.cleaned_data['home']
+
+		if home:
+			err_message = _('There is already another page set as home. Only one home can exists.')
+			# Check if other pages are already home excluded the current edited page
+			if self.obj:
+				if self.Meta.model.objects.filter(published_from=None, home=True).exclude(id=self.obj.id):
+					raise  forms.ValidationError(err_message) 
+			# Check if other pages are already home excluded
+			else:
+				if self.Meta.model.objects.filter(published_from=None, home=True):
+					raise  forms.ValidationError(err_message) 
+		return home
+
 
 
 class ImageInlineForm(forms.ModelForm):
