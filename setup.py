@@ -51,10 +51,10 @@ for dirpath, dirnames, filenames in os.walk('cmsbase'):
         # !!! IMPORTANT !!!                                                            #
         # To get the right prefix, enter the index key of the same                     #
         # value as the length of your package folder name, including the slash.        #
-        # Eg: for 'cmsbase/'' , key will be 7                                          #
+        # Eg: for 'cmsbase/'' , key will be 8                                          #
         ################################################################################
 
-        prefix = dirpath[7:] # Strip "cmsbase/" or "cmsbase\"
+        prefix = dirpath[8:] # Strip "cmsbase/" or "cmsbase\"
         for f in filenames:
             data_files.append(os.path.join(prefix, f))
 
