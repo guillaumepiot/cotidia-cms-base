@@ -46,23 +46,32 @@ for dirpath, dirnames, filenames in os.walk('cmsbase'):
             pkg = pkg.replace(os.path.altsep, '.')
         packages.append(pkg)
     elif filenames:
-        prefix = dirpath[12:] # Strip "cmsbase/" or "cmsbase\"
+
+        ################################################################################
+        # !!! IMPORTANT !!!                                                            #
+        # To get the right prefix, enter the index key of the same                     #
+        # value as the length of your package folder name, including the slash.        #
+        # Eg: for 'cmsbase/'' , key will be 7                                          #
+        ################################################################################
+
+        prefix = dirpath[7:] # Strip "cmsbase/" or "cmsbase\"
         for f in filenames:
             data_files.append(os.path.join(prefix, f))
 
+print data_files
 
-setup(
-    name="cotidia-cms-base",
-    description="Django application to manage content publishing",
-    version=VERSION,
-    author="Guillaume Piot",
-    author_email="guillaume@cotidia.com",
-    url="https://bitbucket.org/guillaumepiot/cotidia-cms-base",
-    download_url="https://bitbucket.org/guillaumepiot/cotidia-cms-base/downloads/cotidia-cms-base-%s.tar.gz" % VERSION,
-    package_dir={'cmsbase': 'cmsbase'},
-    packages=packages,
-    package_data={'cmsbase': data_files},
-    include_package_data=True,
-    install_requires=install_requires,
-    classifiers=CLASSIFIERS,
-)
+# setup(
+#     name="cotidia-cms-base",
+#     description="Django application to manage content publishing",
+#     version=VERSION,
+#     author="Guillaume Piot",
+#     author_email="guillaume@cotidia.com",
+#     url="https://bitbucket.org/guillaumepiot/cotidia-cms-base",
+#     download_url="https://bitbucket.org/guillaumepiot/cotidia-cms-base/downloads/cotidia-cms-base-%s.tar.gz" % VERSION,
+#     package_dir={'cmsbase': 'cmsbase'},
+#     packages=packages,
+#     package_data={'cmsbase': data_files},
+#     include_package_data=True,
+#     install_requires=install_requires,
+#     classifiers=CLASSIFIERS,
+# )
