@@ -151,29 +151,17 @@ def search(request, directory=False):
 		if form.is_valid():
 
 			language_code = get_language()
-			#print "Selected language: %s" % language_code
 			query = form.cleaned_data['query']
 			ix = open_dir(settings.SEARCH_INDEX_PATH)
 
 			with ix.searcher() as s:
 				parser = QueryParser("content", ix.schema)
 				myquery = parser.parse(query)
+				
 				# Filter results for our current language only
 				allow_q = And([Term("language", language_code) , ])
 
-				if directory:
-
-					location = form.cleaned_data['location']
-
-					category = Category.objects.get(id=location)
-					root = u"%s"%category.published_from.get_root()
-
-					restrict_q = Or([Term("content_type", u"page"), Term("content_type", u"event")])
-					results = s.search(myquery, filter=allow_q, mask=restrict_q,  limit=None)
-					template = 'cms/search_results.html'
-				else:
-					results = s.search(myquery, filter=allow_q, limit=None)
-				#result_count = results.filtered_count
+				results = s.search(myquery, filter=allow_q, limit=None)
 
 				results_objects = []
 
@@ -183,17 +171,7 @@ def search(request, directory=False):
 					obj_class = ct.model_class()
 					obj = obj_class.objects.get(id=r['id'])
 
-
-
-					if r['content_type'].lower() == 'event':
-						result = {'title':obj.translated().title, 'url':obj.get_absolute_url(), 'breadcrumbs':obj.get_breadcrumbs(), 'content': obj.translated().description, 'content_type':r['content_type']}
-					else:
-
-						if root:
-							if root not in obj.get_breadcrumbs():
-								continue
-
-						result = {'title':obj.translated().title, 'url':obj.get_absolute_url(), 'breadcrumbs':obj.get_breadcrumbs(), 'content': obj.translated().content, 'content_type':r['content_type']}
+					result = {'title':obj.translated().title, 'url':obj.get_absolute_url(), 'breadcrumbs':obj.get_breadcrumbs(), 'content': obj.translated().content, 'content_type':r['content_type']}
 					results_objects.append(result)
 	else:
 		form = SearchForm()

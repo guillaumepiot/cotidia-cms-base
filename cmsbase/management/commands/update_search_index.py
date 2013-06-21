@@ -20,7 +20,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 		# indexed (meaning it can be searched)
 		# stored (meaning the value that gets indexed is returned with the results; this is useful for fields such as the title).
-		schema = Schema(title=TEXT(stored=True), content_type=TEXT(stored=True), language=TEXT(stored=True), id=ID(stored=True), content=TEXT)
+		schema = Schema(title=TEXT(stored=True), content_type=TEXT(stored=True), language=KEYWORD(stored=True), id=ID(stored=True), content=TEXT)
 
 		index_path = settings.SEARCH_INDEX_PATH
 
