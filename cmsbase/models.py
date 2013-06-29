@@ -262,6 +262,7 @@ class BasePage(MPTTModel, MultilingualModel):
 			return self.get_descendants(include_self=include_self)
 
 	def get_root_page(self):
+		# TODO: improve
 		if self.get_published():
 			return self.get_root()
 		else:
