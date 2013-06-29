@@ -384,7 +384,7 @@ class PageImage(models.Model):
 		from cmsbase.widgets import get_media_upload_to
 
 		# return get_media_upload_to(self.page.slug, 'pages')
-		location = "cms/%s"%(self.page.slug)
+		location = "cms/%s"%(self.parent.slug)
 		return get_media_upload_to(location, instance)
 
 	parent = models.ForeignKey('Page')
