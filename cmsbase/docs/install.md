@@ -27,6 +27,14 @@ Also install the dependencies underdevelopment:
     $ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager
     $ pip install -e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model
 
+If you don't to install it in development mode (for example on production server), use the following commands:
+
+	$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-cms-base.git
+	$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-admin-tools.git
+    $ pip install git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git
+    $ pip install git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git
+    $ pip install git+https://github.com/dokterbob/django-multilingual-model.git
+
 Create a Django project
 -----------------------
 
