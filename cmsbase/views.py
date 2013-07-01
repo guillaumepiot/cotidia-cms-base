@@ -25,20 +25,34 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 			last_slug = slugs[len(slugs)-1]
 		elif len(slugs) > 1:
 			last_slug = slugs[len(slugs)-1]
-		else:
-			last_slug = slugs[0]
+			# Get parent page:
+			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
+
 
 		published = []
 
 		if preview:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
-
-			if translation.count() > 0:
-				published.append(translation[0].parent)
 		else:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published=True).exclude(parent__published_from=None)
-			if translation.count() > 0:
-				published.append(translation[0].parent)
+		
+		# fetch the page that correspond to the complete url - as they can be multiple page with same slug but in different branches
+		if translation.count() > 0:
+			for t in translation:
+				# We must align lengths of slug parameters to avoid a URL prefix set against the app
+				# Eg: you may set up the cms app to run under /cms/, but because the slug will not contain '/cms/',
+				# we must count backwards the number of parameters of slug, and add the same number from get_absolute_url.
+				# that way the app prefix should be striped from the comparison
+				slug_length = len(slugs)
+
+				page_url = t.parent.get_absolute_url().strip('/')
+				page_slugs = page_url.split('/')
+				# Count from the end
+				page_slugs = page_slugs[len(page_slugs)-slug_length:len(page_slugs)]
+
+				if page_slugs == slugs:
+					published.append(t.parent)
+					continue
 
 	else:
 		if preview:
@@ -76,10 +90,8 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 
 			# Is it home page or not?
 			if slug:
-				slugs = slug.split('/')
 				page = get_page(request=request, model_class=model_class, translation_class=translation_class, slug=slug, preview=is_preview)
 			else:
-				slugs = []
 				page = get_page(request=request, model_class=model_class, translation_class=translation_class, preview=is_preview)
 
 			# Check if any page exists at all
@@ -100,7 +112,7 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 					return HttpResponseRedirect(page.redirect_to.get_absolute_url())
 
 				# When you switch language it will load the right translation but stay on the same slug
-				# So we need to redirect tio the right translated slug if not on it already
+				# So we need to redirect to the right translated slug if not on it already
 				page_url = page.get_absolute_url()
 
 				if not page_url == request.path and slug:
