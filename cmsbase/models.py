@@ -57,6 +57,9 @@ class BasePage(MPTTModel, MultilingualModel):
 	# Navigation
 	hide_from_nav = models.BooleanField(_('Hide from navigation'), blank=True)
 
+	# Related pages / can be used for reading more about the same subject
+	related_pages = models.ManyToManyField('self', blank=True)
+
 	objects = BasePageManager()
 
 	def get_content_type(self):
@@ -398,11 +401,58 @@ class PageImage(models.Model):
 		verbose_name_plural = _('Images')
 
 	def delete(self, *args, **kwargs):
-		from sorl.thumbnail import get_thumbnail
 		storage, path = self.image.storage, self.image.path
 		super(PageImage, self).delete(*args, **kwargs)
 		# Physically delete the file
 		storage.delete(path)
+
+
+class PageDocument(models.Model):
+
+	def call_naming(self, instance=None):
+		from cmsbase.widgets import get_media_upload_to
+
+		# return get_media_upload_to(self.page.slug, 'pages')
+		location = "cms/%s"%(self.parent.slug)
+		return get_media_upload_to(location, instance)
+
+	parent = models.ForeignKey('Page')
+	document = models.ImageField(upload_to=call_naming, max_length=100)
+	# Ordering
+	order_id = models.IntegerField(blank=True, null=True)
+
+	class Meta:
+		ordering = ('order_id',)
+		verbose_name = _('Document')
+		verbose_name_plural = _('Documents')
+
+	def delete(self, *args, **kwargs):
+		storage, path = self.document.storage, self.document.path
+		super(PageDocument, self).delete(*args, **kwargs)
+		# Physically delete the file
+		storage.delete(path)
+
+
+class PageLink(models.Model):
+
+    parent = models.ForeignKey('Page')
+
+    link_name = models.CharField(_('Link to (name)'), max_length=250, blank=True, help_text=_('Eg: Click here for more info'))
+    url = models.URLField(_('Link to (URL)'), max_length=250, blank=True, help_text=_('Eg: http://example.com/info'))
+
+    # Ordering
+    order_id = models.IntegerField(blank=True, null=True)
+
+    date_created = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('order_id','link_name',)
+        verbose_name = _('Link')
+        verbose_name_plural = _('Links')
+
+    def __unicode__(self):
+        return u'%s' % (self.link_name)
 
 
 class Page(BasePage):

@@ -25,14 +25,16 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 		new_fieldset = []
 		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
 			for fieldset in self.fieldsets:
+				print fieldset
 				if fieldset[0] != 'Approval':
 					new_fieldset.append(fieldset)
-			return new_fieldset
+			
 		else:
 			for fieldset in self.fieldsets:
 				if fieldset[0] != 'Publishing':
 					new_fieldset.append(fieldset)
-			return new_fieldset
+
+		return new_fieldset
 
 	def get_list_display(self, request, obj=None):
 		if not settings.PREFIX_DEFAULT_LOCALE:
@@ -218,30 +220,6 @@ class PageTranslationInline(TranslationInline):
 
 
 
-	# if settings.PREFIX_DEFAULT_LOCALE:
-	# 	fieldsets = (
-	# 		('Content', {
-	# 			'classes': ('default',),
-	# 			'fields': ('language_code','title', 'slug', 'content' )
-	# 		}),
-	# 		('Meta data', {
-	# 			'classes': ('default collapse',),
-	# 			'fields': ('meta_title', 'meta_description', )
-	# 		}),
-	# 	)
-	# else:
-	# 	fieldsets = (
-	# 		('Content', {
-	# 			'classes': ('default',),
-	# 			'fields': ('language_code','title', 'slug', 'content' )
-	# 		}),
-	# 		('Meta data', {
-	# 			'classes': ('default collapse',),
-	# 			'fields': ('meta_title', 'meta_description', )
-	# 		}),
-	# 	)
-
-
 class PageFormAdmin(forms.ModelForm):
 	redirect_to = TreeNodeChoiceField(queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
 
@@ -253,13 +231,15 @@ class PageFormAdmin(forms.ModelForm):
 
 		redirect_to = self.fields['redirect_to']
 		self.obj = kwargs.get('instance', False)
+
+		if cms_settings.CMS_PAGE_RELATED_PAGES:
+			self.fields['related_pages'] = forms.ModelMultipleChoiceField(queryset=Page.objects.get_published_original(), widget=forms.CheckboxSelectMultiple)
 		
 
 	def clean_slug(self):
 		slug = self.cleaned_data['slug']
 
 		pages = [page.slug for page in Page.objects.all()]
-
 
 		if self.obj and slug in pages and slug != self.obj.slug and slug != '':
 			raise forms.ValidationError(_('The unique page identifier must be unique')) 
@@ -283,7 +263,9 @@ class PageFormAdmin(forms.ModelForm):
 					raise  forms.ValidationError(err_message) 
 		return home
 
-
+#################
+# Images inline #
+#################
 
 class ImageInlineForm(forms.ModelForm):
 	image = forms.ImageField(label=_('Image'), widget=AdminImageWidget)
@@ -296,19 +278,48 @@ class PageImageInline(admin.TabularInline):
 	extra = 0
 	template = 'admin/cmsbase/page/images-inline.html'
 
+####################
+# Documents inline #
+####################
+
+class DocumentInlineForm(forms.ModelForm):
+	document = forms.FileField(label=_('Document'), widget=AdminCustomFileWidget)
+	class Meta:
+		model=PageDocument
+
+class PageDocumentInline(admin.TabularInline):
+	form = DocumentInlineForm
+	model = PageDocument
+	extra = 0
+	template = 'admin/cmsbase/page/images-inline.html'
+
+################
+# Links inline #
+################
+
+class PageLinkInline(admin.TabularInline):
+	model = PageLink
+	extra = 0
+	template = 'admin/cmsbase/page/images-inline.html'
+
+##############
+# Page admin #
+##############
+
 class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin):
 
 	form = PageFormAdmin
-
-	#list_display = ["title", "home_icon", "is_published", "approval", 'template', 'languages']
-	#list_filter = ["approval_needed"]
-	#search_fields = ['slug']
-	# prepopulated_fields = {'slug': ('title',)}
 
 	inlines = (PageTranslationInline, )
 
 	if cms_settings.CMS_PAGE_IMAGES:
 		inlines += (PageImageInline,)
+
+	if cms_settings.CMS_PAGE_DOCUMENTS:
+		inlines += (PageDocumentInline,)
+
+	if cms_settings.CMS_PAGE_LINKS:
+		inlines += (PageLinkInline,)
 
 	mptt_indent_field = 'title'
 
@@ -321,12 +332,17 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 
 		
 		('Settings', {
-			#'description':_('The page template'),
 			'classes': ('default',),
 			'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'slug', 'order_id' )
 		}),
 
 	)
+
+	if cms_settings.CMS_PAGE_RELATED_PAGES:
+		fieldsets = fieldsets + (('Related pages', {
+			'classes': ('default',),
+			'fields': ( 'related_pages',)
+		}),)
 
 	class Media:
 		css = {
