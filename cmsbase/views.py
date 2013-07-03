@@ -110,6 +110,8 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 				# Hard redirect if specified in page attributes
 				if page.redirect_to:
 					return HttpResponseRedirect(page.redirect_to.get_absolute_url())
+				if page.redirect_to_url:
+					return HttpResponseRedirect(page.redirect_to_url)
 
 				# When you switch language it will load the right translation but stay on the same slug
 				# So we need to redirect to the right translated slug if not on it already

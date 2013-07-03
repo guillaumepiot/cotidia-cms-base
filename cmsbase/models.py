@@ -53,6 +53,7 @@ class BasePage(MPTTModel, MultilingualModel):
 
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
+	redirect_to_url = models.URLField(_('Redirect to URL'), blank=True, help_text=_('Redirect this page to a given URL'))
 	
 	# Navigation
 	hide_from_nav = models.BooleanField(_('Hide from navigation'), blank=True)

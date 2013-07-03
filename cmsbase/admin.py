@@ -221,7 +221,7 @@ class PageTranslationInline(TranslationInline):
 
 
 class PageFormAdmin(forms.ModelForm):
-	redirect_to = TreeNodeChoiceField(queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
+	redirect_to = TreeNodeChoiceField(label=_('Redirect to page'), queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
 
 	class Meta:
 		model = Page
@@ -233,7 +233,7 @@ class PageFormAdmin(forms.ModelForm):
 		self.obj = kwargs.get('instance', False)
 
 		if cms_settings.CMS_PAGE_RELATED_PAGES:
-			self.fields['related_pages'] = forms.ModelMultipleChoiceField(queryset=Page.objects.get_published_original(), widget=forms.CheckboxSelectMultiple)
+			self.fields['related_pages'] = forms.ModelMultipleChoiceField(queryset=Page.objects.get_published_original(), widget=forms.CheckboxSelectMultiple, required=False)
 		
 
 	def clean_slug(self):
@@ -333,7 +333,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 		
 		('Settings', {
 			'classes': ('default',),
-			'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'slug', 'order_id' )
+			'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'redirect_to_url', 'slug', 'order_id' )
 		}),
 
 	)
