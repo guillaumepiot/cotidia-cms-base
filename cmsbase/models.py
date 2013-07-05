@@ -301,6 +301,31 @@ class BasePage(MPTTModel, MultilingualModel):
 			return False
 
 
+	def documents(self):
+		documents = []
+
+		if self.published_from:
+			if hasattr(self.CMSMeta, 'document_class'):
+				documents = self.CMSMeta.document_class.objects.filter(parent=self.published_from).order_by('order_id')
+		else:
+			if hasattr(self.CMSMeta, 'document_class'):
+				documents = self.CMSMeta.document_class.objects.filter(parent=self).order_by('order_id')
+
+		return documents
+
+	def links(self):
+		links = []
+
+		if self.published_from:
+			if hasattr(self.CMSMeta, 'link_class'):
+				links = self.CMSMeta.link_class.objects.filter(parent=self.published_from).order_by('order_id')
+		else:
+			if hasattr(self.CMSMeta, 'link_class'):
+				links = self.CMSMeta.link_class.objects.filter(parent=self).order_by('order_id')
+
+		return links
+
+
 	# Since the MPTT method get_siblings doesn't include self by default
 	# We need to use this method to all siblings including self in a template view
 	@property
@@ -388,11 +413,12 @@ class PageImage(models.Model):
 		from cmsbase.widgets import get_media_upload_to
 
 		# return get_media_upload_to(self.page.slug, 'pages')
-		location = "cms/%s"%(self.parent.slug)
+		location = "cms/images%s"%(self.parent.slug)
 		return get_media_upload_to(location, instance)
 
 	parent = models.ForeignKey('Page')
 	image = models.ImageField(upload_to=call_naming, max_length=100)
+	caption = models.CharField(_('Caption'), max_length=250, blank=True)
 	# Ordering
 	order_id = models.IntegerField(blank=True, null=True)
 
@@ -414,11 +440,11 @@ class PageDocument(models.Model):
 		from cmsbase.widgets import get_media_upload_to
 
 		# return get_media_upload_to(self.page.slug, 'pages')
-		location = "cms/%s"%(self.parent.slug)
+		location = "cms/documents%s"%(self.parent.slug)
 		return get_media_upload_to(location, instance)
 
 	parent = models.ForeignKey('Page')
-	document = models.ImageField(upload_to=call_naming, max_length=100)
+	document = models.FileField(upload_to=call_naming, max_length=100)
 	# Ordering
 	order_id = models.IntegerField(blank=True, null=True)
 
@@ -433,6 +459,11 @@ class PageDocument(models.Model):
 		# Physically delete the file
 		storage.delete(path)
 
+	def filename(self):
+		path = self.document.name.split('/')
+		filename = path[len(path)-1]
+		return filename
+
 
 class PageLink(models.Model):
 
@@ -440,6 +471,7 @@ class PageLink(models.Model):
 
     link_name = models.CharField(_('Link to (name)'), max_length=250, blank=True, help_text=_('Eg: Click here for more info'))
     url = models.URLField(_('Link to (URL)'), max_length=250, blank=True, help_text=_('Eg: http://example.com/info'))
+    description = models.TextField(_('Description'), max_length=250, blank=True)
 
     # Ordering
     order_id = models.IntegerField(blank=True, null=True)
@@ -469,8 +501,17 @@ class Page(BasePage):
 		translation_class = PageTranslation
 		# Provide the url name to create a url for that model
 		model_url_name = 'cms:page'
+
 		# Provide the inline image model if necessary
 		if cms_settings.CMS_PAGE_IMAGES:
 			image_class = PageImage
+
+		# Provide the inline document model if necessary
+		if cms_settings.CMS_PAGE_DOCUMENTS:
+			document_class = PageDocument
+
+		# Provide the inline link model if necessary
+		if cms_settings.CMS_PAGE_LINKS:
+			link_class = PageLink
 
 

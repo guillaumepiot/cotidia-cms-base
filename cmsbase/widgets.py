@@ -4,6 +4,8 @@ from django.contrib.admin.widgets import AdminFileWidget
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 
+from cmsbase import settings as cms_settings
+
 class AdminImageWidget(AdminFileWidget):
 	def render(self, name, value, attrs=None):
 		output = []
@@ -15,7 +17,7 @@ class AdminImageWidget(AdminFileWidget):
 			output.append(u' <a href="%s" target="_blank" class="image_link"><img title="Click to preview" src="%s" alt="%s" width="80px" /></a>' % (image_url, image_url, file_name))
 		output.append(super(AdminFileWidget, self).render(name, value, attrs))
 
-		return mark_safe('<div class="thumbnail admin-thumbnail">%s</div>' % u''.join(output))
+		return mark_safe('<div class="thumbnail admin-thumbnail">%s<div class="clearfix"></div></div>' % u''.join(output))
 
 class AdminCustomFileWidget(AdminFileWidget):
 	def render(self, name, value, attrs=None):
@@ -30,7 +32,7 @@ class AdminCustomFileWidget(AdminFileWidget):
 			if file_type in ['jpg', 'jpeg', 'png', 'gif']:
 				output.append(u' <a href="%s" target="_blank" class="image_link"><img title="Click to preview" src="%s" alt="%s" width="80px" /></a>' % (image_url, image_url, file_name))
 			else:
-				output.append(u' <i class="file-icon-%s float-left margin-right"></i>' % (file_type))
+				output.append(u' <i class="icon-file type-%s float-left margin-right"></i>' % (file_type))
 		output.append(super(AdminFileWidget, self).render(name, value, attrs))
 
 		return mark_safe('<div class="thumbnail admin-thumbnail">%s</div>' % u''.join(output))
@@ -41,15 +43,15 @@ def get_media_upload_to(location, filename):
 
 	fileName, fileExtension = os.path.splitext(filename)
 
-
-	# print "location = %s, filename = %s, fileExtension = %s"%(location, fileName, fileExtension)
-	
-	sha = hashlib.new('sha1')
-	sha.update(str(random.random()))
-	salt = sha.hexdigest()[:5]
-	
-	sha = hashlib.new('sha1')
-	sha.update('%s%s' % (salt,fileName))
-	newname = sha.hexdigest()
+	if cms_settings.CMS_HASH_FILE_NAMES:
+		sha = hashlib.new('sha1')
+		sha.update(str(random.random()))
+		salt = sha.hexdigest()[:5]
+		
+		sha = hashlib.new('sha1')
+		sha.update('%s%s' % (salt,fileName))
+		newname = sha.hexdigest()
+	else:
+		newname = fileName
 	
 	return '%s/%s%s' % (location, newname, fileExtension) 

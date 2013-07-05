@@ -1,7 +1,7 @@
 from django import template
 register = template.Library()
 
-from cmsbase.models import Page
+from cmsbase.models import Page, PageLink
 
 # Truncate chars but leaving last word complete
 @register.filter("smart_truncate_chars")
@@ -47,3 +47,11 @@ def get_page_by_unique_identifier(parser, token):
         raise template.TemplateSyntaxError("%r tag must be in the following format: {% get_page_by_slug 'page-slug' as pagevar %}" % token.contents.split()[0])
     
     return PageBySlugNode(slug, varname)
+
+@register.assignment_tag
+def links_for_page(page):
+    if page.published_from:
+        links = PageLink.objects.filter(parent=page.published_from)
+    else:
+        links = PageLink.objects.filter(parent=page)
+    return links

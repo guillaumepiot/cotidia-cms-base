@@ -14,3 +14,6 @@ CMS_PAGE_LINKS = getattr(settings, 'CMS_PAGE_LINKS', False)
 
 # Enable related pages
 CMS_PAGE_RELATED_PAGES = getattr(settings, 'CMS_PAGE_RELATED_PAGES', False)
+
+# Hash uploaded file
+CMS_HASH_FILE_NAMES = getattr(settings, 'CMS_HASH_FILE_NAMES', True)

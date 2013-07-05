@@ -39,6 +39,17 @@ Tags
 
 `{% get_page_by_unique_identifier 'page-slug' as pagevar %}`: Add the page matching the unique page identifier in the current language as `pagevar` in the template context. Returns the published version of the page.
 
+`links_for_page` populate the template context with a list of members related to a specific page.
+
+	{% links_for_page page as links %}
+	
+Eg:
+	
+	{% links_for_page page as links %}
+	{% for link in links %}
+		{{link}}
+	{% endfor %}
+	
 
 Filters
 -------
