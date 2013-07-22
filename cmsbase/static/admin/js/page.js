@@ -7,6 +7,7 @@ $(document).ready(function(){
 	select_language();
 	set_flag();
 	set_prepopulate();
+	related_pages();
 });
 
 //Set readactor textarea
@@ -55,4 +56,11 @@ function set_prepopulate(){
 	}
 	
 	
+}
+
+
+// Behaviour for related pages
+function related_pages(){
+	$('.field-related_pages').hide();
+	$('.field-related_pages').before('<div class="inner"><a href="#" onclick="$(\'.field-related_pages\').slideDown();$(this).parent().hide();" class="btn btn-small">Show related pages</a><br><br></div>');
 }

@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django import forms
 from django.conf import settings
+from django.http import HttpResponseRedirect
 
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
@@ -25,10 +26,8 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 		new_fieldset = []
 		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
 			for fieldset in self.fieldsets:
-				print fieldset
 				if fieldset[0] != 'Approval':
 					new_fieldset.append(fieldset)
-			
 		else:
 			for fieldset in self.fieldsets:
 				if fieldset[0] != 'Publishing':
@@ -38,9 +37,9 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	def get_list_display(self, request, obj=None):
 		if not settings.PREFIX_DEFAULT_LOCALE:
-			return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template']
+			return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template', 'preview']
 		else:
-			return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template', 'languages']
+			return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template', 'languages', 'preview']
 
 
 
@@ -84,6 +83,15 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
 				obj.unpublish_version()
 
+	# Add extra behaviour depending on the button clicked
+	def response_change(self, request, obj):
+		response = super(PublishingWorkflowAdmin, self).response_change(request, obj)
+		if "_preview" in request.POST:
+			return HttpResponseRedirect("%s?preview" % obj.get_absolute_url())
+		elif "_publish" in request.POST:
+			self._publish_object(obj)
+		return response
+
 	# Custom result queryset
 	def queryset(self, request):
 		"""
@@ -105,15 +113,19 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			db_field._choices = self.model.CMSMeta.templates
 		return super(PublishingWorkflowAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
+	# Publishing function for an object
+	def _publish_object(self, obj):
+		obj.approval_needed = False
+		obj.published = True
+		obj.save()
+		obj.publish_version()
+		obj.publish_translations()
+
 	# Custom actions
 	def make_published(modeladmin, request, queryset):
 		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
 			for obj in queryset:
-				obj.approval_needed = False
-				obj.published = True
-				obj.save()
-				obj.publish_version()
-				obj.publish_translations()
+				self._publish_object(obj)
 
 			# Rebuild the tree
 			obj.__class__.tree.rebuild()
@@ -198,6 +210,10 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	languages.allow_tags = True
 	languages.short_description = 'Translations'
+
+	def preview(self, obj):
+		return '<a href="%s?preview" target="_blank">%s</a>' % (obj.get_absolute_url(), _('Preview'))
+	preview.allow_tags = True
 
 class PageTranslationInlineFormAdmin(forms.ModelForm):
 	slug = forms.SlugField(label=_('Page URL'))

@@ -87,11 +87,6 @@ class BasePage(MPTTModel, MultilingualModel):
 	# 	super(BasePage, self).__init__(*args, **kwargs)
 
 	class Meta:
-		#ordering = ()
-		permissions = (
-			("can_publish", "Can publish"),
-		)
-
 		# Make this class a reference only with no database, all models must be subclass from this
 		abstract = True
 
@@ -493,6 +488,9 @@ class Page(BasePage):
 	class Meta:
 		verbose_name=_('Page')
 		verbose_name_plural=_('Pages')
+		permissions = (
+			("can_publish", "Can publish"),
+		)
 
 	class CMSMeta:
 		# A tuple of templates paths and names
