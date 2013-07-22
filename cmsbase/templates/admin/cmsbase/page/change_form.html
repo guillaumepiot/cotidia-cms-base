@@ -49,14 +49,14 @@
 					{% if original %}<li><a href="delete/" class="deletelink btn btn-danger float-right">{% trans "Delete" %}</a></li>{% endif %}
 					
 					
-					
 					<div class="btn-group float-left">
 					  <button class="btn btn-primary" type="submit" name="_save">{% trans 'Save' %}</button>
 					  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
 					    <span class="caret"></span>
 					  </button>
 					  <ul class="dropdown-menu">
-					  	<li><button type="submit" name="_publish">{% trans 'Save and publish' %}</button></li>
+					  	
+					  	{% if perms.cmsbase.can_publish %}<li><button type="submit" name="_publish">{% trans 'Save and publish' %}</button></li>{% endif %}
 					  	<li><button type="submit" name="_preview">{% trans 'Save and preview' %}</button></li>
 					    <li><button type="submit" name="_continue">{% trans 'Save and continue editing' %}</button></li>
 					    

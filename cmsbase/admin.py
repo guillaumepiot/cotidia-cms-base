@@ -24,7 +24,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	def get_fieldsets(self, request, obj=None):
 		new_fieldset = []
-		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
+		if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
 			for fieldset in self.fieldsets:
 				if fieldset[0] != 'Approval':
 					new_fieldset.append(fieldset)
@@ -80,7 +80,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 			messages.warning(request, 'The %s "%s" changes must be published to go live.' % (obj_name, obj))
 
 		if not obj.published:
-			if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
+			if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
 				obj.unpublish_version()
 
 	# Add extra behaviour depending on the button clicked
@@ -123,7 +123,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	# Custom actions
 	def make_published(modeladmin, request, queryset):
-		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
+		if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
 			for obj in queryset:
 				self._publish_object(obj)
 
@@ -133,7 +133,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 	make_published.short_description = "Approve & Publish"
 
 	def make_unpublished(modeladmin, request, queryset):
-		if request.user.has_perm('cms.can_publish') or request.user.is_superuser:
+		if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
 			for obj in queryset:
 				obj.published = False
 				obj.save()
@@ -151,9 +151,10 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	def get_actions(self, request):
 		actions = super(PublishingWorkflowAdmin, self).get_actions(request)
-		if not request.user.has_perm('cms.can_publish') and not request.user.is_superuser:
+		if not request.user.has_perm('cmsbase.can_publish') and not request.user.is_superuser:
 			del actions['make_published']
 			del actions['make_unpublished']
+			del actions['delete_selected']
 		return actions
 
 
@@ -345,7 +346,6 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 	# FIELDSETS
 
 	fieldsets = (
-
 		
 		('Settings', {
 			'classes': ('default',),
