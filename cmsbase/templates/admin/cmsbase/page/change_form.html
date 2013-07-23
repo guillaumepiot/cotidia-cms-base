@@ -56,7 +56,7 @@
 					  </button>
 					  <ul class="dropdown-menu">
 					  	
-					  	{% if perms.cmsbase.can_publish %}<li><button type="submit" name="_publish">{% trans 'Save and publish' %}</button></li>{% endif %}
+					  	{% if perms.cmsbase.can_publish and original %}<li><button type="submit" name="_publish">{% trans 'Save and publish' %}</button></li>{% endif %}
 					  	<li><button type="submit" name="_preview">{% trans 'Save and preview' %}</button></li>
 					    <li><button type="submit" name="_continue">{% trans 'Save and continue editing' %}</button></li>
 					    

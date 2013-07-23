@@ -176,13 +176,6 @@ class BasePage(MPTTModel, MultilingualModel):
 
 		return obj
 
-	def delete(self):
-		cls = self.__class__
-		published_version = cls.objects.filter(published_from=self)
-		for version in published_version:
-			version.delete()
-		super(cls, self).delete()
-
 
 	def get_absolute_url(self):
 		from django.utils import translation
