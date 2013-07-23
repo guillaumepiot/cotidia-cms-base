@@ -122,7 +122,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 		obj.publish_translations()
 
 	# Custom actions
-	def make_published(modeladmin, request, queryset):
+	def make_published(self, request, queryset):
 		if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
 			for obj in queryset:
 				self._publish_object(obj)
@@ -132,7 +132,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	make_published.short_description = "Approve & Publish"
 
-	def make_unpublished(modeladmin, request, queryset):
+	def make_unpublished(self, request, queryset):
 		if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
 			for obj in queryset:
 				obj.published = False
