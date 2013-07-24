@@ -6,9 +6,9 @@ Install Whoosh
 
 CMS Base is using Whoosh to handle full text search and indexing.
 
-You will need to install Whoosh to enable the search feature:
+You will need to install Whoosh 2.4.1 to enable the search feature:
 
-	$ pip install whoosh
+	$ pip install Whoosh==2.4.1
 	
 	
 Create the index
@@ -61,3 +61,32 @@ This command will run at 0:00 every day.
 Please note that is it calling the python command via the vitualenv python binary.
 
 The --settings argument is optional and depends on how your project is set up. Though, it will set in this way with a default CMS Base install.
+
+
+Customising the index
+---------------------
+
+You can add more data to your index by copy update_search_index.py command to your project level and add the following code:
+
+
+	from blog.models import Article
+	from event.models import Event
+
+	# Blog data (from cotidia-blog app)
+	for page in Article.objects.get_published_live():
+		content_type = ContentType.objects.get_for_model(Article)
+		for translation in page.get_translations():
+			writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
+                id=u"%s" % page.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
+
+	# Events data (from cotidia-event app)
+	for page in Event.objects.get_published_live():
+		content_type = ContentType.objects.get_for_model(Event)
+		for translation in page.get_translations():
+			writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
+                id=u"%s" % page.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
+                
+
+Because Cotidia Blog and Cotidia Event inherit from the CMS Base Page classes, it is very easy to add those app to the search index. The view and template will require no update, as it recognise content-type for each app.
+
+If you require to include a different type of app to the index, you will need to assign the right attributes
