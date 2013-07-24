@@ -1,0 +1,25 @@
+{% extends 'cmsbase/page.html' %}{% load i18n %}
+{% block meta_title %}{% trans 'Search' %}{% endblock %}
+{% block meta_description %}{% if page %}{{page.translated.meta_description}}{% else %}Page{% endif %}{% endblock %}
+{% block main %}
+	<h1>{% trans 'Search' %}</h1>
+	{% if results %}
+    	{% if results|length > 1 %}
+    		<p>{% blocktrans with results|length as result_count %}We have found {{result_count}} results matching your query.{% endblocktrans %}</p>
+    	{% else %}
+    		<p>{% blocktrans with results|length as result_count %}We have found {{result_count}} result matching your query.{% endblocktrans %}</p>
+    	{% endif %} 
+    {% endif %} 
+
+	{% for r in results %}
+		<div class="result">
+			<div class="title">
+				<a href="{{r.url}}">{% if r.breadcrumbs %}{{r.breadcrumbs|join:' &gt; '}} &gt; {% endif %}{{r.title}}</a>
+			</div>
+			<p>{{r.content|striptags|truncatewords:40}}</p>
+		</div>
+	{% empty %}
+		{% trans "Sorry, there are no results matching your query." %}
+	{% endfor %}
+	
+{% endblock main %}

@@ -155,18 +155,18 @@ def search(request, directory=False):
 	from whoosh.query import And, Or, Term
 	from django.utils.translation import get_language
 	from django.contrib.contenttypes.models import ContentType
-	template = 'cms/search.html'
+	template = 'cmsbase/search.html'
 	results_objects = []
 
 	query = False
 	root = False
-	if request.POST:
-		form = SearchForm(data=request.POST)
+	if request.POST or request.GET:
+		form = SearchForm(data=request.POST or request.GET)
 		if form.is_valid():
 
 			language_code = get_language()
 			query = form.cleaned_data['query']
-			ix = open_dir(settings.SEARCH_INDEX_PATH)
+			ix = open_dir(cms_settings.SEARCH_INDEX_PATH)
 
 			with ix.searcher() as s:
 				parser = QueryParser("content", ix.schema)

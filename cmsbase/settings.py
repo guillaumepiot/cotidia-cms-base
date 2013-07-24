@@ -17,3 +17,6 @@ CMS_PAGE_RELATED_PAGES = getattr(settings, 'CMS_PAGE_RELATED_PAGES', False)
 
 # Hash uploaded file
 CMS_HASH_FILE_NAMES = getattr(settings, 'CMS_HASH_FILE_NAMES', True)
+
+# The path to save the search index initial
+SEARCH_INDEX_PATH = getattr(settings, 'SEARCH_INDEX_PATH', 'indexes')

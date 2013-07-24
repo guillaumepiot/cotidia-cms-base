@@ -6,9 +6,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
-from cms.models import *
-from directory.models import *
-from agenda.models import *
+from cmsbase.models import Page
+from cmsbase import settings as cms_settings
 
 from whoosh.fields import Schema, STORED, ID, KEYWORD, TEXT
 from whoosh.index import create_in
@@ -22,7 +21,7 @@ class Command(BaseCommand):
 		# stored (meaning the value that gets indexed is returned with the results; this is useful for fields such as the title).
 		schema = Schema(title=TEXT(stored=True), content_type=TEXT(stored=True), language=KEYWORD(stored=True), id=ID(stored=True), content=TEXT)
 
-		index_path = settings.SEARCH_INDEX_PATH
+		index_path = cms_settings.SEARCH_INDEX_PATH
 
 		# Check if the index path exists otherwise create the
 		if not os.path.exists(index_path):
