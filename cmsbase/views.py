@@ -31,14 +31,19 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 
 		published = []
 
+		print 'last_slug', last_slug
+
 		if preview:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
 		else:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published=True).exclude(parent__published_from=None)
+
+		print 'translation', translation
 		
 		# fetch the page that correspond to the complete url - as they can be multiple page with same slug but in different branches
 		if translation.count() > 0:
 			for t in translation:
+
 				# We must align lengths of slug parameters to avoid a URL prefix set against the app
 				# Eg: you may set up the cms app to run under /cms/, but because the slug will not contain '/cms/',
 				# we must count backwards the number of parameters of slug, and add the same number from get_absolute_url.
@@ -49,10 +54,21 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 				page_slugs = page_url.split('/')
 				# Count from the end
 				page_slugs = page_slugs[len(page_slugs)-slug_length:len(page_slugs)]
-
+				
+				# Are the slugs matching?
 				if page_slugs == slugs:
 					published.append(t.parent)
 					continue
+				else:
+					# No match? Now we should also check if we are looking at the right page but not in the right language
+					# So now we lookup other languages for the same page and see if there's a match
+					for lang in t.parent.get_translations():
+						page_url = lang.parent.get_absolute_url(lang.language_code).strip('/')
+						page_slugs = page_url.split('/')
+						page_slugs = page_slugs[len(page_slugs)-slug_length:len(page_slugs)]
+						if page_slugs == slugs:
+							published.append(t.parent)
+							continue
 
 	else:
 		if preview:
@@ -103,7 +119,7 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 					page = model_class()
 					page.template = 'cmsbase/setup-complete.html'
 				else:
-					raise Http404('Not Found')
+					raise Http404('This page could not be retrieved by the CMS')
 
 			else:
 

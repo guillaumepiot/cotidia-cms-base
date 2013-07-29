@@ -177,9 +177,10 @@ class BasePage(MPTTModel, MultilingualModel):
 		return obj
 
 
-	def get_absolute_url(self):
+	def get_absolute_url(self, current_language=False):
 		from django.utils import translation
-		current_language = translation.get_language()
+		if not current_language:
+			current_language = translation.get_language()
 
 		if self.home:
 			url = reverse('cms:home')
@@ -283,6 +284,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	def feature_image(self):
 
 		images = self.images()
+
 		if images.count() > 0:
 			return images[0].image
 		else:
