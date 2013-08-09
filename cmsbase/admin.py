@@ -22,23 +22,26 @@ from cmsbase import settings as cms_settings
 
 class PublishingWorkflowAdmin(admin.ModelAdmin):
 
-	def get_fieldsets(self, request, obj=None):
-		new_fieldset = []
+	# def get_fieldsets(self, request, obj=None):
+	# 	new_fieldset = []
+	# 	if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
+	# 		for fieldset in self.fieldsets:
+	# 			if fieldset[0] != 'Approval':
+	# 				new_fieldset.append(fieldset)
+	# 	else:
+	# 		for fieldset in self.fieldsets:
+	# 			if fieldset[0] != 'Publishing':
+	# 				new_fieldset.append(fieldset)
 
-		# Remove the slug field for non-superuser and non-publishers
-		if not request.user.has_perm('cmsbase.can_publish') and not request.user.is_superuser:
-			fieldsets = (
-				
-				('Settings', {
-					'classes': ('default',),
-					'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'redirect_to_url', 'order_id' )
-				}),
+	# 	return new_fieldset
 
-			)
-			return fieldsets
-			
-		# Default return
-		return self.fieldsets
+	# def __init__(self, *args, **kwargs):
+	# 	print kwargs
+	# 	request = kwargs['request']
+	# 	# Make the slug field read-only for non-superuser and non-publishers
+	# 	if not request.user.has_perm('cmsbase.can_publish') and not request.user.is_superuser:
+	# 		self.base_fields['slug'].widget.attrs['readonly'] = True
+	# 	super(PublishingWorkflowAdmin, self).__init__(*args, **kwargs)
 
 	def get_list_display(self, request, obj=None):
 		if not settings.PREFIX_DEFAULT_LOCALE:
@@ -114,9 +117,17 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	# Set the templates variable based on CMSMeta
 	def formfield_for_dbfield(self, db_field, **kwargs):
+
 		if db_field.name == "template":
 			db_field._choices = self.model.CMSMeta.templates
+		
 		return super(PublishingWorkflowAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+	def get_readonly_fields(self, request, obj=None):
+		if obj: # editing an existing object
+			if not request.user.has_perm('cmsbase.can_publish') and not request.user.is_superuser:
+				return self.readonly_fields + ('slug',)
+		return self.readonly_fields
 
 	# Publishing function for an object
 	def _publish_object(self, obj):
