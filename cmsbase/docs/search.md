@@ -19,6 +19,8 @@ First you will need to verify your index path setting:
 	# The path to save the search index initial
 	SEARCH_INDEX_PATH =  = getattr(settings, 'SEARCH_INDEX_PATH', 'indexes')
 	
+**Note: If you are using a git repository, it is advised to ignore that folder (in .gitignore), as it is representaive of the local database. A production version site will create its own index.**
+	
 It is defaulted to 'indexes', but it is advised to set the path depending on your current project before creating the index.
 
 CMS Base comes with the following default command:

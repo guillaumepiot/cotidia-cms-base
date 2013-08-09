@@ -24,16 +24,21 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
 	def get_fieldsets(self, request, obj=None):
 		new_fieldset = []
-		if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
-			for fieldset in self.fieldsets:
-				if fieldset[0] != 'Approval':
-					new_fieldset.append(fieldset)
-		else:
-			for fieldset in self.fieldsets:
-				if fieldset[0] != 'Publishing':
-					new_fieldset.append(fieldset)
 
-		return new_fieldset
+		# Remove the slug field for non-superuser and non-publishers
+		if not request.user.has_perm('cmsbase.can_publish') and not request.user.is_superuser:
+			fieldsets = (
+				
+				('Settings', {
+					'classes': ('default',),
+					'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'redirect_to_url', 'order_id' )
+				}),
+
+			)
+			return fieldsets
+			
+		# Default return
+		return self.fieldsets
 
 	def get_list_display(self, request, obj=None):
 		if not settings.PREFIX_DEFAULT_LOCALE:
