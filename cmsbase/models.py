@@ -240,8 +240,12 @@ class BasePage(MPTTModel, MultilingualModel):
 			# Else if it is the published version
 			else:
 				# if self.published_from != None:
-				for ancestor in self.published_from.get_ancestors():
-					breadcrumbs.append(ancestor.get_published())
+				if self.published_from:
+					for ancestor in self.published_from.get_ancestors():
+						breadcrumbs.append(ancestor.get_published())
+				else:
+					for ancestor in self.get_ancestors():
+						breadcrumbs.append(ancestor.get_published())
 		return breadcrumbs
 
 	def get_child_pages(self, include_self=False):
@@ -259,7 +263,10 @@ class BasePage(MPTTModel, MultilingualModel):
 		if self.get_published():
 			return self.get_root()
 		else:
-			return self.published_from.get_root()
+			if self.published_from:
+				return self.published_from.get_root()
+			else:
+				return self.get_root()
 
 	@property
 	def has_published_version(self):
