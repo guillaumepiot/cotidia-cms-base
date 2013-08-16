@@ -28,17 +28,13 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 			# Get parent page:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
 
-
 		published = []
-
-		print 'last_slug', last_slug
 
 		if preview:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
 		else:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published=True).exclude(parent__published_from=None)
 
-		print 'translation', translation
 		
 		# fetch the page that correspond to the complete url - as they can be multiple page with same slug but in different branches
 		if translation.count() > 0:
