@@ -18,7 +18,7 @@ install_requires = [
     'django-mptt==0.5.5',
     'django-reversion==1.7',
     'django-localeurl==1.5',
-    'PIL==1.1.7',
+    'pillow',
     'sorl-thumbnail==11.12',
     'south==0.7.6',
     # The following must be installed manually until they are packaged adequately
