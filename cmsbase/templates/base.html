@@ -97,7 +97,7 @@
 			
 		    {% recursetree pages %}
 		        {% if node.get_published and not node.get_published.hide_from_nav %}<li class="{% if request.path == node.get_absolute_url %}active{% endif %}">
-		            <a href="{{node.get_absolute_url}}">{{node.get_published.translated.title}}</a>
+		            <a href="{{node.get_absolute_url}}" {% if not node.get_published.target == '_self' %}target="{{node.get_published.target}}"{% endif %}>{{node.get_published.translated.title}}</a>
 		            {% if not node.is_leaf_node %}
 		                <ul class="children">
 		                    {{ children }}
