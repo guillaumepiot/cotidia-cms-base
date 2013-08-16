@@ -13,6 +13,10 @@ from cmsbase import settings as cms_settings
 
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 
+TARGET_CHOICES = (
+	('_self', 'the same window'),
+	('_blank', 'a new window'),
+)
 
 class BasePageManager(models.Manager):
 
@@ -54,6 +58,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	# Optional redirect
 	redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
 	redirect_to_url = models.URLField(_('Redirect to URL'), blank=True, help_text=_('Redirect this page to a given URL'))
+	target = models.CharField(_('Open page in'), max_length=50, choices=TARGET_CHOICES, default='_self')
 	
 	# Navigation
 	hide_from_nav = models.BooleanField(_('Hide from navigation'), blank=True)

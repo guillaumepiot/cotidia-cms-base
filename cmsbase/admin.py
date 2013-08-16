@@ -365,7 +365,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 		
 		('Settings', {
 			'classes': ('default',),
-			'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'redirect_to_url', 'slug', 'order_id' )
+			'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'redirect_to_url', 'target', 'slug', 'order_id' )
 		}),
 
 	)
