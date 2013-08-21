@@ -36,3 +36,11 @@ Example:
 		'cms': CMSSitemap,
 		'myapp': AppSitemap,
 	}
+	
+
+Template
+--------
+
+CMS Base is using a default template to render the sitemap located in `templates/sitemap.xml`.
+
+You can override this template on a project basis.
