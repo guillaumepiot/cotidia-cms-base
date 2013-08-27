@@ -138,6 +138,14 @@ And add it to  TEMPLATE_CONTEXT_PROCESSORS
 > Please note that "django.core.context_processors.request" is necessary to pass the request to the admin tools template tags.
 
 
+Setup the templates path
+------------------------
+
+	TEMPLATE_DIRS = (
+	    os.path.join(PROJECT_DIR, '../templates/')
+	)
+
+
 Apps
 ----
 
@@ -165,13 +173,6 @@ Include the required apps.
 	    'sorl.thumbnail',
 	    'redactor',
 	    'filemanager'
-	)
-
-Setup the templates path
-------------------------
-
-	TEMPLATE_DIRS = (
-	    os.path.join(PROJECT_DIR, '../templates/')
 	)
 
 
@@ -232,7 +233,7 @@ Default URLS
 
 We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py)
 
-	$ curl https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py > urls.py
+	$ curl https://gist.github.com/guillaumepiot/5392008/raw/a5dd62e07bc981df703b47ca6867dc296b187d5c/urls.py
 
 Or copy and paste the following code:
 
