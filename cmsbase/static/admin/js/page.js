@@ -24,7 +24,11 @@ function setup_redactor(){
 	            imageGetJson: '/uploads/ajax/photos/recent/',
 	            fileUpload: '/uploads/ajax/files/upload/',
 	            autoresize: false,
-	            minHeight:300
+	            minHeight:300,
+	            boldTag: 'strong',
+                italicTag: 'em',
+                linkAnchor: true,
+                linkEmail: true
 	        });
 	         $(index).remove();
         });
