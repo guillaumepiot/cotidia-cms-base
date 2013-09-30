@@ -20,7 +20,30 @@ Install CMS Base (which will also install some dependencies)
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
 
-Also install the dependencies underdevelopment:
+
+AUTOMATED INSTALLATION
+======================
+
+Copy `fabfile.py` from the cmsbase package to your working directory (next to the virtualenv folders):
+
+	eg:
+		bin/
+		include/
+		lib/
+		src/
+		fabfile.py
+		
+Run the installation commande
+
+	$ fab localhost install:project_name='multisource_portlio', mode='edit'
+
+
+
+MANUAL INSTALLATION
+===================
+
+
+Install the dependencies underdevelopment:
 
 	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools
     $ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor
