@@ -50,6 +50,9 @@ Eg:
 		{{link}}
 	{% endfor %}
 	
+`{% home_page as home %}`: Return the original home page instance as `home` in the template context if exist, otherwise return `False`
+	
+`{% language_name LANGUAGE_CODE %}`: Get the language name from the language code
 
 Filters
 -------

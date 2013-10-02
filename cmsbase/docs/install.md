@@ -141,7 +141,7 @@ Context processor
 
 Create a default context processor, download a sample here [https://gist.github.com/guillaumepiot/5338169](https://gist.github.com/guillaumepiot/5338169) or enter the following command in the app folder of the same name as the project:
 
-	$ curl https://gist.github.com/guillaumepiot/5338169/raw/9a7c956166b1f87a1b15d3f634f0218c2ea3fa9b/gistfile1.txt > context_processor.py
+	$ curl https://gist.github.com/guillaumepiot/5338169/raw/08cc845e2e2fcf8c19ebe9f6127112f20adb2f70/gistfile1.txt > context_processor.py
 
 And add it to  TEMPLATE_CONTEXT_PROCESSORS
 

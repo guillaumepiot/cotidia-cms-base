@@ -46,12 +46,12 @@ def install(project_name='', mode='edit'):
 
     with env.cd('%s/%s' % (project_name, project_name)):
         # CMS Base default settings
-        env.run('curl https://gist.github.com/guillaumepiot/6766868/raw/746719bf621a43b394ea7ea5f90774f498d092da/gistfile1.py > settings/__init__.py')
+        env.run('curl https://gist.github.com/guillaumepiot/6766868/raw/72d53822a1573f309a0326e71f15338b717c0b06/gistfile1.py > settings/__init__.py')
         # Replace project name in settings file
         env.run("cd settings && sed -i .bak 's/{{myproject}}/%s/g' __init__.py" % project_name)
         env.run("cd settings && rm __init__.py.bak")
         # Context processor
-        env.run('curl https://gist.github.com/guillaumepiot/5338169/raw/9a7c956166b1f87a1b15d3f634f0218c2ea3fa9b/gistfile1.txt > context_processor.py')
+        env.run('curl https://gist.github.com/guillaumepiot/5338169/raw/08cc845e2e2fcf8c19ebe9f6127112f20adb2f70/gistfile1.txt > context_processor.py')
         # Admin menu
         env.run('curl https://gist.github.com/guillaumepiot/5391705/raw/ec10eda52976618f6f6e0a1a6efd54c95dfe2ce8/gistfile1.py > menu.py')
         # Admin dashboard
