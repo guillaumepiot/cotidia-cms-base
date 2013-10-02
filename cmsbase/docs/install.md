@@ -35,7 +35,7 @@ Copy `fabfile.py` from the cmsbase package to your working directory (next to th
 		
 Run the installation commande
 
-	$ fab localhost install:project_name='multisource_portlio', mode='edit'
+	$ fab localhost install:project_name='myproject',mode='edit'
 
 
 

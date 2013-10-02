@@ -30,12 +30,16 @@ def install(project_name='', mode='edit'):
 
     print "Setting up Django project"
 
-    env.run('django-admin.py startproject %s' % project_name)
+    with settings(warn_only=True):
+        if env.run("cd %s" % project_name).failed:
+            env.run('django-admin.py startproject %s' % project_name)
 
     with env.cd('%s/%s' % (project_name, project_name)):
-        env.run('mkdir settings')
-        env.run('cp settings.py settings/__init__.py')
-        env.run('rm settings.py')
+        with settings(warn_only=True):
+            if env.run("cd settings").failed:
+                env.run('mkdir settings')
+                env.run('cp settings.py settings/__init__.py')
+                env.run('rm settings.py')
 
         with env.cd('settings'):
             env.run('echo "from %s.settings import * \n\nDEBUG=False\nTEMPLATE_DEBUG=DEBUG\n\nALLOWED_HOSTS = []" > staging.py' % project_name)
@@ -61,7 +65,9 @@ def install(project_name='', mode='edit'):
 
     with env.cd('%s' % (project_name)):
         # Create folder for sqlite3 database
-        env.run('mkdir dev')
+        with settings(warn_only=True):
+            if env.run("cd dev").failed:
+                env.run('mkdir dev')
         env.run('python manage.py syncdb')
         env.run('python manage.py migrate --all')
 
