@@ -1,17 +1,14 @@
 import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-# from django.core.urlresolvers import reverse
-from localeurl.models import reverse
 from django.conf import settings
-
-from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-
+from localeurl.models import reverse
+from mptt.models import MPTTModel, TreeForeignKey
 from cmsbase import settings as cms_settings
-
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
+from filemanager.models import FileToObject
 
 TARGET_CHOICES = (
 	('_self', 'the same window'),
@@ -284,13 +281,17 @@ class BasePage(MPTTModel, MultilingualModel):
 	def images(self):
 		images = []
 
-		if self.published_from:
-			if hasattr(self.CMSMeta, 'image_class'):
-				images = self.CMSMeta.image_class.objects.filter(parent=self.published_from).order_by('order_id')
-		else:
-			if hasattr(self.CMSMeta, 'image_class'):
-				images = self.CMSMeta.image_class.objects.filter(parent=self).order_by('order_id')
+		# if self.published_from:
+		# 	if hasattr(self.CMSMeta, 'image_class'):
+		# 		images = self.CMSMeta.image_class.objects.filter(parent=self.published_from).order_by('order_id')
+		# else:
+		# 	if hasattr(self.CMSMeta, 'image_class'):
+		# 		images = self.CMSMeta.image_class.objects.filter(parent=self).order_by('order_id')
 
+		if self.published_from:
+			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self.published_from), object_pk=self.published_from.id, file__is_image=True).order_by('order_id')
+		else:
+			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self), object_pk=self.published_from.id, file__is_image=True).order_by('order_id')
 		return images
 
 	def feature_image(self):
@@ -298,7 +299,7 @@ class BasePage(MPTTModel, MultilingualModel):
 		images = self.images()
 
 		if images.count() > 0:
-			return images[0].image
+			return images[0]
 		else:
 			return False
 
