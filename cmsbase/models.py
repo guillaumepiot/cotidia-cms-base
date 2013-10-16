@@ -443,10 +443,11 @@ class PageDocument(models.Model):
 		from cmsbase.widgets import get_media_upload_to
 
 		# return get_media_upload_to(self.page.slug, 'pages')
-		location = "cms/documents%s"%(self.parent.slug)
-		return get_media_upload_to(location, instance)
+		location = "cms/documents%s/%s"%(self.parent.slug, instance)
+		return location
 
 	parent = models.ForeignKey('Page')
+	name = models.CharField(_('Name'), max_length=250, blank=True)
 	document = models.FileField(upload_to=call_naming, max_length=100)
 	# Ordering
 	order_id = models.IntegerField(blank=True, null=True)
@@ -463,6 +464,8 @@ class PageDocument(models.Model):
 		storage.delete(path)
 
 	def filename(self):
+		if self.name:
+			return self.name
 		path = self.document.name.split('/')
 		filename = path[len(path)-1]
 		return filename
