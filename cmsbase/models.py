@@ -291,7 +291,7 @@ class BasePage(MPTTModel, MultilingualModel):
 		if self.published_from:
 			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self.published_from), object_pk=self.published_from.id, file__is_image=True).order_by('order_id')
 		else:
-			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self), object_pk=self.published_from.id, file__is_image=True).order_by('order_id')
+			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self), object_pk=self.id, file__is_image=True).order_by('order_id')
 		return images
 
 	def feature_image(self):
