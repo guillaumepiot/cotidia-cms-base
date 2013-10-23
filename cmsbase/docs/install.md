@@ -7,7 +7,7 @@ Create a new folder for your project
 	$ mkdir myproject
 	$ cd myproject
 
-Create and start a virtual environment (higly recommended)
+Create and start a virtual environment (highly recommended)
 ----------------------------------------------------------
 
 	$ virtualenv .
