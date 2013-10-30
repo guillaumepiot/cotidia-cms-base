@@ -20,3 +20,6 @@ CMS_HASH_FILE_NAMES = getattr(settings, 'CMS_HASH_FILE_NAMES', True)
 
 # The path to save the search index initial
 SEARCH_INDEX_PATH = getattr(settings, 'SEARCH_INDEX_PATH', 'indexes')
+
+# Add a prefix to all urls
+CMS_PREFIX = getattr(settings, 'CMS_PREFIX', False)
