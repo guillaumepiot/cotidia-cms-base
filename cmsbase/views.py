@@ -17,9 +17,13 @@ from cmsbase.forms import SearchForm
 def get_page(request, model_class=Page , translation_class=PageTranslation , slug=False, preview=False):
 
 	# Deconstruct the slug to get the last element corresponding to the page we are looking for
-	if slug:
+	if slug and slug != cms_settings.CMS_PREFIX:
 
 		slugs = slug.split('/')
+
+		if cms_settings.CMS_PREFIX:
+			if len(slugs) > 0 and slugs[0] == cms_settings.CMS_PREFIX:
+				slugs = slugs[1:]
 
 		if len(slugs) == 1:
 			last_slug = slugs[len(slugs)-1]
