@@ -224,11 +224,12 @@ class BasePage(MPTTModel, MultilingualModel):
 			# Create the full url based on the pattern
 			url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug})
 
-			if cms_settings.CMS_PREFIX:
-				slugs = url.strip('/').split('/')
-				if len(slugs)>0:
-					if slugs[0] != cms_settings.CMS_PREFIX:
-						url = '/%s%s' % (cms_settings.CMS_PREFIX, url)
+		# Add prefix if required. Not compatible with localeurl redirect
+		if cms_settings.CMS_PREFIX:
+			slugs = url.strip('/').split('/')
+			if len(slugs)>0:
+				if slugs[0] != cms_settings.CMS_PREFIX:
+					url = '/%s%s' % (cms_settings.CMS_PREFIX, url)
 
 
 		return url
