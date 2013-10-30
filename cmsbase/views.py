@@ -117,20 +117,20 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 				else:
 					raise Http404('This page could not be retrieved by the CMS')
 
-			# else:
+			else:
 
-			# 	# Hard redirect if specified in page attributes
-			# 	if page.redirect_to:
-			# 		return HttpResponseRedirect(page.redirect_to.get_absolute_url())
-			# 	if page.redirect_to_url:
-			# 		return HttpResponseRedirect(page.redirect_to_url)
+				# Hard redirect if specified in page attributes
+				if page.redirect_to:
+					return HttpResponseRedirect(page.redirect_to.get_absolute_url())
+				if page.redirect_to_url:
+					return HttpResponseRedirect(page.redirect_to_url)
 
-			# 	# When you switch language it will load the right translation but stay on the same slug
-			# 	# So we need to redirect to the right translated slug if not on it already
-			# 	page_url = page.get_absolute_url()
+				# When you switch language it will load the right translation but stay on the same slug
+				# So we need to redirect to the right translated slug if not on it already
+				page_url = page.get_absolute_url()
 
-			# 	if not page_url == request.path and slug:
-			# 		return HttpResponseRedirect(page_url)
+				if not page_url == request.path and slug:
+					return HttpResponseRedirect(page_url)
 
 			# Assign is_preview to the request object for cleanliness
 			request.is_preview = is_preview
