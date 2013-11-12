@@ -14,13 +14,11 @@ CLASSIFIERS = [
 ]
 
 install_requires = [
-    'django==1.5.1',
-    'django-mptt==0.5.5',
-    'django-reversion==1.7',
-    'django-localeurl==2.0.1',
+    'django==1.6',
+    'django-mptt==0.6',
+    'django-reversion==1.8',
     'pillow',
-    'sorl-thumbnail==11.12',
-    'south==0.7.6',
+    'south',
     # The following must be installed manually until they are packaged adequately
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',

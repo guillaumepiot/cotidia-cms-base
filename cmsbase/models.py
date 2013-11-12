@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
-from localeurl.models import reverse
+from django.core.urlresolvers import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 from cmsbase import settings as cms_settings
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
@@ -29,7 +29,7 @@ class BasePageManager(models.Manager):
 
 class BasePage(MPTTModel, MultilingualModel):
 	home = models.BooleanField(blank=True)
-	published = models.BooleanField(_('Active'))
+	published = models.BooleanField(_('Active'), null=True)
 	approval_needed = models.BooleanField()
 	template = models.CharField(max_length=250, choices=[], default='cms/page.html')
 
