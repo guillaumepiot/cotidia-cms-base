@@ -229,9 +229,9 @@ class BasePage(MPTTModel, MultilingualModel):
 			slugs = url.strip('/').split('/')
 			if len(slugs)>0:
 				if slugs[0] != cms_settings.CMS_PREFIX:
-					url = '%s%s' % (cms_settings.CMS_PREFIX, url)
+					url = '/%s%s' % (cms_settings.CMS_PREFIX, url)
 
-		print 'url', url
+
 		return url
 
 	def get_breadcrumbs(self):
