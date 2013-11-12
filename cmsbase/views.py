@@ -34,6 +34,7 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 
 		published = []
 
+
 		if preview:
 			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
 		else:
@@ -133,7 +134,7 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 				# So we need to redirect to the right translated slug if not on it already
 				page_url = page.get_absolute_url()
 
-				if not page_url == request.path and slug:
+				if not page_url == request.path and slug and not settings.CMS_PREFIX:
 					return HttpResponseRedirect(page_url)
 
 			# Assign is_preview to the request object for cleanliness

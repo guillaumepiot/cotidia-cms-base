@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
 
-from multilingual_model.admin import TranslationInline
+from multilingual_model.admin import TranslationStackedInline
 
 from redactor.widgets import RedactorEditor
 from filemanager.widgets import MultipleFileWidget
@@ -60,7 +60,8 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         obj.save()
 
         # Rebuild the tree
-        obj.__class__.tree.rebuild()
+        print dir(obj.__class__)
+        obj.__class__._tree_manager.rebuild()
 
         obj_name = u'%s' % obj._meta.verbose_name
 
@@ -245,14 +246,12 @@ class PageTranslationInlineFormAdmin(forms.ModelForm):
         By always returning true even unchanged inlines will get validated and saved."""
         return True
 
-class PageTranslationInline(TranslationInline):
+class PageTranslationInline(TranslationStackedInline):
     model = PageTranslation
     form = PageTranslationInlineFormAdmin
     extra = 0 if settings.PREFIX_DEFAULT_LOCALE else 1
     prepopulated_fields = {'slug': ('title',)}
     template = 'admin/cmsbase/cms_translation_inline.html'
-
-
 
 class PageFormAdmin(forms.ModelForm):
     redirect_to = TreeNodeChoiceField(label=_('Redirect to page'), queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
@@ -318,7 +317,7 @@ class PageImageInline(admin.TabularInline):
     form = ImageInlineForm
     model = PageImage
     extra = 0
-    template = 'admin/cmsbase/page/images-inline.html'
+    #template = 'admin/cmsbase/page/images-inline.html'
 
 ####################
 # Documents inline #
@@ -333,7 +332,7 @@ class PageDocumentInline(admin.TabularInline):
     form = DocumentInlineForm
     model = PageDocument
     extra = 0
-    template = 'admin/cmsbase/page/images-inline.html'
+    #template = 'admin/cmsbase/page/images-inline.html'
 
 ################
 # Links inline #
@@ -342,7 +341,7 @@ class PageDocumentInline(admin.TabularInline):
 class PageLinkInline(admin.TabularInline):
     model = PageLink
     extra = 0
-    template = 'admin/cmsbase/page/images-inline.html'
+    #template = 'admin/cmsbase/page/images-inline.html'
 
 ##############
 # Page admin #
