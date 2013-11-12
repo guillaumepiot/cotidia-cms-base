@@ -50,7 +50,7 @@ def install(project_name='', mode='edit'):
 
     with env.cd('%s/%s' % (project_name, project_name)):
         # CMS Base default settings
-        env.run('curl https://gist.github.com/guillaumepiot/6766868/raw/72d53822a1573f309a0326e71f15338b717c0b06/gistfile1.py > settings/__init__.py')
+        env.run('curl https://gist.github.com/guillaumepiot/6766868/raw/4cc8971fb75750dbb39646a822113c36734fd902/gistfile1.py > settings/__init__.py')
         # Replace project name in settings file
         env.run("cd settings && sed -i .bak 's/{{myproject}}/%s/g' __init__.py" % project_name)
         env.run("cd settings && rm __init__.py.bak")
@@ -61,7 +61,7 @@ def install(project_name='', mode='edit'):
         # Admin dashboard
         env.run('curl https://gist.github.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py')
         # URLs conf
-        env.run('curl https://gist.github.com/guillaumepiot/5392008/raw/a5dd62e07bc981df703b47ca6867dc296b187d5c/urls.py > urls.py')
+        env.run('curl https://gist.github.com/guillaumepiot/5392008/raw/58a0e69885d2591f64868837b025b52043faf70c/urls.py > urls.py')
 
     with env.cd('%s' % (project_name)):
         # Create folder for sqlite3 database

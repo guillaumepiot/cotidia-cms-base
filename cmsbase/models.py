@@ -28,9 +28,9 @@ class BasePageManager(models.Manager):
 
 
 class BasePage(MPTTModel, MultilingualModel):
-	home = models.BooleanField(blank=True)
-	published = models.BooleanField(_('Active'), null=True)
-	approval_needed = models.BooleanField()
+	home = models.BooleanField(default=False)
+	published = models.BooleanField(_('Active'), default=False)
+	approval_needed = models.BooleanField(default=False)
 	template = models.CharField(max_length=250, choices=[], default='cms/page.html')
 
 	#MPTT parent
@@ -46,8 +46,8 @@ class BasePage(MPTTModel, MultilingualModel):
 	order_id = models.IntegerField(default=0)
 
 	# Publishing
-	publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'))
-	approve = models.BooleanField(_('Submit for approval'))
+	publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'), default=False)
+	approve = models.BooleanField(_('Submit for approval'), default=False)
 
 	date_created = models.DateTimeField()
 	date_updated = models.DateTimeField()
@@ -58,7 +58,7 @@ class BasePage(MPTTModel, MultilingualModel):
 	target = models.CharField(_('Open page in'), max_length=50, choices=TARGET_CHOICES, default='_self')
 	
 	# Navigation
-	hide_from_nav = models.BooleanField(_('Hide from navigation'), blank=True)
+	hide_from_nav = models.BooleanField(_('Hide from navigation'), default=False)
 
 	# Related pages / can be used for reading more about the same subject
 	related_pages = models.ManyToManyField('self', blank=True)

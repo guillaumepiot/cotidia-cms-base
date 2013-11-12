@@ -128,13 +128,26 @@ We comment the STATIC_ROOT as we will using STATICFILES_DIRS instead.
 	    os.path.join(PROJECT_DIR, "../static"),
 	)
 
-We insert the localeurl at the start of our middlewares, this will automatically add url language suffix if required.
+We insert  `django.middleware.locale.LocaleMiddleware` in our middlewares, to support language changes.
 
 	MIDDLEWARE_CLASSES = (
-    	'localeurl.middleware.LocaleURLMiddleware',
-    	...
-    )
+	    'django.contrib.sessions.middleware.SessionMiddleware',
+	    'django.middleware.locale.LocaleMiddleware',
+	    'django.middleware.common.CommonMiddleware',
+	    'django.middleware.csrf.CsrfViewMiddleware',
+	    'django.contrib.auth.middleware.AuthenticationMiddleware',
+	    'django.contrib.messages.middleware.MessageMiddleware',
+	)
 
+Our urls will automatically bear the prefix at the start using the following url pattern: `from django.conf.urls.i18n import i18n_patterns`
+
+	urlpatterns = i18n_patterns('cmsbase',
+
+		url(r'^$', 'views.page', name="home"),
+		url(r'^search/$', 'views.search', name="search"),
+		url(r'^(?P<slug>[-\w\/]+)/$', 'views.page', name="page"),
+
+	)
 
 Context processor
 -----------------
@@ -193,7 +206,6 @@ Include the required apps.
 	    'reversion',
 	    'mptt',
 	    'south',
-	    'sorl.thumbnail',
 	    'redactor',
 	    'filemanager'
 	)
@@ -254,7 +266,7 @@ Include a list of URLs that doesn't require the language prefix
 Default URLS
 ------------
 
-We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/ceb40367ced138d70ff0f8fe2ad31f1b474a4152/urls.py)
+We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/58a0e69885d2591f64868837b025b52043faf70c/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/58a0e69885d2591f64868837b025b52043faf70c/urls.py)
 
 	$ curl https://gist.github.com/guillaumepiot/5392008/raw/a5dd62e07bc981df703b47ca6867dc296b187d5c/urls.py
 
@@ -266,18 +278,15 @@ Or copy and paste the following code:
 	admin.autodiscover()
 
 	urlpatterns = patterns('',
-	    # URL language management
-	    (r'^localeurl/', include('localeurl.urls')),
 	    # Language switcher management
 	    (r'^i18n/', include('django.conf.urls.i18n')),
 
-
 	    # Admin
+	    url(r'^admin/i18n/', include('django.conf.urls.i18n')),
 	    url(r'^admin/', include(admin.site.urls)),
-	    # Text editor file uploads
 	    url(r'^uploads/', include('filemanager.urls')),
 
-	    # CMS base
+	    # Front
 	    url(r'^', include('cmsbase.urls', namespace='cms')),
 	)
 
