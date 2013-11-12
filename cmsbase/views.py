@@ -134,7 +134,7 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 				# So we need to redirect to the right translated slug if not on it already
 				page_url = page.get_absolute_url()
 
-				if not page_url == request.path and slug and not settings.CMS_PREFIX:
+				if not page_url == request.path and slug and not cms_settings.CMS_PREFIX:
 					return HttpResponseRedirect(page_url)
 
 			# Assign is_preview to the request object for cleanliness
