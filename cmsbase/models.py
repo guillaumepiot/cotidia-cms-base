@@ -416,7 +416,7 @@ class PageTranslation(MultilingualTranslation, PublishTranslation):
 			verbose_name_plural=_('Content')
 
 	def __unicode__(self):
-		return dict(settings.LANGUAGES).get(self.language_code)
+		return u'%s - %s' % (self.title, dict(settings.LANGUAGES).get(self.language_code))
 
 
 # class PageImage(models.Model):
