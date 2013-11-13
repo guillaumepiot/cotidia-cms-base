@@ -289,19 +289,18 @@ class BasePage(MPTTModel, MultilingualModel):
 			return False
 
 	def images(self):
+		from django.utils.translation import get_language
+
 		images = []
-
-		# if self.published_from:
-		# 	if hasattr(self.CMSMeta, 'image_class'):
-		# 		images = self.CMSMeta.image_class.objects.filter(parent=self.published_from).order_by('order_id')
-		# else:
-		# 	if hasattr(self.CMSMeta, 'image_class'):
-		# 		images = self.CMSMeta.image_class.objects.filter(parent=self).order_by('order_id')
-
 		if self.published_from:
-			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self.published_from), object_pk=self.published_from.id, file__is_image=True).order_by('order_id')
+			# Get the the original translation in the right language
+			translation = self.CMSMeta.translation_class.objects.get(language_code=get_language(), parent=self.published_from)
 		else:
-			images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(self), object_pk=self.id, file__is_image=True).order_by('order_id')
+			# Get the the original translation in the right language
+			translation = self.CMSMeta.translation_class.objects.get(language_code=get_language(), parent=self)
+		
+		images = FileToObject.objects.filter(content_type=ContentType.objects.get_for_model(translation), object_pk=translation.id, file__is_image=True).order_by('order_id')
+
 		return images
 
 	def feature_image(self):
@@ -420,31 +419,31 @@ class PageTranslation(MultilingualTranslation, PublishTranslation):
 		return dict(settings.LANGUAGES).get(self.language_code)
 
 
-class PageImage(models.Model):
+# class PageImage(models.Model):
 
-	def call_naming(self, instance=None):
-		from cmsbase.widgets import get_media_upload_to
+# 	def call_naming(self, instance=None):
+# 		from cmsbase.widgets import get_media_upload_to
 
-		# return get_media_upload_to(self.page.slug, 'pages')
-		location = "cms/images%s"%(self.parent.slug)
-		return get_media_upload_to(location, instance)
+# 		# return get_media_upload_to(self.page.slug, 'pages')
+# 		location = "cms/images%s"%(self.parent.slug)
+# 		return get_media_upload_to(location, instance)
 
-	parent = models.ForeignKey('Page')
-	image = models.ImageField(upload_to=call_naming, max_length=100)
-	caption = models.CharField(_('Caption'), max_length=250, blank=True)
-	# Ordering
-	order_id = models.IntegerField(blank=True, null=True)
+# 	parent = models.ForeignKey('Page')
+# 	image = models.ImageField(upload_to=call_naming, max_length=100)
+# 	caption = models.CharField(_('Caption'), max_length=250, blank=True)
+# 	# Ordering
+# 	order_id = models.IntegerField(blank=True, null=True)
 
-	class Meta:
-		ordering = ('order_id',)
-		verbose_name = _('Image')
-		verbose_name_plural = _('Images')
+# 	class Meta:
+# 		ordering = ('order_id',)
+# 		verbose_name = _('Image')
+# 		verbose_name_plural = _('Images')
 
-	def delete(self, *args, **kwargs):
-		storage, path = self.image.storage, self.image.path
-		super(PageImage, self).delete(*args, **kwargs)
-		# Physically delete the file
-		storage.delete(path)
+# 	def delete(self, *args, **kwargs):
+# 		storage, path = self.image.storage, self.image.path
+# 		super(PageImage, self).delete(*args, **kwargs)
+# 		# Physically delete the file
+# 		storage.delete(path)
 
 
 class PageDocument(models.Model):
@@ -522,8 +521,8 @@ class Page(BasePage):
 		model_url_name = 'cms:page'
 
 		# Provide the inline image model if necessary
-		if cms_settings.CMS_PAGE_IMAGES:
-			image_class = PageImage
+		# if cms_settings.CMS_PAGE_IMAGES:
+		# 	image_class = PageImage
 
 		# Provide the inline document model if necessary
 		if cms_settings.CMS_PAGE_DOCUMENTS:

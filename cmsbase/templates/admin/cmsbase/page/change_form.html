@@ -22,10 +22,12 @@
 {% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
 {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
 {% if errors %}
+<div class="inner">
     <p class="alert alert-danger">
     {% blocktrans count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
     </p>
     {{ adminform.form.non_field_errors }}
+</div>
 {% endif %}
 
 {% block field_sets %}
@@ -38,45 +40,41 @@
 		</div>
 	</div>
 	<div class="col-md-3">	
-		<div class="inner">
+		<div class="inner sidebar">
 		{% for fieldset in adminform %}
 			{% include "admin/includes/fieldset.html" %}
 		{% endfor %}
-		<div class="form-actions">
-			<div class="row-fluid">
-				<div class="span12">
-					
-					{% if original %}<li><a href="delete/" class="deletelink btn btn-danger float-right">{% trans "Delete" %}</a></li>{% endif %}
-					
-					
-					<div class="btn-group float-left">
-					  <button class="btn btn-primary" type="submit" name="_save">{% trans 'Save' %}</button>
-					  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-					    <span class="caret"></span>
-					  </button>
-					  <ul class="dropdown-menu">
-					  	
-					  	{% if perms.cmsbase.can_publish and original %}
-					  	<li><button type="submit" name="_publish">{% trans 'Save and publish' %}</button></li>
-					  	<li><button type="submit" name="_preview">{% trans 'Save and preview' %}</button></li>
-					  	{% endif %}
-					  	
-					    <li><button type="submit" name="_continue">{% trans 'Save and continue editing' %}</button></li>
-					    
-					  </ul>
-					</div>
-					<a href="{% url opts|admin_urlname:'changelist' %}" class="small gray float-left cancel">{% trans "Cancel" %}</a>
-					
-					
-					
-				</div>
-			</div>
-
-		</div>
+		
 		</div>
 	</div>
 </div>
 
+<div class="form-actions">
+	<div class="row-fluid">
+		<div class="span12">
+			
+			{% if original %}<li><a href="delete/" class="deletelink btn btn-danger pull-right">{% trans "Delete" %}</a></li>{% endif %}
+			
+			<button class="btn btn-primary" type="submit" name="_save">{% trans 'Save' %}</button>
+			<div class="btn-group">
+			  
+			  	{% if perms.cmsbase.can_publish and original %}
+			  	<button type="submit" name="_publish" class="btn btn-default">{% trans 'Save & Publish' %}</button>
+			  	<button type="submit" name="_preview" class="btn btn-default">{% trans 'Save & Preview' %}</button>
+			  	{% endif %}
+			  	
+			    <button type="submit" name="_continue" class="btn btn-default">{% trans 'Save & Continue editing' %}</button>
+
+			</div>
+			<a href="{% url opts|admin_urlname:'changelist' %}" class="small gray cancel">{% trans "Cancel" %}</a>
+			
+			
+			
+		</div>
+	</div>
+
+</div>
+		
 {% endblock %}
 
 {% block inline_field_sets %}

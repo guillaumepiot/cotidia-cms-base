@@ -54,13 +54,12 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if not obj.id and obj.parent:
-            obj.__class__.tree.insert_node(obj, obj.parent)
+            obj.__class__._tree_manager.insert_node(obj, obj.parent)
 
 
         obj.save()
 
         # Rebuild the tree
-        print dir(obj.__class__)
         obj.__class__._tree_manager.rebuild()
 
         obj_name = u'%s' % obj._meta.verbose_name
@@ -146,7 +145,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
                 self._publish_object(obj)
 
             # Rebuild the tree
-            obj.__class__.tree.rebuild()
+            obj.__class__._tree_manager.rebuild()
 
     make_published.short_description = "Approve & Publish"
 
@@ -158,7 +157,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
                 obj.unpublish_version()
 
             # Rebuild the tree
-            obj.__class__.tree.rebuild()
+            obj.__class__._tree_manager.rebuild()
 
     make_unpublished.short_description = "Un-publish"
 
@@ -235,9 +234,11 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     preview.allow_tags = True
 
 class PageTranslationInlineFormAdmin(forms.ModelForm):
+    required_css_class = 'required'
+    error_css_class = 'errorfield'
     slug = forms.SlugField(label=_('Page URL'))
     content = forms.CharField(widget=RedactorEditor(redactor_css="/static/css/redactor-editor.css"), required=False)
-
+    images = forms.CharField(widget=MultipleFileWidget, required=False)
     class Meta:
         model = PageTranslation
 
@@ -245,6 +246,17 @@ class PageTranslationInlineFormAdmin(forms.ModelForm):
         """ Should returns True if data differs from initial.
         By always returning true even unchanged inlines will get validated and saved."""
         return True
+
+    def __init__(self, *args, **kwargs):
+        from django.contrib.contenttypes.models import ContentType
+        super(PageTranslationInlineFormAdmin, self).__init__(*args, **kwargs)
+
+        if self.instance:
+            content_type = ContentType.objects.get_for_model(self.instance)
+            object_pk = self.instance.id
+            self.fields['images'].widget.attrs.update({'content_type':content_type.id, 'object_pk':object_pk})
+        else:
+            self.fields['images'].widget.attrs.update({'content_type':False, 'object_pk':False})
 
 class PageTranslationInline(TranslationStackedInline):
     model = PageTranslation
@@ -255,7 +267,7 @@ class PageTranslationInline(TranslationStackedInline):
 
 class PageFormAdmin(forms.ModelForm):
     redirect_to = TreeNodeChoiceField(label=_('Redirect to page'), queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
-    images = forms.CharField(widget=MultipleFileWidget, required=False)
+    #images = forms.CharField(widget=MultipleFileWidget, required=False)
     class Meta:
         model = Page
 
@@ -269,12 +281,12 @@ class PageFormAdmin(forms.ModelForm):
         if cms_settings.CMS_PAGE_RELATED_PAGES:
             self.fields['related_pages'] = forms.ModelMultipleChoiceField(queryset=Page.objects.get_published_original(), widget=forms.CheckboxSelectMultiple, required=False)
         
-        if self.instance:
-            content_type = ContentType.objects.get_for_model(self.instance)
-            object_pk = self.instance.id
-            self.fields['images'].widget.attrs.update({'content_type':content_type.id, 'object_pk':object_pk})
-        else:
-            self.fields['images'].widget.attrs.update({'content_type':False, 'object_pk':False})
+        # if self.instance:
+        #     content_type = ContentType.objects.get_for_model(self.instance)
+        #     object_pk = self.instance.id
+        #     self.fields['images'].widget.attrs.update({'content_type':content_type.id, 'object_pk':object_pk})
+        # else:
+        #     self.fields['images'].widget.attrs.update({'content_type':False, 'object_pk':False})
 
     def clean_slug(self):
         slug = self.cleaned_data['slug']
@@ -308,15 +320,15 @@ class PageFormAdmin(forms.ModelForm):
 # Images inline #
 #################
 
-class ImageInlineForm(forms.ModelForm):
-    image = forms.ImageField(label=_('Image'), widget=AdminImageWidget)
-    class Meta:
-        model=PageImage
+# class ImageInlineForm(forms.ModelForm):
+#     image = forms.ImageField(label=_('Image'), widget=AdminImageWidget)
+#     class Meta:
+#         model=PageImage
 
-class PageImageInline(admin.TabularInline):
-    form = ImageInlineForm
-    model = PageImage
-    extra = 0
+# class PageImageInline(admin.TabularInline):
+#     form = ImageInlineForm
+#     model = PageImage
+#     extra = 0
     #template = 'admin/cmsbase/page/images-inline.html'
 
 ####################
@@ -332,7 +344,7 @@ class PageDocumentInline(admin.TabularInline):
     form = DocumentInlineForm
     model = PageDocument
     extra = 0
-    #template = 'admin/cmsbase/page/images-inline.html'
+    template="admin/includes/fieldset-inline-tabular.html"
 
 ################
 # Links inline #
@@ -376,11 +388,11 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 
     )
 
-    if cms_settings.CMS_PAGE_IMAGES:
-        fieldsets += ('Images', {
-            'classes': ('default',),
-            'fields': ( 'images', )
-        }),
+    # if cms_settings.CMS_PAGE_IMAGES:
+    #     fieldsets += ('Images', {
+    #         'classes': ('default',),
+    #         'fields': ( 'images', )
+    #     }),
 
     if cms_settings.CMS_PAGE_RELATED_PAGES:
         fieldsets = fieldsets + (('Related pages', {
