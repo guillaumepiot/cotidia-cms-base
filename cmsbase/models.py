@@ -186,6 +186,10 @@ class BasePage(MPTTModel, MultilingualModel):
 
 		if self.home:
 			url = reverse('cms:home')
+			if cms_settings.CMS_PREFIX and cms_settings.CMS_PREFIX.get(current_language, False):
+				url = reverse('cms:home', prefix=cms_settings.CMS_PREFIX[current_language])
+			else:
+				url = reverse('cms:home')
 		else:
 			slug = ''
 
