@@ -178,7 +178,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     # Custom result list
     def home_icon(self, obj):
         if hasattr(obj, 'home') and obj.home:
-            return '<i class="icon-home"></i>'
+            return '<i class="glyphicon glyphicon-home"></i>'
         else:
             return ''
     home_icon.allow_tags = True
@@ -186,25 +186,25 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     def approval(self, obj):
         if obj.approval_needed:
-            return '<i class="icon-time"></i>'
+            return '<i class="glyphicon glyphicon-time"></i>'
         else:
-            return '<i class="icon-ok"></i>'
+            return '<i class="glyphicon glyphicon-ok"></i>'
     approval.allow_tags = True
     approval.short_description = 'Approved'
 
     def is_published(self, obj):
         if obj.published:
-            return '<i class="icon-ok"></i>'
+            return '<i class="glyphicon glyphicon-ok"></i>'
         else:
-            return '<i class="icon-minus-sign"></i>'
+            return '<i class="glyphicon glyphicon-minus-sign"></i>'
     is_published.allow_tags = True
     is_published.short_description = 'Published'
 
     def is_active(self, obj):
         if obj.published:
-            return '<i class="icon-ok"></i>'
+            return '<i class="glyphicon glyphicon-ok"></i>'
         else:
-            return '<i class="icon-minus-sign"></i>'
+            return '<i class="glyphicon glyphicon-minus-sign"></i>'
     is_active.allow_tags = True
     is_active.short_description = 'Active'
 
