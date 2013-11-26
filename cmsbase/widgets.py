@@ -32,7 +32,7 @@ class AdminCustomFileWidget(AdminFileWidget):
 			if file_type in ['jpg', 'jpeg', 'png', 'gif']:
 				output.append(u' <a href="%s" target="_blank" class="image_link"><img title="Click to preview" src="%s" alt="%s" width="80px" /></a>' % (image_url, image_url, file_name))
 			else:
-				output.append(u' <i class="icon-file type-%s float-left margin-right"></i>' % (file_type))
+				output.append(u' <i class="glyphicon glyphicon-file type-%s pull-left" style="font-size:50px;"></i>' % (file_type))
 		output.append(super(AdminFileWidget, self).render(name, value, attrs))
 
 		return mark_safe('<div class="thumbnail admin-thumbnail">%s</div>' % u''.join(output))
