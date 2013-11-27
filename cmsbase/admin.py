@@ -196,7 +196,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         if obj.published:
             return '<i class="glyphicon glyphicon-ok"></i>'
         else:
-            return '<i class="glyphicon glyphicon-minus-sign"></i>'
+            return '<i class="glyphicon glyphicon-remove"></i>'
     is_published.allow_tags = True
     is_published.short_description = 'Published'
 
@@ -204,7 +204,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         if obj.published:
             return '<i class="glyphicon glyphicon-ok"></i>'
         else:
-            return '<i class="glyphicon glyphicon-minus-sign"></i>'
+            return '<i class="glyphicon glyphicon-remove"></i>'
     is_active.allow_tags = True
     is_active.short_description = 'Active'
 
