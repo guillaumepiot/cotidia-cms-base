@@ -184,10 +184,19 @@ class BasePage(MPTTModel, MultilingualModel):
 		if not current_language:
 			current_language = translation.get_language()
 
+		if cms_settings.CMS_PREFIX.get(current_language, False):
+			CMS_PREFIX = cms_settings.CMS_PREFIX[current_language]
+		else:
+			CMS_PREFIX = False
+
+
+		if not CMS_PREFIX[len(CMS_PREFIX)-1] == '/':
+			CMS_PREFIX = CMS_PREFIX + '/'
+
 		if self.home:
 			url = reverse('cms:home')
-			if cms_settings.CMS_PREFIX and cms_settings.CMS_PREFIX.get(current_language, False):
-				url = reverse('cms:home', prefix=cms_settings.CMS_PREFIX[current_language])
+			if CMS_PREFIX:
+				url = reverse('cms:home', prefix=CMS_PREFIX)
 			else:
 				url = reverse('cms:home')
 		else:
@@ -226,8 +235,8 @@ class BasePage(MPTTModel, MultilingualModel):
 			slug = "%s%s" % (slug, translation.slug)
 
 			# Create the full url based on the pattern
-			if cms_settings.CMS_PREFIX and cms_settings.CMS_PREFIX.get(current_language, False):
-				url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug}, prefix=cms_settings.CMS_PREFIX[current_language])
+			if CMS_PREFIX:
+				url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug}, prefix=CMS_PREFIX)
 			else:
 				url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug})
 
