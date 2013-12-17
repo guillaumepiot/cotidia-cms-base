@@ -6,11 +6,11 @@
 	{{block.super}}
 	
 	{% if original and not original.has_published_version %}
-	<div class="alert alert-warning"><i class="icon-time"></i> {% blocktrans with opts.module_name|capfirst as module_name %}{{module_name}} is not published and requires moderation{% endblocktrans %}</div>
+	<div class="alert alert-warning"><i class="glyphicon glyphicon-time"></i> {% blocktrans with opts.module_name|capfirst as module_name %}{{module_name}} is not published and requires moderation{% endblocktrans %}</div>
 	{% elif original and original.has_published_version and not original.approval_needed %}
-	<div class="alert alert-success"><i class="icon-ok"></i> {% blocktrans with opts.module_name|capfirst as module_name %}{{module_name}} is currently published {% endblocktrans %}</div>
+	<div class="alert alert-success"><i class="glyphicon glyphicon-ok"></i> {% blocktrans with opts.module_name|capfirst as module_name %}{{module_name}} is currently published {% endblocktrans %}</div>
 	{% elif original and original.has_published_version and original.approval_needed %}
-	<div class="alert alert-warning"><i class="icon-ok"></i> {% blocktrans with opts.module_name|capfirst as module_name %}{{module_name}} has an older version published but the latest update needs moderation{% endblocktrans %}</div>
+	<div class="alert alert-warning"><i class="glyphicon glyphicon-ok"></i> {% blocktrans with opts.module_name|capfirst as module_name %}{{module_name}} has an older version published but the latest update needs moderation{% endblocktrans %}</div>
 	{% endif %}
 	
 {% endblock %}

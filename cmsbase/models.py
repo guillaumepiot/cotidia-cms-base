@@ -184,7 +184,7 @@ class BasePage(MPTTModel, MultilingualModel):
 		if not current_language:
 			current_language = translation.get_language()
 
-		if cms_settings.CMS_PREFIX.get(current_language, False):
+		if cms_settings.CMS_PREFIX and cms_settings.CMS_PREFIX.get(current_language, False):
 			CMS_PREFIX = cms_settings.CMS_PREFIX[current_language]
 		else:
 			CMS_PREFIX = False
