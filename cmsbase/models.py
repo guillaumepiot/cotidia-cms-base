@@ -190,7 +190,7 @@ class BasePage(MPTTModel, MultilingualModel):
 			CMS_PREFIX = False
 
 
-		if not CMS_PREFIX[len(CMS_PREFIX)-1] == '/':
+		if CMS_PREFIX and not CMS_PREFIX[len(CMS_PREFIX)-1] == '/':
 			CMS_PREFIX = CMS_PREFIX + '/'
 
 		if self.home:
