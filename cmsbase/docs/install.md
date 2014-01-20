@@ -265,7 +265,7 @@ Default URLS
 
 We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py)
 
-	$ curl https://gist.github.com/guillaumepiot/5392008/raw/aaa08b43dcf77c1e87dabb2f68ba9f5fb8c0ba66/urls.py
+	$ curl https://gist.github.com/guillaumepiot/5392008/raw/78ea031a51fb6568a7da95eb6e3fc87fad55c6cc/urls.py
 
 Or copy and paste the following code:
 
@@ -279,10 +279,10 @@ Or copy and paste the following code:
 	    (r'^i18n/', include('django.conf.urls.i18n')),
 
 	    # Password reset features
-		url(r'^admin/password_reset/$', 'django.contrib.auth.views.password_reset', name='admin_password_reset'),
-		url(r'^admin/password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
-		url(r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm'),
-		url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
+	    url(r'^admin/password_reset/$', 'django.contrib.auth.views.password_reset', name='admin_password_reset'),
+	    url(r'^admin/password_reset/done/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done'),
+	    url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', name="password_reset_confirm"),
+	    url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete', name="password_reset_complete"),
 
 	    # Admin
 	    url(r'^admin/i18n/', include('django.conf.urls.i18n')),

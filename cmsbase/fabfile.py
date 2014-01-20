@@ -61,7 +61,7 @@ def install(project_name='', mode='edit'):
         # Admin dashboard
         env.run('curl https://gist.github.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py')
         # URLs conf
-        env.run('curl https://gist.github.com/guillaumepiot/5392008/raw/aaa08b43dcf77c1e87dabb2f68ba9f5fb8c0ba66/urls.py > urls.py')
+        env.run('curl https://gist.github.com/guillaumepiot/5392008/raw/78ea031a51fb6568a7da95eb6e3fc87fad55c6cc/urls.py > urls.py')
 
     with env.cd('%s' % (project_name)):
         # Create folder for sqlite3 database
