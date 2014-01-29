@@ -14,7 +14,7 @@ from cmsbase.forms import SearchForm
 
 # Function to retrieve page object depending on previwe mode and language
 
-def get_page(request, model_class=Page , translation_class=PageTranslation , slug=False, preview=False):
+def get_page(request, model_class=Page , translation_class=PageTranslation , slug=False, preview=False, filter_args={}):
 
 	# Deconstruct the slug to get the last element corresponding to the page we are looking for
 	if slug and slug != cms_settings.CMS_PREFIX:
@@ -36,9 +36,9 @@ def get_page(request, model_class=Page , translation_class=PageTranslation , slu
 
 
 		if preview:
-			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None)
+			translation = translation_class.objects.filter(slug=last_slug, parent__published_from=None, **filter_args)
 		else:
-			translation = translation_class.objects.filter(slug=last_slug, parent__published=True).exclude(parent__published_from=None)
+			translation = translation_class.objects.filter(slug=last_slug, parent__published=True, **filter_args).exclude(parent__published_from=None)
 
 		
 		# fetch the page that correspond to the complete url - as they can be multiple page with same slug but in different branches

@@ -179,7 +179,8 @@ class BasePage(MPTTModel, MultilingualModel):
 		return obj
 
 
-	def get_absolute_url(self, current_language=False):
+	def get_absolute_url(self, current_language=False, urlargs=False):
+
 		from django.utils import translation
 		if not current_language:
 			current_language = translation.get_language()
@@ -234,11 +235,20 @@ class BasePage(MPTTModel, MultilingualModel):
 
 			slug = "%s%s" % (slug, translation.slug)
 
+			# Add extra prefixes if required
+			default_args = {'slug':slug}
+			if urlargs:
+				reverse_args = dict(default_args.items() + urlargs.items())
+			else:
+				reverse_args = default_args
+
 			# Create the full url based on the pattern
 			if CMS_PREFIX:
-				url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug}, prefix=CMS_PREFIX)
+
+				url = reverse(self.CMSMeta.model_url_name, kwargs=reverse_args, prefix=CMS_PREFIX)
 			else:
-				url = reverse(self.CMSMeta.model_url_name, kwargs={'slug':slug})
+				url = reverse(self.CMSMeta.model_url_name, kwargs=reverse_args)
+
 
 		# Add prefix if required. Not compatible with localeurl redirect
 		# if cms_settings.CMS_PREFIX:
