@@ -154,7 +154,7 @@ class BasePage(MPTTModel):
         else:
             return None
 
-    def set_dynamic_attributes(self, obj):
+    def set_dynamic_attributes(self, translation):
         dynamic_attrs = []
         # Go through each fieldset
         for fieldset in self.mask.get_fields():
@@ -164,8 +164,7 @@ class BasePage(MPTTModel):
                 # Get the name of the field
                 field_name = '%s_%s' % (fieldset_id, field['name'])
                 # print field_name
-                setattr(obj, field_name, obj.get_attr(field_name))
-        return obj
+                setattr(translation, field_name, translation.get_attr(field_name))
 
     def translated(self):
         from django.utils.translation import get_language
@@ -175,7 +174,7 @@ class BasePage(MPTTModel):
         except:
             translation = self.CMSMeta.translation_class.objects.get(language_code=settings.LANGUAGE_CODE, parent=self)
 
-        translation = self.set_dynamic_attributes(translation)
+        self.set_dynamic_attributes(translation)
         return translation
 
     def get_translations(self):
