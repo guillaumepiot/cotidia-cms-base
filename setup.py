@@ -19,6 +19,8 @@ install_requires = [
     'django-reversion==1.8',
     'pillow',
     'south',
+    'django-codemirror-widget',
+    'django-localeurl',
     # The following must be installed manually until they are packaged adequately
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
     #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',

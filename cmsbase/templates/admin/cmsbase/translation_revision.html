@@ -1,0 +1,44 @@
+{% extends 'admin/change_form.html' %}{% load i18n %}
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'admin:index' %}">Dashboard</a></li>
+  <li><a href="{% url 'admin:index' %}cmsbase/">Cmsbase</a></li>
+  <li><a href="{% url 'admin:index' %}cmsbase/page/">Pages</a></li>
+  <li>Translation</li>
+</ol>
+{% endblock %}
+{% block content_title %}<div class="inner"><h1>{{translation.title}} / {% trans "Translation history" %} &nbsp; <a href="{% url 'admin:add_edit_translation' page.id translation.language_code %}" class="small gray">{% trans "Cancel" %}</a></h1></div>{% endblock %}
+
+
+{% block content %}
+<div id="content-main">
+  {% if version_list %}
+      <table id="change-history" class="table table-striped">
+          <thead>
+              <tr>
+                  <th scope="col">{% trans 'Date/time' %}</th>
+                  <th scope="col">{% trans 'User' %}</th>
+                  <th scope="col">{% trans 'Comment' %}</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for action in version_list %}
+                  <tr>
+                      <th scope="row"><a href="{% url 'admin:translation_recover' page.id translation.language_code action.id %}">{{action.revision.date_created}}</a></th>
+                      <td>
+                          {% if action.revision.user %}
+                              {{action.revision.user.username}}
+                              {% if action.revision.user.first_name %} ({{action.revision.user.first_name}} {{action.revision.user.last_name}}){% endif %}
+                          {% endif %}
+                      </td>
+                      <td>{{action.revision.comment|linebreaksbr|default:""}}</td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  {% else %}
+      <p class="inner">{% trans "This object doesn't have a change history. It probably wasn't added via this admin site." %}</p>
+  {% endif %}
+</div>
+{% endblock %}
+

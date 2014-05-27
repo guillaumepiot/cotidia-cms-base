@@ -131,8 +131,9 @@ We comment the STATIC_ROOT as we will using STATICFILES_DIRS instead.
 We insert  `django.middleware.locale.LocaleMiddleware` in our middlewares, to support language changes.
 
 	MIDDLEWARE_CLASSES = (
+		'localeurl.middleware.LocaleURLMiddleware',
+
 	    'django.contrib.sessions.middleware.SessionMiddleware',
-	    'django.middleware.locale.LocaleMiddleware',
 	    'django.middleware.common.CommonMiddleware',
 	    'django.middleware.csrf.CsrfViewMiddleware',
 	    'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -146,12 +147,16 @@ Our urls will automatically bear the prefix at the start using the following url
 	    url(r'^', include('cmsbase.urls', namespace='cms')),
 	)
 
+Specify the SITE_ID, we require it to use Django sites:
+
+	SITE_ID = 1
+
 Context processor
 -----------------
 
 Create a default context processor, download a sample here [https://gist.github.com/guillaumepiot/5338169](https://gist.github.com/guillaumepiot/5338169) or enter the following command in the app folder of the same name as the project:
 
-	$ curl https://gist.github.com/guillaumepiot/5338169/raw/08cc845e2e2fcf8c19ebe9f6127112f20adb2f70/gistfile1.txt > context_processor.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5338169/raw/9a9ce7174ca8f0f5c6affdc5040a12ef7b29c54d/gistfile1.txt > context_processor.py
 
 And add it to  TEMPLATE_CONTEXT_PROCESSORS
 
@@ -198,6 +203,9 @@ Include the required apps.
 	    'django.contrib.messages',
 	    'django.contrib.staticfiles',
 	    'django.contrib.admin',
+	    'django.contrib.sites',
+
+	    'localeurl',
 
 	    'cmsbase',
 	    'reversion',
@@ -224,8 +232,8 @@ Then, we must hook our menu and dashboard classes to generate the custom admin t
 
 Pull the default files from GIST automatically:
 
-	$ curl https://gist.github.com/guillaumepiot/5391705/raw/ec10eda52976618f6f6e0a1a6efd54c95dfe2ce8/gistfile1.py > menu.py
-	$ curl https://gist.github.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/b8e79427c91a4ca8dbdf/raw/b15e45ecdebe17ccb6069445480df1dc5d8c2d99/menu.py > menu.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py
 
 > You can follow the setup instructions for the admin tools here: [https://bitbucket.org/guillaumepiot/cotidia-admin-tools](https://bitbucket.org/guillaumepiot/cotidia-admin-tools)
 
@@ -265,7 +273,7 @@ Default URLS
 
 We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py)
 
-	$ curl https://gist.github.com/guillaumepiot/5392008/raw/78ea031a51fb6568a7da95eb6e3fc87fad55c6cc/urls.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5392008/raw/b393a030699991f3411056e242feabb9545218ec/urls.py
 
 Or copy and paste the following code:
 
@@ -276,7 +284,7 @@ Or copy and paste the following code:
 
 	urlpatterns = patterns('',
 	    # Language switcher management
-	    (r'^i18n/', include('django.conf.urls.i18n')),
+	    (r'^localeurl/', include('localeurl.urls')),
 
 	    # Password reset features
 	    url(r'^admin/password_reset/$', 'django.contrib.auth.views.password_reset', name='admin_password_reset'),

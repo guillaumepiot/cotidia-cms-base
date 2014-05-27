@@ -1,0 +1,74 @@
+{% extends 'admin/change_form.html' %}{% load i18n %}
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'admin:index' %}">Dashboard</a></li>
+  <li><a href="{% url 'admin:index' %}cmsbase/">Cmsbase</a></li>
+  <li><a href="{% url 'admin:index' %}cmsbase/page/">Pages</a></li>
+  <li>Translation</li>
+</ol>
+{% endblock %}
+{% block content_title %}<div class="inner"><h1>{{ title }} &nbsp; <a href="{% url 'admin:cmsbase_page_changelist' %}" class="small gray">{% trans "Cancel" %}</a></h1></div>{% endblock %}
+
+{% block object-tools %}
+{% if translation %}
+  <ul class="object-tools btn-toolbar inner">
+    {% block object-tools-items %}
+    <div class="btn-group">
+      <a href="{% url 'admin:translation_revision' page.id translation.language_code translation.id %}" class="historylink btn btn-default"><i class="glyphicon glyphicon-time"></i> {% trans "History" %}</a>
+    </div>
+    {% endblock %}
+  </ul>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <form enctype="multipart/form-data" action="" method="post" id="add_edit_translation_form" class="form-horizontal">{% csrf_token %}
+    <div>
+    {{form.errors}}
+    {% if form.errors %}
+      <div class="inner">
+        <p class="alert alert-danger">
+        {% blocktrans count counter=form.errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </p>
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+      <div class="inner">
+        {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+        {% for fieldset in form.fieldsets %}
+          <fieldset class="{{ fieldset.classes }}">
+          {% if fieldset.legend %}
+            <h2>{{ fieldset.legend }}</h2>
+          {% endif %}
+          {% if fieldset.description %}
+            <p class="description">{{ fieldset.description }}</p>
+          {% endif %}
+          <ul>
+          {% for field in fieldset %}
+            {% if field.is_hidden %}
+              {{ field }}
+            {% else %}
+              {% include 'admin/includes/field_standard.html' %}
+            {% endif %}
+          {% endfor %}
+          </ul>
+          </fieldset>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        <div class="row">
+          <div class="col-md-12">
+            <input type="submit" value="{% if recover %}{% trans "Recover" %}{% else %}{% trans 'Save' %}{% endif %}" class="btn btn-primary" name="_save" {{ onclick_attrib }}/>
+            {% if recover %}<a href="{% url 'admin:translation_revision' page.id translation.language_code translation.id %}" class="btn">{% trans "Return to revision list" %}</a>{% endif %}
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </form>
+</div>
+{% endblock %}
+

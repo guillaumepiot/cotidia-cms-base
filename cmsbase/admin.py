@@ -1,4 +1,4 @@
-import reversion
+import reversion, json
 
 from django.contrib import admin, messages
 from django.contrib.admin.widgets import AdminFileWidget
@@ -19,38 +19,17 @@ from filemanager.widgets import MultipleFileWidget
 from cmsbase.models import *
 from cmsbase.widgets import AdminImageWidget, AdminCustomFileWidget
 from cmsbase import settings as cms_settings
+from cmsbase.admin_views import *
 
+from codemirror import CodeMirrorTextarea
 
 class PublishingWorkflowAdmin(admin.ModelAdmin):
 
-    # def get_fieldsets(self, request, obj=None):
-    #   new_fieldset = []
-    #   if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
-    #       for fieldset in self.fieldsets:
-    #           if fieldset[0] != 'Approval':
-    #               new_fieldset.append(fieldset)
-    #   else:
-    #       for fieldset in self.fieldsets:
-    #           if fieldset[0] != 'Publishing':
-    #               new_fieldset.append(fieldset)
-
-    #   return new_fieldset
-
-    # def __init__(self, *args, **kwargs):
-    #   print kwargs
-    #   request = kwargs['request']
-    #   # Make the slug field read-only for non-superuser and non-publishers
-    #   if not request.user.has_perm('cmsbase.can_publish') and not request.user.is_superuser:
-    #       self.base_fields['slug'].widget.attrs['readonly'] = True
-    #   super(PublishingWorkflowAdmin, self).__init__(*args, **kwargs)
-
     def get_list_display(self, request, obj=None):
         if not settings.PREFIX_DEFAULT_LOCALE:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template', 'preview']
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_template_name', 'preview']
         else:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'template', 'languages', 'preview']
-
-
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_template_name', 'languages', 'preview']
 
     def save_model(self, request, obj, form, change):
         if not obj.id and obj.parent:
@@ -208,22 +187,31 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     is_active.allow_tags = True
     is_active.short_description = 'Active'
 
-    def title(self, obj):
-        translation = obj.translated() #PageTranslation.objects.filter(parent=obj, language_code=settings.DEFAULT_LANGUAGE)
-        if translation:
-            return translation.title
-        else:
-            return _('No translation available for default language')
+    def get_template_name(self, obj):
+        return dict(cms_settings.CMS_PAGE_TEMPLATES).get(obj.template)
+    get_template_name.allow_tags = True
+    get_template_name.short_description = 'Template'
 
 
     def languages(self, obj):
         available_ts = {}
         ts=[]
+        exiting_lang = []
         for t in obj.get_translations():
-            available_ts[t.language_code] = u'<img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s">' % (t.language_code, t.__unicode__())
+            exiting_lang.append(t.language_code)
+            available_ts[t.language_code] = u'<a href="%s"><img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s"></a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':t.language_code}), t.language_code, t.__unicode__())
         for language in settings.LANGUAGES:
             if available_ts.get(language[0], False):
                 ts.append(available_ts[language[0]])
+
+        if len(available_ts) < len(settings.LANGUAGES):
+            # If we have some language already inputted, load the next missing one
+            for lang in settings.LANGUAGES:
+                if lang[0] not in exiting_lang:
+                    next_missing_language = lang[0]
+                    break
+
+            ts.append('<a href="%s">+ %s</a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':next_missing_language}), _('Add translation')))
         return ' '.join(ts)
 
     languages.allow_tags = True
@@ -233,39 +221,22 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         return '<a href="%s?preview" target="_blank">%s</a>' % (obj.get_absolute_url(), _('Preview'))
     preview.allow_tags = True
 
-class PageTranslationInlineFormAdmin(forms.ModelForm):
-    required_css_class = 'required'
-    error_css_class = 'errorfield'
-    slug = forms.SlugField(label=_('Page URL'))
-    content = forms.CharField(widget=RedactorEditor(redactor_css="/static/css/redactor-editor.css"), required=False)
-    images = forms.CharField(widget=MultipleFileWidget, required=False)
-    class Meta:
-        model = PageTranslation
 
-    def has_changed(self):
-        """ Should returns True if data differs from initial.
-        By always returning true even unchanged inlines will get validated and saved."""
-        return True
+    def get_urls(self):
+        from django.conf.urls import patterns, url
+        urls = super(PublishingWorkflowAdmin, self).get_urls()
+        my_urls = patterns('',
+            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/history/(?P<translation_id>[-\w]+)/', self.admin_site.admin_view(translation_revision), name='translation_revision'),
+            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/recover/(?P<recover_id>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), name='translation_recover'),
+            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), name='add_edit_translation'),
+        )
+        return my_urls + urls
 
-    def __init__(self, *args, **kwargs):
-        from django.contrib.contenttypes.models import ContentType
-        super(PageTranslationInlineFormAdmin, self).__init__(*args, **kwargs)
-
-        if self.instance:
-            content_type = ContentType.objects.get_for_model(self.instance)
-            object_pk = self.instance.id
-            self.fields['images'].widget.attrs.update({'content_type':content_type.id, 'object_pk':object_pk})
-        else:
-            self.fields['images'].widget.attrs.update({'content_type':False, 'object_pk':False})
-
-class PageTranslationInline(TranslationStackedInline):
-    model = PageTranslation
-    form = PageTranslationInlineFormAdmin
-    extra = 0 if settings.PREFIX_DEFAULT_LOCALE else 1
-    prepopulated_fields = {'slug': ('title',)}
-    template = 'admin/cmsbase/cms_translation_inline.html'
 
 class PageFormAdmin(forms.ModelForm):
+    required_css_class = 'required'
+    error_css_class = 'errorfield'
+
     redirect_to = TreeNodeChoiceField(label=_('Redirect to page'), queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
     #images = forms.CharField(widget=MultipleFileWidget, required=False)
     class Meta:
@@ -363,7 +334,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 
     form = PageFormAdmin
 
-    inlines = (PageTranslationInline, )
+    # inlines = (PageTranslationInline, )
 
 
     if cms_settings.CMS_PAGE_DOCUMENTS:
@@ -383,7 +354,15 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
         
         ('Settings', {
             'classes': ('default',),
-            'fields': ( 'home', 'hide_from_nav', 'parent', 'template', 'redirect_to', 'redirect_to_url', 'target', 'slug', 'order_id')
+            'fields': ('display_title', 'template', 'mask',  'parent', 'slug', )
+        }),
+        ('Redirection', {
+            'classes': ('default'),
+            'fields': ('redirect_to', 'redirect_to_url', 'target',)
+        }),
+        ('Meta', {
+            'classes': ('default'),
+            'fields': ('home', 'hide_from_nav',  'order_id',)
         }),
 
     )
@@ -408,3 +387,81 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
 
 
 admin.site.register(Page, PageAdmin)
+
+
+##############
+# Page masks #
+##############
+
+class PageMaskAdminForm(forms.ModelForm):
+    required_css_class = 'required'
+    error_css_class = 'errorfield'
+    initial = """[
+  {
+    "fieldset":"Page content",
+    "fields":[
+        {
+            "name":"description",
+            "type":"charfield",
+            "required":true
+        }
+    ]
+  },
+  {
+    "fieldset":"Meta data",
+    "fields":[
+        {
+            "name":"meta_description",
+            "type":"charfield",
+            "required":false
+        },
+        {
+            "name":"meta_title",
+            "type":"charfield",
+            "required":false
+        }
+    ]
+  }
+]
+"""
+    config = forms.CharField(widget=CodeMirrorTextarea(mode="javascript", theme="cobalt", config={ 'fixedGutter': True }), initial=initial)
+    class Meta:
+        model=PageMask
+
+    def clean_config(self):
+
+        config = self.cleaned_data['config']
+        try:
+            json.loads(config)
+        except:
+            raise forms.ValidationError(_('The JSON string is invalid'))
+
+
+        ############################
+        # TO-DO                    #
+        # Validate all fields data #
+        ############################
+
+
+        return config
+
+class PageMaskAdmin(reversion.VersionAdmin):
+    form = PageMaskAdminForm
+
+
+admin.site.register(PageMask, PageMaskAdmin)
+
+
+#################
+# Page dynamics #
+#################
+
+# class PageDynamicAdmin(PageAdmin):
+#     inlines = []
+
+
+# admin.site.register(PageDynamic, PageDynamicAdmin)
+
+
+
+
