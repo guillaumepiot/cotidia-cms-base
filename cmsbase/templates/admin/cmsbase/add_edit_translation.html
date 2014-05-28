@@ -25,7 +25,6 @@
 <div id="content-main">
   <form enctype="multipart/form-data" action="" method="post" id="add_edit_translation_form" class="form-horizontal">{% csrf_token %}
     <div>
-    {{form.errors}}
     {% if form.errors %}
       <div class="inner">
         <p class="alert alert-danger">

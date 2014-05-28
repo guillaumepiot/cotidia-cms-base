@@ -19,3 +19,13 @@
 
 .cm-s-cobalt .CodeMirror-activeline-background {background: #002D57 !important;}
 .cm-s-cobalt .CodeMirror-matchingbracket {outline:1px solid grey;color:white !important}
+
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}

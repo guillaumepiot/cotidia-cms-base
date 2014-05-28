@@ -27,9 +27,9 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request, obj=None):
         if not settings.PREFIX_DEFAULT_LOCALE:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_template_name', 'preview']
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'preview']
         else:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_template_name', 'languages', 'preview']
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'languages', 'preview']
 
     def save_model(self, request, obj, form, change):
         if not obj.id and obj.parent:
@@ -191,6 +191,13 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         return dict(cms_settings.CMS_PAGE_TEMPLATES).get(obj.template)
     get_template_name.allow_tags = True
     get_template_name.short_description = 'Template'
+
+    def get_data_set(self, obj):
+        return obj.dataset
+    get_data_set.allow_tags = True
+    get_data_set.short_description = 'Data set'
+
+    
 
 
     def languages(self, obj):
@@ -354,7 +361,7 @@ class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin)
         
         ('Settings', {
             'classes': ('default',),
-            'fields': ('display_title', 'template', 'mask',  'parent', 'slug', )
+            'fields': ('display_title', 'template', 'dataset',  'parent', 'slug', )
         }),
         ('Redirection', {
             'classes': ('default'),
@@ -393,7 +400,7 @@ admin.site.register(Page, PageAdmin)
 # Page masks #
 ##############
 
-class PageMaskAdminForm(forms.ModelForm):
+class PageDataSetAdminForm(forms.ModelForm):
     required_css_class = 'required'
     error_css_class = 'errorfield'
     initial = """[
@@ -424,9 +431,9 @@ class PageMaskAdminForm(forms.ModelForm):
   }
 ]
 """
-    config = forms.CharField(widget=CodeMirrorTextarea(mode="javascript", theme="cobalt", config={ 'fixedGutter': True }), initial=initial)
+    config = forms.CharField(widget=CodeMirrorTextarea(mode="javascript", theme="cobalt", config={ 'fixedGutter': True, 'lineNumbers': True }), initial=initial)
     class Meta:
-        model=PageMask
+        model=PageDataSet
 
     def clean_config(self):
 
@@ -445,11 +452,11 @@ class PageMaskAdminForm(forms.ModelForm):
 
         return config
 
-class PageMaskAdmin(reversion.VersionAdmin):
-    form = PageMaskAdminForm
+class PageDataSetAdmin(reversion.VersionAdmin):
+    form = PageDataSetAdminForm
 
 
-admin.site.register(PageMask, PageMaskAdmin)
+admin.site.register(PageDataSet, PageDataSetAdmin)
 
 
 #################

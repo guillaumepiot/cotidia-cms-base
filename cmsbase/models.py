@@ -45,7 +45,7 @@ class BasePage(MPTTModel):
     published_from = models.ForeignKey('self', blank=True, null=True)
 
     #Page mask
-    mask = models.ForeignKey('PageMask', blank=True, null=True)
+    dataset = models.ForeignKey('PageDataSet', blank=True, null=True)
 
     # A unique identifier
     slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier", blank=True, null=True)
@@ -157,7 +157,7 @@ class BasePage(MPTTModel):
     def set_dynamic_attributes(self, translation):
         dynamic_attrs = []
         # Go through each fieldset
-        for fieldset in self.mask.get_fields():
+        for fieldset in self.dataset.get_fields():
             fieldset_id = slugify(fieldset['fieldset']).replace('-','_')
             for field in fieldset['fields']:
 
@@ -514,13 +514,13 @@ class PageTranslation(models.Model, PublishTranslation):
 reversion.register(PageTranslation)
 
 
-class PageMask(models.Model):
+class PageDataSet(models.Model):
     name = models.CharField(max_length=50)
     config = models.TextField()
 
     class Meta:
-        verbose_name=_('Page Mask')
-        verbose_name_plural=_('Page Masks')
+        verbose_name=_('Data set')
+        verbose_name_plural=_('Data sets')
 
     def __unicode__(self):
         return u'%s' % self.name

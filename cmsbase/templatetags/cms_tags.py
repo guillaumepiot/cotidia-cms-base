@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 register = template.Library()
 
 from cmsbase.models import Page, PageLink
@@ -69,3 +70,13 @@ def language_name(language_code):
         if lang[0] == language_code:
             return lang[1]
     return False
+
+
+@register.simple_tag
+def get_page_url_by_id(page_id):
+    try:
+        page = get_object_or_404(Page, id=page_id)
+        return page.get_absolute_url()
+    except:
+        return None
+    
