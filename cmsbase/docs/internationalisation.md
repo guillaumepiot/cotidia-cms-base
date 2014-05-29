@@ -1,9 +1,9 @@
 Internationalisation
 ====================
 
-For a thorough doc, look on the django-localeurl repo here:
+We require django-localeurl to manage language in urls and redirection:
 
-https://bitbucket.org/carljm/django-localeurl/src/b8ada3a2b6788927ba403fa75b2db4f3775460ec/docs/usage.rst?at=default
+$ pip install django-localeurl==2.0.1
 
 Language switcher
 -----------------
@@ -43,7 +43,7 @@ Or as a simple select box:
 Settings
 --------
 
-Here's the default settings:
+The default settings:
 
 	LANGUAGES = (
 	    ('en', 'English'),
@@ -70,3 +70,75 @@ If the list equals 1, there's only one language and therefore the site is not mu
 	PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) == 1 else True
 	
 The LOCALE_INDEPENDENT_PATHS specify the urls that doesn't require localeurl support. Useful for the admin or api call such as the ajax file upload the Redactor text editor.
+
+
+Translation files
+-----------------
+
+Django support gettext to manage text translation across the site.
+
+We usually use transaltion files to manage small pieces or recurring text, such as button names, alert messages and so on.
+
+*************
+Note: Linux install
+
+Your server must have gettext install in order for translation to work.
+
+Run the following command on Ubuntu to install:
+
+	$ aptitude install gettext libgettextpo-dev	
+
+*************
+
+
+In settings.py, add the template directory to the variable LOCAL_PATHS:
+
+LOCALE_PATHS = (
+    os.path.join(PROJECT_DIR, 'path/to/locale/'),
+)
+
+- Create the locale folder
+- In the project directory, run a command to harvest each language
+
+	$ django-admin.py makemessages -l en
+
+You can use includes to specify which files to crawl for translations:
+
+	$ django-admin.py makemessages -l en -i "templates/admin*"
+
+
+*************
+Note: You may need to install gettext
+
+- Download gettest here: http://www.gnu.org/software/gettext/
+- cd to the uncompressed folder
+- Install:
+	$ ./configure
+	$ make
+	$ make install
+
+*************
+
+- Compile the language files
+
+	$ django-admin.py compilemessages
+
+
+Manage translation in the Admin
+-------------------------------
+
+We use Rosetta to manage the translations.
+
+	$ pip install django-rosetta
+
+
+- Add 'rosetta' to your INSTALLED_APPS
+- Add to urls.py:
+
+	url(r'^admin/rosetta/', include('rosetta.urls')),
+
+- Add the menu.py (from the admin nav bar):
+
+	items.MenuItem(_('Translations'), reverse('rosetta-pick-file')),
+
+You can now input the translations for the each language.
