@@ -14,7 +14,7 @@ CLASSIFIERS = [
 ]
 
 install_requires = [
-    'django==1.6',
+    'django>=1.6',
     'django-mptt==0.6',
     'django-reversion==1.8',
     'django-form-utils==1.0.1',
