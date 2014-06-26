@@ -27,7 +27,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request, obj=None):
         if not settings.PREFIX_DEFAULT_LOCALE:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'preview']
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'content', 'preview']
         else:
             return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'languages', 'preview']
 
@@ -198,7 +198,13 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     get_data_set.short_description = 'Data set'
 
     
-
+    def content(self, obj):
+        if obj.get_translations().count() == 0:
+            return '<a href="%s">+ %s</a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':settings.DEFAULT_LANGUAGE}), _('Add content'))
+        else:
+            return '<a href="%s">%s</a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':settings.DEFAULT_LANGUAGE}), _('Edit content'))
+    content.allow_tags = True
+    content.short_description = 'Content'
 
     def languages(self, obj):
         available_ts = {}
