@@ -20,8 +20,9 @@
   </ul>
 {% endif %}
 {% endblock %}
-
+{% block extrahead %}{{block.super}}{{form.media}}{% endblock %}
 {% block content %}
+
 <div id="content-main">
   <form enctype="multipart/form-data" action="" method="post" id="add_edit_translation_form" class="form-horizontal">{% csrf_token %}
     <div>

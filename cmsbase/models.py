@@ -157,14 +157,15 @@ class BasePage(MPTTModel):
     def set_dynamic_attributes(self, translation):
         dynamic_attrs = []
         # Go through each fieldset
-        for fieldset in self.dataset.get_fields():
-            fieldset_id = slugify(fieldset['fieldset']).replace('-','_')
-            for field in fieldset['fields']:
+        if self.dataset:
+            for fieldset in self.dataset.get_fields():
+                fieldset_id = slugify(fieldset['fieldset']).replace('-','_')
+                for field in fieldset['fields']:
 
-                # Get the name of the field
-                field_name = '%s_%s' % (fieldset_id, field['name'])
-                # print field_name
-                setattr(translation, field_name, translation.get_attr(field_name))
+                    # Get the name of the field
+                    field_name = '%s_%s' % (fieldset_id, field['name'])
+                    # print field_name
+                    setattr(translation, field_name, translation.get_attr(field_name))
 
     def translated(self):
         from django.utils.translation import get_language
