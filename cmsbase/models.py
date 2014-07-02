@@ -514,13 +514,14 @@ class PageTranslation(models.Model, PublishTranslation):
 reversion.register(PageTranslation)
 
 
-class PageDataSet(models.Model):
+class BaseDataSet(models.Model):
     name = models.CharField(max_length=50)
     config = models.TextField()
 
     class Meta:
         verbose_name=_('Data set')
         verbose_name_plural=_('Data sets')
+        abstract = True
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -530,6 +531,12 @@ class PageDataSet(models.Model):
             return json.loads(self.config)
         except:
             raise Exception('JSON config could not be loaded from Page mask')
+
+class PageDataSet(BaseDataSet):
+
+    class Meta:
+        verbose_name=_('Page data set')
+        verbose_name_plural=_('Page data sets')
 
 # class PageTranslationDynamic(MultilingualTranslation, PublishTranslation):
 #   parent = models.ForeignKey('PageDynamic', related_name='translations_dynamic')
