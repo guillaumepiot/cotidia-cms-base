@@ -22,6 +22,13 @@ class BasePageManager(models.Manager):
     def get_published_live(self):
         return self.model.objects.filter(published=True).exclude(published_from=None)
 
+    def get_published_translation_live(self, language_code=False):
+        translation_model = self.model.CMSMeta.translation_class
+        if language_code:
+            return translation_model.objects.filter(parent__published=True, language_code=language_code).exclude(parent__published_from=None)
+        else:
+            return translation_model.objects.filter(parent__published=True).exclude(parent__published_from=None)
+
     def get_published_original(self):
         return self.model.objects.filter(published=True, published_from=None)
 
@@ -43,9 +50,6 @@ class BasePage(MPTTModel):
 
     # Publish version key
     published_from = models.ForeignKey('self', blank=True, null=True)
-
-    #Page mask
-    dataset = models.ForeignKey('PageDataSet', blank=True, null=True)
 
     # A unique identifier
     slug = models.SlugField(max_length=60,  verbose_name="Unique Page Identifier", blank=True, null=True)
@@ -459,7 +463,8 @@ class PublishTranslation(object):
             # Update fields which are not ignored
             for field in cls._meta.fields:
                 if field.attname not in ignore_fields:
-                    obj.__dict__[field.attname] = self.__dict__[field.attname]
+                    setattr(obj, field.attname, getattr(self, field.attname))
+                    #obj.__dict__[field.attname] = self.__dict__[field.attname]
 
             obj.parent = published_page
             obj.save()
@@ -468,14 +473,14 @@ class PublishTranslation(object):
     
 
 
-
-# Create the working models
+#############################
+# Create the working models #
+#############################
 
 
 # And the translation model
 
-class PageTranslation(models.Model, PublishTranslation):
-    parent = models.ForeignKey('Page', related_name='translations')
+class BasePageTranslation(models.Model, PublishTranslation):
     title = models.CharField(_('Page title'), max_length=100)
     slug = models.SlugField(max_length=100)
     language_code = models.CharField(
@@ -490,7 +495,7 @@ class PageTranslation(models.Model, PublishTranslation):
 
     class Meta:
         unique_together = ('parent', 'language_code')
-
+        abstract = True
         if len(settings.LANGUAGES) > 1:
             verbose_name=_('Translation')
             verbose_name_plural=_('Translations')
@@ -511,6 +516,17 @@ class PageTranslation(models.Model, PublishTranslation):
         except:
             return ''
 
+    def translation_edit_url(self):
+        return reverse('admin:add_edit_translation_'+self.parent._meta.model_name, kwargs={'page_id':self.parent.id, 'language_code':self.language_code})
+    
+    def translation_revision_url(self):
+        return reverse('admin:translation_revision_'+self.parent._meta.model_name, kwargs={'page_id':self.parent.id, 'language_code':self.language_code, 'translation_id':self.id})
+
+    def translation_recover_url(self):
+        return '%stranslation/%s/%s/recover' % (reverse('admin:'+self.parent._meta.app_label+'_'+self.parent._meta.model_name+'_changelist'), self.parent.id, self.language_code)
+
+class PageTranslation(BasePageTranslation):
+    parent = models.ForeignKey('Page', related_name='translations')
 
 reversion.register(PageTranslation)
 
@@ -538,22 +554,6 @@ class PageDataSet(BaseDataSet):
     class Meta:
         verbose_name=_('Page data set')
         verbose_name_plural=_('Page data sets')
-
-# class PageTranslationDynamic(MultilingualTranslation, PublishTranslation):
-#   parent = models.ForeignKey('PageDynamic', related_name='translations_dynamic')
-
-#   class Meta:
-#       unique_together = ('parent', 'language_code')
-
-#       if len(settings.LANGUAGES) > 1:
-#           verbose_name=_('Translation')
-#           verbose_name_plural=_('Translations')
-#       else:
-#           verbose_name=_('Content')
-#           verbose_name_plural=_('Content')
-
-#   def __unicode__(self):
-#       return u'%s' % (dict(settings.LANGUAGES).get(self.language_code))
 
 
 class PageDocument(models.Model):
@@ -614,6 +614,8 @@ class PageLink(models.Model):
 
 
 class Page(BasePage):
+    #Page mask
+    dataset = models.ForeignKey('PageDataSet', blank=True, null=True)
 
     class Meta:
         verbose_name=_('Page')
@@ -642,33 +644,6 @@ class Page(BasePage):
         if cms_settings.CMS_PAGE_LINKS:
             link_class = PageLink
 
-# class PageDynamic(BasePage):
-
-#   class Meta:
-#       verbose_name=_('Page (dynamic)')
-#       verbose_name_plural=_('Pages (dynamic)')
-#       permissions = (
-#           ("can_publish", "Can publish"),
-#       )
-
-#   class CMSMeta:
-#       # A tuple of templates paths and names
-#       templates = cms_settings.CMS_PAGE_TEMPLATES
-#       # Indicate which Translation class to use for content
-#       translation_class = PageTranslationDynamic
-#       # Provide the url name to create a url for that model
-#       model_url_name = 'cms:pagedynamic'
-
-#       # Provide the inline image model if necessary
-#       # if cms_settings.CMS_PAGE_IMAGES:
-#       #   image_class = PageImage
-
-#       # Provide the inline document model if necessary
-#       if cms_settings.CMS_PAGE_DOCUMENTS:
-#           document_class = PageDocument
-
-#       # Provide the inline link model if necessary
-#       if cms_settings.CMS_PAGE_LINKS:
-#           link_class = PageLink
+reversion.register(Page, follow=["translations"])
 
 

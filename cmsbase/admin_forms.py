@@ -48,19 +48,12 @@ class TranslationForm(BetterModelForm):
 
         self._fieldsets = [
             ('main', {'fields': ['parent', 'language_code', 'title', 'slug',], 'legend': 'Settings'}),
-            # ('Advanced', {
-            #     'fields': ['three', 'one'],
-            #     'legend': 'The fieldset legend',
-            #     'description': 'advanced stuff',
-            #     'classes': ['advanced', 'collapse']
-            #     }
-            # )
         ]
 
         # Make parent field hidden
-        self.fields['parent'] = TreeNodeChoiceField(queryset=Page.objects.get_originals(), widget=forms.HiddenInput())
+        self.fields['parent'] = TreeNodeChoiceField(queryset=page.__class__.objects.get_originals(), widget=forms.HiddenInput())
 
-        self.json_fields = page.dataset.get_fields()
+        self.json_fields = page.dataset.get_fields() if page.dataset else []
 
         # Go through each fieldset
         for fieldset in self.json_fields:
