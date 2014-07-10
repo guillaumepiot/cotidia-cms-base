@@ -20,12 +20,12 @@ FIELD_CLASS_MAP = {
     'textfield': {
         'field_class':forms.CharField,
         'field_widget':forms.Textarea,
-        'max_length':5000,
+        'max_length':50000,
     },
     'editorfield': {
         'field_class':forms.CharField,
         'field_widget':RedactorEditor(redactor_css="/static/css/redactor-editor.css"),
-        'max_length':5000,
+        'max_length':50000,
     },
     'pagelinkfield': {
         'field_class':TreeNodeChoiceField,
