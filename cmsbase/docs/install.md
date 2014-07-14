@@ -256,7 +256,7 @@ Include a list of URLs that doesn't require the language prefix
 
 ###Default URLS
 
-We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py)
+We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/](https://gist.github.com/guillaumepiot/5392008/raw/)
 
 	$ curl https://gist.githubusercontent.com/guillaumepiot/5392008/raw/  > urls.py
 
