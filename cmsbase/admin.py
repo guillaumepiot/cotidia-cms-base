@@ -25,6 +25,8 @@ from codemirror import CodeMirrorTextarea
 
 class PublishingWorkflowAdmin(admin.ModelAdmin):
 
+    
+
     def get_list_display(self, request, obj=None):
         if not settings.PREFIX_DEFAULT_LOCALE:
             return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'content', 'preview']
@@ -199,20 +201,27 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     
     def content(self, obj):
+        translation_class_slug = self.model._meta.model_name
+
         if obj.get_translations().count() == 0:
-            return '<a href="%s">+ %s</a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':settings.DEFAULT_LANGUAGE}), _('Add content'))
+            return '<a href="%s">+ %s</a>' % (reverse('admin:add_edit_translation_'+translation_class_slug, kwargs={'page_id':obj.id, 'language_code':settings.DEFAULT_LANGUAGE}), _('Add content'))
         else:
-            return '<a href="%s">%s</a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':settings.DEFAULT_LANGUAGE}), _('Edit content'))
+            return '<a href="%s">%s</a>' % (reverse('admin:add_edit_translation_'+translation_class_slug, kwargs={'page_id':obj.id, 'language_code':settings.DEFAULT_LANGUAGE}), _('Edit content'))
     content.allow_tags = True
     content.short_description = 'Content'
 
+    
+
+
     def languages(self, obj):
+        translation_class_slug = self.model._meta.model_name
+
         available_ts = {}
         ts=[]
         exiting_lang = []
         for t in obj.get_translations():
             exiting_lang.append(t.language_code)
-            available_ts[t.language_code] = u'<a href="%s"><img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s"></a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':t.language_code}), t.language_code, t.__unicode__())
+            available_ts[t.language_code] = u'<a href="%s"><img src="/static/admin/img/flags/%s.png" alt="" rel="tooltip" data-title="%s"></a>' % (reverse('admin:add_edit_translation_'+translation_class_slug, kwargs={'page_id':obj.id, 'language_code':t.language_code}), t.language_code, t.__unicode__())
         for language in settings.LANGUAGES:
             if available_ts.get(language[0], False):
                 ts.append(available_ts[language[0]])
@@ -224,7 +233,7 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
                     next_missing_language = lang[0]
                     break
 
-            ts.append('<a href="%s">+ %s</a>' % (reverse('admin:add_edit_translation', kwargs={'page_id':obj.id, 'language_code':next_missing_language}), _('Add translation')))
+            ts.append('<a href="%s">+ %s</a>' % (reverse('admin:add_edit_translation_'+translation_class_slug, kwargs={'page_id':obj.id, 'language_code':next_missing_language}), _('Add translation')))
         return ' '.join(ts)
 
     languages.allow_tags = True
@@ -238,10 +247,11 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     def get_urls(self):
         from django.conf.urls import patterns, url
         urls = super(PublishingWorkflowAdmin, self).get_urls()
+        translation_class_slug = self.model._meta.model_name
         my_urls = patterns('',
-            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/history/(?P<translation_id>[-\w]+)/', self.admin_site.admin_view(translation_revision), name='translation_revision'),
-            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/recover/(?P<recover_id>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), name='translation_recover'),
-            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), name='add_edit_translation'),
+            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/history/(?P<translation_id>[-\w]+)/', self.admin_site.admin_view(translation_revision), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class}, name='translation_revision_'+translation_class_slug),
+            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/recover/(?P<recover_id>[-\w]+)/', self.admin_site.admin_view(add_edit_translation),{'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_form_class':self.translation_form_class}, name='translation_recover_'+translation_class_slug),
+            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_form_class':self.translation_form_class}, name='add_edit_translation_'+translation_class_slug ),
         )
         return my_urls + urls
 
@@ -343,12 +353,10 @@ class PageLinkInline(admin.TabularInline):
 # Page admin #
 ##############
 
-class PageAdmin(PublishingWorkflowAdmin, MPTTModelAdmin, reversion.VersionAdmin):
+class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin):
 
     form = PageFormAdmin
-
-    # inlines = (PageTranslationInline, )
-
+    translation_form_class = TranslationForm
 
     if cms_settings.CMS_PAGE_DOCUMENTS:
         inlines += (PageDocumentInline,)

@@ -2,12 +2,12 @@
 {% block breadcrumbs %}
 <ol class="breadcrumb">
   <li><a href="{% url 'admin:index' %}">Dashboard</a></li>
-  <li><a href="{% url 'admin:index' %}cmsbase/">Cmsbase</a></li>
-  <li><a href="{% url 'admin:index' %}cmsbase/page/">Pages</a></li>
+  <li><a href="{% url 'admin:index' %}{{app_label}}/">{{app_label|capfirst}}</a></li>
+  <li><a href="{% url 'admin:index' %}{{app_label}}/{{model_name}}/">{{verbose_name_plural}}</a></li>
   <li>Translation</li>
 </ol>
 {% endblock %}
-{% block content_title %}<div class="inner"><h1>{{translation.title}} / {% trans "Translation history" %} &nbsp; <a href="{% url 'admin:add_edit_translation' page.id translation.language_code %}" class="small gray">{% trans "Cancel" %}</a></h1></div>{% endblock %}
+{% block content_title %}<div class="inner"><h1>{{translation.title}} / {% trans "Translation history" %} &nbsp; <a href="{{translation.translation_edit_url}}" class="small gray">{% trans "Cancel" %}</a></h1></div>{% endblock %}
 
 
 {% block content %}
@@ -24,7 +24,7 @@
           <tbody>
               {% for action in version_list %}
                   <tr>
-                      <th scope="row"><a href="{% url 'admin:translation_recover' page.id translation.language_code action.id %}">{{action.revision.date_created}}</a></th>
+                      <th scope="row"><a href="{{translation.translation_recover_url}}/{{action.id}}/">{{action.revision.date_created}}</a></th>
                       <td>
                           {% if action.revision.user %}
                               {{action.revision.user.username}}
