@@ -16,7 +16,7 @@ Create and start a virtual environment (highly recommended)
 Install CMS Base (which will also install some dependencies)
 -----------------------------------------------------------
 
-	$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-cms-base.git#egg=cmsbase
+	$ pip install -e git+https://github.com/Cotidia/django-cms-base.git#egg=cmsbase
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
 
@@ -52,7 +52,6 @@ Install the dependencies underdevelopment:
 
 If you don't to install it in development mode (for example on production server), use the following commands:
 
-	$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-cms-base.git
 	$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-admin-tools.git
     $ pip install git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git
     $ pip install git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git
@@ -156,7 +155,7 @@ Context processor
 
 Create a default context processor, download a sample here [https://gist.github.com/guillaumepiot/5338169](https://gist.github.com/guillaumepiot/5338169) or enter the following command in the app folder of the same name as the project:
 
-	$ curl https://gist.githubusercontent.com/guillaumepiot/5338169/raw/9a9ce7174ca8f0f5c6affdc5040a12ef7b29c54d/gistfile1.txt > context_processor.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5338169/raw/ > context_processor.py
 
 And add it to  TEMPLATE_CONTEXT_PROCESSORS
 
@@ -232,8 +231,8 @@ Then, we must hook our menu and dashboard classes to generate the custom admin t
 
 Pull the default files from GIST automatically:
 
-	$ curl https://gist.githubusercontent.com/guillaumepiot/b8e79427c91a4ca8dbdf/raw/b15e45ecdebe17ccb6069445480df1dc5d8c2d99/menu.py > menu.py
-	$ curl https://gist.githubusercontent.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5391705/raw/ > menu.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5391722/raw/ > dashboard.py
 
 > You can follow the setup instructions for the admin tools here: [https://bitbucket.org/guillaumepiot/cotidia-admin-tools](https://bitbucket.org/guillaumepiot/cotidia-admin-tools)
 
@@ -273,7 +272,7 @@ Default URLS
 
 We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py)
 
-	$ curl https://gist.githubusercontent.com/guillaumepiot/5392008/raw/b393a030699991f3411056e242feabb9545218ec/urls.py
+	$ curl https://gist.githubusercontent.com/guillaumepiot/5392008/raw/  > urls.py
 
 Or copy and paste the following code:
 
