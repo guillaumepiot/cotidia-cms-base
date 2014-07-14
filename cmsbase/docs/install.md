@@ -1,17 +1,17 @@
 Install
 =======
 
-#Create a new folder for your project
+###Create a new folder for your project
 
 	$ mkdir myproject
 	$ cd myproject
 
-#Create and start a virtual environment (highly recommended)
+###Create and start a virtual environment (highly recommended)
 
 	$ virtualenv .
 	$ source bin/activate
 	
-#Install CMS Base (which will also install some dependencies)
+###Install CMS Base (which will also install some dependencies)
 
 	$ pip install -e git+https://github.com/Cotidia/django-cms-base.git#egg=cmsbase
 	
