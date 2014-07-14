@@ -3,6 +3,10 @@ django-cms-base
 
 An extensible CMS based on Django, including dynamic page fields in JSON datasets, multilingual localisation and publishing workflow.
 
+## Documentation
+
+Currently in the source code: [https://github.com/Cotidia/django-cms-base/tree/master/cmsbase/docs](documentation)
+
 ##Important notice
 
 Since Xcode 5.1, some unknown argument warnings turn into errors, which blocks the installation of the pillow library. One way to overcome this issue is to use the following command:
