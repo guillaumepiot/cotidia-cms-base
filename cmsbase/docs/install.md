@@ -1,28 +1,24 @@
-Installation
-============
+Install
+=======
 
-Create a new folder for your project
-------------------------------------
+#Create a new folder for your project
 
 	$ mkdir myproject
 	$ cd myproject
 
-Create and start a virtual environment (highly recommended)
-----------------------------------------------------------
+#Create and start a virtual environment (highly recommended)
 
 	$ virtualenv .
 	$ source bin/activate
 	
-Install CMS Base (which will also install some dependencies)
------------------------------------------------------------
+#Install CMS Base (which will also install some dependencies)
 
 	$ pip install -e git+https://github.com/Cotidia/django-cms-base.git#egg=cmsbase
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
 
 
-AUTOMATED INSTALLATION
-======================
+#Automated installation
 
 Copy `fabfile.py` from the cmsbase package to your working directory (next to the virtualenv folders):
 
@@ -39,8 +35,7 @@ Run the installation commande
 
 
 
-MANUAL INSTALLATION
-===================
+#Manual installation
 
 
 Install the dependencies underdevelopment:
@@ -57,13 +52,11 @@ If you don't to install it in development mode (for example on production server
     $ pip install git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git
     $ pip install git+https://github.com/dokterbob/django-multilingual-model.git
 
-Create a Django project
------------------------
+##Create a Django project
 
 	$ django-admin.py startproject myproject
 
-Setup the settings
-------------------
+##Setup the settings
 
 First we set a staging/production settings method:
 
@@ -78,8 +71,7 @@ First we set a staging/production settings method:
 > This way we can call the adequate settings file in the server setup depending if we are in staging or production mode, while keeping all settings organised.
 
 
-Settings configuration
-----------------------
+##Settings configuration
 
 To facilitate our several path settings, we set the project path variable:
 
@@ -150,8 +142,7 @@ Specify the SITE_ID, we require it to use Django sites:
 
 	SITE_ID = 1
 
-Context processor
------------------
+##Context processor
 
 Create a default context processor, download a sample here [https://gist.github.com/guillaumepiot/5338169](https://gist.github.com/guillaumepiot/5338169) or enter the following command in the app folder of the same name as the project:
 
@@ -175,16 +166,14 @@ And add it to  TEMPLATE_CONTEXT_PROCESSORS
 > Please note that "django.core.context_processors.request" is necessary to pass the request to the admin tools template tags.
 
 
-Setup the templates path
-------------------------
+##Setup the templates path
 
 	TEMPLATE_DIRS = (
 	    os.path.join(PROJECT_DIR, '../templates/')
 	)
 
 
-Apps
-----
+##Apps
 
 Include the required apps.
 
@@ -215,8 +204,7 @@ Include the required apps.
 	)
 
 
-Admin panel settings
---------------------
+##Admin panel settings
 
 Is it recommended to set the following variables to create a copyright notice in the admin footer:
 
@@ -237,8 +225,7 @@ Pull the default files from GIST automatically:
 > You can follow the setup instructions for the admin tools here: [https://bitbucket.org/guillaumepiot/cotidia-admin-tools](https://bitbucket.org/guillaumepiot/cotidia-admin-tools)
 
 
-Multilingual settings
----------------------
+##Multilingual settings
 
 Include a tuple of enabled languages.
 
@@ -267,8 +254,7 @@ Include a list of URLs that doesn't require the language prefix
 	# False if we have only one language supported
 	PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) <= 1 else True
 
-Default URLS
-------------
+##Default URLS
 
 We recommend to pull the default URLs file from this gist: [https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py](https://gist.github.com/guillaumepiot/5392008/raw/c2234c5a746d1bb59cc4cfa9ddb3ecd060a6016e/urls.py)
 
@@ -305,8 +291,7 @@ Or copy and paste the following code:
 	        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
 	    ) + urlpatterns
 
-Sync the database
------------------
+##Sync the database
 
 	$ python manage.py syncdb
 	$ python manage.py migrate --all
@@ -318,8 +303,7 @@ That's it, now just start the site:
 	$ python manage.py runserver
 
 
-Possible issues
----------------
+##Possible issues
 
 When saving the page model instance, you may encounter the following error:
 
