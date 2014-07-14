@@ -1,12 +1,18 @@
 # Run as local
-import sys 
+import sys, random
 from fabric.api import *
+
+# Generate a secret key for Django settings.py
+def generate_secret_key():
+    return ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+
 
 def localhost():
    # Setup localhost
     env.run = local
     env.cd = lcd
     env.hosts = ['localhost'] 
+
 
 def install(project_name='', mode='edit'):
 
@@ -50,18 +56,19 @@ def install(project_name='', mode='edit'):
 
     with env.cd('%s/%s' % (project_name, project_name)):
         # CMS Base default settings
-        env.run('curl https://gist.github.com/guillaumepiot/6766868/raw/4cc8971fb75750dbb39646a822113c36734fd902/gistfile1.py > settings/__init__.py')
+        env.run('curl https://gist.githubusercontent.com/guillaumepiot/6766868/raw/ > settings/__init__.py')
         # Replace project name in settings file
         env.run("cd settings && sed -i .bak 's/{{myproject}}/%s/g' __init__.py" % project_name)
+        env.run("cd settings && sed -i .bak 's/{{secretkey}}/%s/g' __init__.py" % generate_secret_key())
         env.run("cd settings && rm __init__.py.bak")
         # Context processor
-        env.run('curl https://gist.github.com/guillaumepiot/5338169/raw/08cc845e2e2fcf8c19ebe9f6127112f20adb2f70/gistfile1.txt > context_processor.py')
+        env.run('curl https://gist.githubusercontent.com/guillaumepiot/5338169/raw/ > context_processor.py')
         # Admin menu
-        env.run('curl https://gist.github.com/guillaumepiot/5391705/raw/ec10eda52976618f6f6e0a1a6efd54c95dfe2ce8/gistfile1.py > menu.py')
+        env.run('curl https://gist.githubusercontent.com/guillaumepiot/5391705/raw/ > menu.py')
         # Admin dashboard
-        env.run('curl https://gist.github.com/guillaumepiot/5391722/raw/21d0eba942d22c8ef880703dc5701eade2569b01/gistfile1.py > dashboard.py')
+        env.run('curl https://gist.githubusercontent.com/guillaumepiot/5391722/raw/ > dashboard.py')
         # URLs conf
-        env.run('curl https://gist.github.com/guillaumepiot/5392008/raw/78ea031a51fb6568a7da95eb6e3fc87fad55c6cc/urls.py > urls.py')
+        env.run('curl https://gist.githubusercontent.com/guillaumepiot/5392008/raw/ > urls.py')
 
     with env.cd('%s' % (project_name)):
         # Create folder for sqlite3 database
