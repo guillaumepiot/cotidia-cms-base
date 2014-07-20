@@ -423,7 +423,7 @@ class PageDataSetAdminForm(forms.ModelForm):
     "fields":[
         {
             "name":"description",
-            "type":"charfield",
+            "type":"editorfield",
             "required":true
         }
     ]
@@ -432,13 +432,13 @@ class PageDataSetAdminForm(forms.ModelForm):
     "fieldset":"Meta data",
     "fields":[
         {
-            "name":"meta_description",
+            "name":"meta_title",
             "type":"charfield",
             "required":false
         },
         {
-            "name":"meta_title",
-            "type":"charfield",
+            "name":"meta_description",
+            "type":"textfield",
             "required":false
         }
     ]

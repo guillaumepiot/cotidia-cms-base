@@ -7,4 +7,4 @@ administration interface, it includes:
  * tools to make admin theming easier.
 """
 
-VERSION = '0.2'
+VERSION = '1.0'
