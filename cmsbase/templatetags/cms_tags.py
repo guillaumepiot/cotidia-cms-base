@@ -79,4 +79,10 @@ def get_page_url_by_id(page_id):
         return page.get_absolute_url()
     except:
         return None
+
+@register.filter
+def get_page_url(page_id):
+    if page_id:
+        page = get_object_or_404(Page, id=page_id)
+        return page.get_absolute_url()
     

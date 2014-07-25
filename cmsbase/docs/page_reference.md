@@ -45,6 +45,6 @@ Manager
 
 `BasePage.objects.get_published_live()`: Returns all the published versions of the published pages
 
-`BasePage.objects.get_published_original()`: Returns all the original versions of the published pages
+`BasePage.objects.get_published_originals()`: Returns all the original versions of the published pages
 
 `BasePage.objects.get_originals()`: Returns all original pages, published and not published

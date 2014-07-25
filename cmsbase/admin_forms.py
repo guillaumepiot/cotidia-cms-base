@@ -30,7 +30,7 @@ FIELD_CLASS_MAP = {
     'pagelinkfield': {
         'field_class':TreeNodeChoiceField,
         'field_widget':forms.Select,
-        'field_choices':Page.objects.get_originals()
+        'field_choices':Page.objects.get_published_originals()
     }
 }
 
@@ -42,6 +42,9 @@ class TranslationForm(BetterModelForm):
         model = PageTranslation
         exclude = ['content']
 
+    class Media:
+        js = ('js/slugify.js',)
+
     def __init__(self, page, *args, **kwargs):
 
         super(TranslationForm, self).__init__(*args, **kwargs)
@@ -52,6 +55,8 @@ class TranslationForm(BetterModelForm):
 
         # Make parent field hidden
         self.fields['parent'] = TreeNodeChoiceField(queryset=page.__class__.objects.get_originals(), widget=forms.HiddenInput())
+        # Assign auto-slug from title to slug field
+        self.fields['title'].widget.attrs['data-slug'] = 'slug'
 
         self.json_fields = page.dataset.get_fields() if page.dataset else []
 
@@ -76,7 +81,7 @@ class TranslationForm(BetterModelForm):
                 # Create a new form field
                 
                 if field_type in ['pagelinkfield']:
-                    self.fields[field_name] = field_class(required=field_required, label=field_label, queryset=FIELD_CLASS_MAP[field_type]['field_choices'])
+                    self.fields[field_name] = field_class(required=field_required, label=field_label, queryset=FIELD_CLASS_MAP[field_type]['field_choices'], help_text=_('Only published pages can be linked to.'))
                 else:
                     self.fields[field_name] = field_class(max_length=FIELD_CLASS_MAP[field_type]['max_length'], required=field_required, label=field_label, widget=field_widget)
 
@@ -122,7 +127,8 @@ class TranslationForm(BetterModelForm):
 
                 if field_type in ['pagelinkfield']:
                     if self.cleaned_data[field_name]:
-                        mask_data[field_name] = self.cleaned_data[field_name].id
+                        page = self.cleaned_data[field_name]
+                        mask_data[field_name] = page.id
                 else:
                     mask_data[field_name] = self.cleaned_data[field_name]
 

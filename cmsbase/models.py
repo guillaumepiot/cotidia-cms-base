@@ -29,7 +29,7 @@ class BasePageManager(models.Manager):
         else:
             return translation_model.objects.filter(parent__published=True).exclude(parent__published_from=None)
 
-    def get_published_original(self):
+    def get_published_originals(self):
         return self.model.objects.filter(published=True, published_from=None)
 
     def get_originals(self):
@@ -168,7 +168,7 @@ class BasePage(MPTTModel):
 
                     # Get the name of the field
                     field_name = '%s_%s' % (fieldset_id, field['name'])
-                    # print field_name
+                    # Assign the value of the field to the translation object
                     setattr(translation, field_name, translation.get_attr(field_name))
 
     def translated(self):
@@ -512,7 +512,11 @@ class BasePageTranslation(models.Model, PublishTranslation):
 
     def get_attr(self, attr_name):
         try:
-            return self.get_content[attr_name]
+            value = self.get_content[attr_name]
+            # In the case of page link field, we need to return the url
+            if hasattr(value, 'url'):
+                return value['url']
+            return value
         except:
             return ''
 
