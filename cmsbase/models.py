@@ -239,6 +239,35 @@ class BasePage(MPTTModel):
         return obj
 
 
+    def duplicate(self):
+
+        cls = self.__class__
+
+        # Fields to ignore in duplication
+        ignore_fields = ['id', 'published', 'approval_needed', 'published_from_id', 'order_id', 'publish', 'approve', 'lft', 'rght', 'tree_id', 'level', 'page_ptr_id']
+
+        obj = cls()
+
+        # Update fields which are not ignored
+        for field in cls._meta.fields:
+            #print dir(field)
+            if field.attname not in ignore_fields:
+                if field.attname == 'slug':
+                    obj.__dict__[field.attname] = self.__dict__[field.attname] + '-copy'
+                elif field.attname == 'display_title':
+                    obj.__dict__[field.attname] = self.__dict__[field.attname] + ' Copy'
+                else:
+                    obj.__dict__[field.attname] = self.__dict__[field.attname]
+
+        obj.save()
+
+        # Duplicate translations
+        for translation in self.CMSMeta.translation_class.objects.filter(parent=self):
+            translation.duplicate(obj)
+
+        return obj
+
+
     def get_absolute_url(self, current_language=False, urlargs=False):
 
         from django.utils import translation
@@ -464,10 +493,26 @@ class PublishTranslation(object):
             for field in cls._meta.fields:
                 if field.attname not in ignore_fields:
                     setattr(obj, field.attname, getattr(self, field.attname))
-                    #obj.__dict__[field.attname] = self.__dict__[field.attname]
 
             obj.parent = published_page
             obj.save()
+
+    def duplicate(self, parent):
+        # We create a copy of the current object and attach it to a new parent
+        cls = self.__class__
+        obj = cls()
+
+        # Fields to ignore in duplication
+        ignore_fields = ['id', 'parent_id', ]
+
+        # Update fields which are not ignored
+        for field in cls._meta.fields:
+            if field.attname not in ignore_fields:
+                setattr(obj, field.attname, getattr(self, field.attname))
+
+        obj.parent = parent
+        obj.save()
+
 
 
     

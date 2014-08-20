@@ -153,8 +153,17 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     make_unpublished.short_description = "Un-publish"
 
+    def duplicate(self, request, queryset):
+        for obj in queryset:
+            obj.duplicate()
+
+        # Rebuild the tree
+        obj.__class__._tree_manager.rebuild()
+
+    duplicate.short_description = "Duplicate"
+
     #Assign those actions
-    actions = [make_published, make_unpublished]
+    actions = [make_published, make_unpublished, duplicate]
 
 
 
