@@ -52,15 +52,13 @@
           {% if fieldset.description %}
             <p class="description">{{ fieldset.description }}</p>
           {% endif %}
-          <ul>
           {% for field in fieldset %}
             {% if field.is_hidden %}
-              {{ field }}
+              <div class="form-row">{{ field }}</div>
             {% else %}
               {% include 'admin/includes/field_standard.html' %}
             {% endif %}
           {% endfor %}
-          </ul>
           </fieldset>
         {% endfor %}
       </div>

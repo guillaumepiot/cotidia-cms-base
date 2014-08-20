@@ -61,8 +61,8 @@ class BasePage(MPTTModel):
     publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'), default=False)
     approve = models.BooleanField(_('Submit for approval'), default=False)
 
-    date_created = models.DateTimeField()
-    date_updated = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     # Optional redirect
     redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
@@ -147,8 +147,8 @@ class BasePage(MPTTModel):
     def title(self):
         return self.display_title
 
-    # class MPTTMeta:
-    #   order_insertion_by = ['order_id']
+    class MPTTMeta:
+      order_insertion_by = ['order_id']
 
     def get_published(self):
         cls = self.__class__

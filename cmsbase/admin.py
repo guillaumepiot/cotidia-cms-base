@@ -393,6 +393,8 @@ class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin)
 
     mptt_level_indent = 20
 
+    change_list_template = 'admin/cmsbase/page/change_list.html'
+
 
     # FIELDSETS
 
