@@ -29,7 +29,7 @@ Copy `fabfile.py` from the cmsbase package to your working directory (next to th
 		src/
 		fabfile.py
 		
-Run the installation commande
+Run the installation command
 
 	$ fab localhost install:project_name='myproject',mode='edit'
 

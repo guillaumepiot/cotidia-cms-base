@@ -60,13 +60,13 @@ for dirpath, dirnames, filenames in os.walk('cmsbase'):
             data_files.append(os.path.join(prefix, f))
 
 setup(
-    name="cotidia-cms-base",
-    description="Django application to manage content publishing",
+    name="django-cms-base",
+    description="An extensible CMS based on Django, including dynamic page fields in JSON datasets, multilingual localisation and publishing workflow.",
     version=VERSION,
     author="Guillaume Piot",
     author_email="guillaume@cotidia.com",
-    url="https://bitbucket.org/guillaumepiot/cotidia-cms-base",
-    download_url="https://bitbucket.org/guillaumepiot/cotidia-cms-base/downloads/cotidia-cms-base-%s.tar.gz" % VERSION,
+    url="https://github.com/Cotidia/django-cms-base",
+    download_url="https://github.com/Cotidia/django-cms-base/archive/%s.tar.gz" % VERSION,
     package_dir={'cmsbase': 'cmsbase'},
     packages=packages,
     package_data={'cmsbase': data_files},
