@@ -13,7 +13,7 @@ Install
 	
 ###Install CMS Base (which will also install some dependencies)
 
-	$ pip install -e git+https://github.com/Cotidia/django-cms-base.git#egg=cmsbase
+	$ pip install -e git+https://github.com/Cotidia/cotidia-cms-base.git#egg=cmsbase
 	
 > Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.
 

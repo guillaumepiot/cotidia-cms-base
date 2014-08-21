@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django import forms
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
@@ -77,9 +78,16 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     def response_change(self, request, obj):
         response = super(PublishingWorkflowAdmin, self).response_change(request, obj)
         if "_preview" in request.POST:
-            return HttpResponseRedirect("%s?preview" % obj.get_absolute_url())
+            if obj.get_translations():
+                return HttpResponseRedirect("%s?preview" % obj.get_absolute_url())
+            else:
+                messages.error(request, "%s could not be published because it doesn't have any content yet." % obj)
         elif "_publish" in request.POST:
-            self._publish_object(obj)
+            if obj.get_translations():
+                self._publish_object(obj)
+            else:
+                messages.error(request, "%s could not be published because it doesn't have any content yet." % obj)
+            
         return response
 
     # Custom result queryset
@@ -123,7 +131,10 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     def make_published(self, request, queryset):
         if request.user.has_perm('cmsbase.can_publish') or request.user.is_superuser:
             for obj in queryset:
-                self._publish_object(obj)
+                if obj.get_translations():
+                    self._publish_object(obj)
+                else:
+                    messages.error(request, "%s could not be published because it doesn't have any content yet." % obj)
 
             # Rebuild the tree
             obj.__class__._tree_manager.rebuild()
@@ -142,8 +153,17 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     make_unpublished.short_description = "Un-publish"
 
+    def duplicate(self, request, queryset):
+        for obj in queryset:
+            obj.duplicate()
+
+        # Rebuild the tree
+        obj.__class__._tree_manager.rebuild()
+
+    duplicate.short_description = "Duplicate"
+
     #Assign those actions
-    actions = [make_published, make_unpublished]
+    actions = [make_published, make_unpublished, duplicate]
 
 
 
@@ -259,11 +279,13 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 class PageFormAdmin(forms.ModelForm):
     required_css_class = 'required'
     error_css_class = 'errorfield'
-
-    redirect_to = TreeNodeChoiceField(label=_('Redirect to page'), queryset=Page.objects.get_published_original(), help_text=_('Redirect this page to another page in the system'), required=False)
+    redirect_to = TreeNodeChoiceField(label=_('Redirect to page'), queryset=Page.objects.get_published_originals(), help_text=_('Redirect this page to another page in the system'), required=False)
     #images = forms.CharField(widget=MultipleFileWidget, required=False)
     class Meta:
         model = Page
+
+    class Media:
+        js = ('js/slugify.js',)
 
     def __init__(self, *args, **kwargs):
         from django.contrib.contenttypes.models import ContentType
@@ -272,8 +294,11 @@ class PageFormAdmin(forms.ModelForm):
         redirect_to = self.fields['redirect_to']
         self.obj = kwargs.get('instance', False)
 
+        # Assign auto-slug from title to slug field
+        self.fields['display_title'].widget.attrs['data-slug'] = 'slug'
+
         if cms_settings.CMS_PAGE_RELATED_PAGES:
-            self.fields['related_pages'] = forms.ModelMultipleChoiceField(queryset=Page.objects.get_published_original(), widget=forms.CheckboxSelectMultiple, required=False)
+            self.fields['related_pages'] = forms.ModelMultipleChoiceField(queryset=Page.objects.get_published_originals(), widget=forms.CheckboxSelectMultiple, required=False)
         
         # if self.instance:
         #     content_type = ContentType.objects.get_for_model(self.instance)
@@ -368,6 +393,8 @@ class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin)
 
     mptt_level_indent = 20
 
+    change_list_template = 'admin/cmsbase/page/change_list.html'
+
 
     # FIELDSETS
 
@@ -423,8 +450,8 @@ class PageDataSetAdminForm(forms.ModelForm):
     "fields":[
         {
             "name":"description",
-            "type":"charfield",
-            "required":true
+            "type":"editorfield",
+            "required":false
         }
     ]
   },
@@ -432,13 +459,13 @@ class PageDataSetAdminForm(forms.ModelForm):
     "fieldset":"Meta data",
     "fields":[
         {
-            "name":"meta_description",
+            "name":"meta_title",
             "type":"charfield",
             "required":false
         },
         {
-            "name":"meta_title",
-            "type":"charfield",
+            "name":"meta_description",
+            "type":"textfield",
             "required":false
         }
     ]

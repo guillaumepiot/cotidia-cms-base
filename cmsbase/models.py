@@ -29,7 +29,7 @@ class BasePageManager(models.Manager):
         else:
             return translation_model.objects.filter(parent__published=True).exclude(parent__published_from=None)
 
-    def get_published_original(self):
+    def get_published_originals(self):
         return self.model.objects.filter(published=True, published_from=None)
 
     def get_originals(self):
@@ -61,8 +61,8 @@ class BasePage(MPTTModel):
     publish = models.BooleanField(_('Publish this page. The page will also be set to Active.'), default=False)
     approve = models.BooleanField(_('Submit for approval'), default=False)
 
-    date_created = models.DateTimeField()
-    date_updated = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     # Optional redirect
     redirect_to = models.ForeignKey('self', blank=True, null=True, related_name='redirect_to_page')
@@ -147,8 +147,8 @@ class BasePage(MPTTModel):
     def title(self):
         return self.display_title
 
-    # class MPTTMeta:
-    #   order_insertion_by = ['order_id']
+    class MPTTMeta:
+      order_insertion_by = ['order_id']
 
     def get_published(self):
         cls = self.__class__
@@ -168,7 +168,7 @@ class BasePage(MPTTModel):
 
                     # Get the name of the field
                     field_name = '%s_%s' % (fieldset_id, field['name'])
-                    # print field_name
+                    # Assign the value of the field to the translation object
                     setattr(translation, field_name, translation.get_attr(field_name))
 
     def translated(self):
@@ -235,6 +235,35 @@ class BasePage(MPTTModel):
             # Update data
             obj.published = False
             obj.save()
+
+        return obj
+
+
+    def duplicate(self):
+
+        cls = self.__class__
+
+        # Fields to ignore in duplication
+        ignore_fields = ['id', 'published', 'approval_needed', 'published_from_id', 'order_id', 'publish', 'approve', 'lft', 'rght', 'tree_id', 'level', 'page_ptr_id']
+
+        obj = cls()
+
+        # Update fields which are not ignored
+        for field in cls._meta.fields:
+            #print dir(field)
+            if field.attname not in ignore_fields:
+                if field.attname == 'slug':
+                    obj.__dict__[field.attname] = self.__dict__[field.attname] + '-copy'
+                elif field.attname == 'display_title':
+                    obj.__dict__[field.attname] = self.__dict__[field.attname] + ' Copy'
+                else:
+                    obj.__dict__[field.attname] = self.__dict__[field.attname]
+
+        obj.save()
+
+        # Duplicate translations
+        for translation in self.CMSMeta.translation_class.objects.filter(parent=self):
+            translation.duplicate(obj)
 
         return obj
 
@@ -464,10 +493,26 @@ class PublishTranslation(object):
             for field in cls._meta.fields:
                 if field.attname not in ignore_fields:
                     setattr(obj, field.attname, getattr(self, field.attname))
-                    #obj.__dict__[field.attname] = self.__dict__[field.attname]
 
             obj.parent = published_page
             obj.save()
+
+    def duplicate(self, parent):
+        # We create a copy of the current object and attach it to a new parent
+        cls = self.__class__
+        obj = cls()
+
+        # Fields to ignore in duplication
+        ignore_fields = ['id', 'parent_id', ]
+
+        # Update fields which are not ignored
+        for field in cls._meta.fields:
+            if field.attname not in ignore_fields:
+                setattr(obj, field.attname, getattr(self, field.attname))
+
+        obj.parent = parent
+        obj.save()
+
 
 
     
@@ -512,7 +557,11 @@ class BasePageTranslation(models.Model, PublishTranslation):
 
     def get_attr(self, attr_name):
         try:
-            return self.get_content[attr_name]
+            value = self.get_content[attr_name]
+            # In the case of page link field, we need to return the url
+            if hasattr(value, 'url'):
+                return value['url']
+            return value
         except:
             return ''
 
