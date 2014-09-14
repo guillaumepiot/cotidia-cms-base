@@ -1,3 +1,9 @@
+---
+layout: page
+title: Specifications
+permalink: "specifications.html"
+---
+
 Specifications
 ==============
 
@@ -48,6 +54,9 @@ Text editor
 All content text editor should be enabled with Redactor, the best wysiwyg I know out there.
 
 	$ -e git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git
+
+File upload
+-----------
 
 All file upload within the wysiwyg should be handle by Filemanager which plugs nicely with Redactor
   

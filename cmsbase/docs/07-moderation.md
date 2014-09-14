@@ -1,3 +1,9 @@
+---
+layout: page
+title: Moderation
+permalink: "moderation.html"
+---
+
 Moderation
 ==========
 

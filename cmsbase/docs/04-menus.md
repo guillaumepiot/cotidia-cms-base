@@ -1,3 +1,9 @@
+---
+layout: page
+title: Menus
+permalink: "menu.html"
+---
+
 Menus
 =====
 
@@ -9,10 +15,13 @@ How to use it
 
 In your template, import the mptt tags:
 
+{% raw %}
 	{% load mptt_tags %}
+{% endraw %}
 
 To create a navigation list, use the following code passing on a MPTT tree node (nodes):
 
+{% raw %}
 	<ul>
 	    {% recursetree nodes %}
 	        {% if node.get_published %}<li>
@@ -25,7 +34,8 @@ To create a navigation list, use the following code passing on a MPTT tree node 
 	        </li>{% endif %}
 	    {% endrecursetree %}
 	</ul>
-	
+{% endraw %}	
+
 Getting the node in Python:
 
 	nodes = page_original.get_root().get_descendants(include_self=True)
@@ -43,5 +53,7 @@ Get the full tree
 -----------------
 
 You can use the template tage to get the full tree for a specific model:
-
-{% full_tree_for_model cmsbase.Page as pages %}
+	
+{% raw %}
+	{% full_tree_for_model cmsbase.Page as pages %}
+{% endraw %}

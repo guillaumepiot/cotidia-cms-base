@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Page reference</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li ><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li ><a href="/menu.html">Menus</a></li>
+					
+						<li ><a href="/usage.html">Usage</a></li>
+					
+						<li ><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li ><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li class="active"><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li ><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="page-reference">Page reference</h1>
+
+<h2 id="properties">Properties</h2>
+
+<p><code>BasePage.siblings</code>: Returns all siblings from a given page (original not published version) including itself.</p>
+
+<h2 id="method">Method</h2>
+
+<p><code>BasePage.get_published()</code>: Returns the published version of an original page. If the page it’s called from is a published version, then it returns <code>None</code></p>
+
+<p><code>BasePage.translated()</code>: Returns the translated object of a given page, in the current language set.</p>
+
+<p><code>BasePage.get_translations()</code>: Returns all translation objects from a given page.</p>
+
+<p><code>BasePage.publish_translations()</code>: Publish translations of a given original page.</p>
+
+<p><code>BasePage.publish_version()</code>: Publish a given original page</p>
+
+<p><code>BasePage.unpublish_version()</code>: Un-publish a given original page</p>
+
+<p><code>BasePage.delete()</code>: Delete a given original page and its published version.</p>
+
+<p><code>BasePage.get_absolute_url()</code>: Construct a URL based on the page ancestor tree and returns it.</p>
+
+<p><code>BasePage.get_breadcrumbs()</code>: Returns a list of ancestor pages until the root page.</p>
+
+<p><code>BasePage.get_child_pages(include_self=False)</code>: Returns all the child pages of any given page. Return the current object as well if <code>include_self</code> equals <code>True</code></p>
+
+<ul>
+  <li>If the page object is original, all descendants are returned included un-published pages</li>
+  <li>If the page object is a live version, only published descendants are returnes</li>
+</ul>
+
+<p><code>BasePage.get_root_page()</code>: Returns the root page from the ancestor tree of a given page.</p>
+
+<p><code>BasePage.images()</code>: Returns all the inline images of the original image. Please note that currently inline images are not part of the publishing workflow. Any uploaded images will be directly available from the published version as well.</p>
+
+<p><code>BasePage.feature_image()</code>: Returns the first image depending on the order_id. If no order_id has been specified, then the oldest image uploaded will be returned.</p>
+
+<h2 id="manager">Manager</h2>
+
+<p><code>BasePage.objects.get_published_live()</code>: Returns all the published versions of the published pages</p>
+
+<p><code>BasePage.objects.get_published_originals()</code>: Returns all the original versions of the published pages</p>
+
+<p><code>BasePage.objects.get_originals()</code>: Returns all original pages, published and not published</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

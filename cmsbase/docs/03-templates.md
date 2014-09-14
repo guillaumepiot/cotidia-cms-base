@@ -1,3 +1,9 @@
+---
+layout: page
+title: Templates
+permalink: "template.html"
+---
+
 Templates
 =========
 
@@ -8,9 +14,13 @@ The base html is copied from Tim Murtaugh's html5reset.org, and is located in 't
 
 Page blocks:
 
-- {% block meta_title %}{% endblock %}: the meta title of page
-- {% block meta_description %}{% endblock %}: the meta description of the page
-- {% block google_site_verification %}{% endblock %}: the google webmaster verification code
+{% raw %}
+`{% block meta_title %}{% endblock %}`: the meta title of page
+
+`{% block meta_description %}{% endblock %}`: the meta description of the page
+
+`{% block google_site_verification %}{% endblock %}`: the google webmaster verification code
+{% endraw %}
 
 Custom page templates
 ---------------------
@@ -37,6 +47,7 @@ For example:
 Tags
 ----
 
+{% raw %}
 `{% get_page_by_unique_identifier 'page-slug' as pagevar %}`: Add the page matching the unique page identifier in the current language as `pagevar` in the template context. Returns the published version of the page.
 
 `links_for_page` populate the template context with a list of members related to a specific page.
@@ -44,15 +55,16 @@ Tags
 	{% links_for_page page as links %}
 	
 Eg:
-	
+
 	{% links_for_page page as links %}
 	{% for link in links %}
 		{{link}}
 	{% endfor %}
-	
+
 `{% home_page as home %}`: Return the original home page instance as `home` in the template context if exist, otherwise return `False`
 	
 `{% language_name LANGUAGE_CODE %}`: Get the language name from the language code
+{% endraw %}
 
 Filters
 -------

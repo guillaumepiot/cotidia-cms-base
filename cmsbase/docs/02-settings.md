@@ -1,3 +1,9 @@
+---
+layout: page
+title: CMS settings
+permalink: "settings.html"
+---
+
 CMS Base settings
 =================
 

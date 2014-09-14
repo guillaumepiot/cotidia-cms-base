@@ -1,3 +1,9 @@
+---
+layout: page
+title: Page reference
+permalink: "page-reference.html"
+---
+
 Page reference
 ==============
 

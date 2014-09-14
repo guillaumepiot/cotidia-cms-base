@@ -1,3 +1,9 @@
+---
+layout: page
+title: Installation
+permalink: "install.html"
+---
+
 Install
 =======
 
@@ -83,8 +89,8 @@ Setup the local database, we recommend to use sqlite locally but feel free to an
 
 	DATABASES = {
 	    'default': {
-	        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-	        'NAME': 'dev/myproject.db',                      # Or path to database file if using sqlite3.
+	        'ENGINE': 'django.db.backends.sqlite3',
+	        'NAME': 'dev/myproject.db',
 	    }
 	}
 
@@ -169,7 +175,7 @@ And add it to  TEMPLATE_CONTEXT_PROCESSORS
 ###Setup the templates path
 
 	TEMPLATE_DIRS = (
-	    os.path.join(PROJECT_DIR, '../templates/')
+	    os.path.join(PROJECT_DIR, '../templates/'),
 	)
 
 

@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Menus</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li ><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li class="active"><a href="/menu.html">Menus</a></li>
+					
+						<li ><a href="/usage.html">Usage</a></li>
+					
+						<li ><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li ><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li ><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li ><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="menus">Menus</h1>
+
+<p>Menus are generated from the MPTT tree, using the MPTT template tag.</p>
+
+<h2 id="how-to-use-it">How to use it</h2>
+
+<p>In your template, import the mptt tags:</p>
+
+<pre><code>{% load mptt_tags %}
+</code></pre>
+
+<p>To create a navigation list, use the following code passing on a MPTT tree node (nodes):</p>
+
+<pre><code>&lt;ul&gt;
+    {% recursetree nodes %}
+        {% if node.get_published %}&lt;li&gt;
+            &lt;a href="{{node.get_absolute_url}}"&gt;{{node.get_published.translated.title}}&lt;/a&gt;
+            {% if not node.is_leaf_node %}
+                &lt;ul class="children"&gt;
+                    {{ children }}
+                &lt;/ul&gt;
+            {% endif %}
+        &lt;/li&gt;{% endif %}
+    {% endrecursetree %}
+&lt;/ul&gt;
+</code></pre>
+
+<p>Getting the node in Python:</p>
+
+<pre><code>nodes = page_original.get_root().get_descendants(include_self=True)
+</code></pre>
+
+<p>It first get the root of the current page instance, then look up it root node and get all descendants. This will generate a full tree.</p>
+
+<p>!!! Please note that because the tree can ony be generated by “original” pages, the template output should lookup the “published” version to write the approved published content. Hence:</p>
+
+<p>The “translated” method automatically lookup the current language set in your session to render the right translation.</p>
+
+<h2 id="get-the-full-tree">Get the full tree</h2>
+
+<p>You can use the template tage to get the full tree for a specific model:</p>
+
+<pre><code>{% full_tree_for_model cmsbase.Page as pages %}
+</code></pre>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

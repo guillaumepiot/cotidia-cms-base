@@ -5,7 +5,7 @@ An extensible CMS based on Django, including dynamic page fields in JSON dataset
 
 ## Documentation
 
-Currently in the source code: [documentation](https://github.com/Cotidia/django-cms-base/tree/master/cmsbase/docs)
+[cmsbase.cotidia.com](http://cmsbase.cotidia.com/)
 
 ##Important notice
 

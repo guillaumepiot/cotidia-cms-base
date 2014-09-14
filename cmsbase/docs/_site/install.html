@@ -1,0 +1,469 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Installation</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li class="active"><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li ><a href="/menu.html">Menus</a></li>
+					
+						<li ><a href="/usage.html">Usage</a></li>
+					
+						<li ><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li ><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li ><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li ><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="install">Install</h1>
+
+<h3 id="create-a-new-folder-for-your-project">Create a new folder for your project</h3>
+
+<pre><code>$ mkdir myproject
+$ cd myproject
+</code></pre>
+
+<h3 id="create-and-start-a-virtual-environment-highly-recommended">Create and start a virtual environment (highly recommended)</h3>
+
+<pre><code>$ virtualenv .
+$ source bin/activate
+</code></pre>
+
+<h3 id="install-cms-base-which-will-also-install-some-dependencies">Install CMS Base (which will also install some dependencies)</h3>
+
+<pre><code>$ pip install -e git+https://github.com/Cotidia/cotidia-cms-base.git#egg=cmsbase
+</code></pre>
+
+<blockquote>
+  <p>Since the project is under development, we install CMS Base in edit mode (-e) from the repository to enable bug fixing and improvements if required.</p>
+</blockquote>
+
+<h2 id="automated-installation">Automated installation</h2>
+
+<p>Copy <code>fabfile.py</code> from the cmsbase package to your working directory (next to the virtualenv folders):</p>
+
+<pre><code>eg:
+	bin/
+	include/
+	lib/
+	src/
+	fabfile.py
+</code></pre>
+
+<p>Run the installation command</p>
+
+<pre><code>$ fab localhost install:project_name='myproject',mode='edit'
+</code></pre>
+
+<h2 id="manual-installation">Manual installation</h2>
+
+<p>Install the dependencies underdevelopment:</p>
+
+<pre><code>$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools
+$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor
+$ pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager
+$ pip install -e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model
+</code></pre>
+
+<p>If you don’t to install it in development mode (for example on production server), use the following commands:</p>
+
+<pre><code>$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-admin-tools.git
+$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git
+$ pip install git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git
+$ pip install git+https://github.com/dokterbob/django-multilingual-model.git
+</code></pre>
+
+<h3 id="create-a-django-project">Create a Django project</h3>
+
+<pre><code>$ django-admin.py startproject myproject
+</code></pre>
+
+<h3 id="setup-the-settings">Setup the settings</h3>
+
+<p>First we set a staging/production settings method:</p>
+
+<pre><code>$ cd myproject/myproject
+$ mkdir settings
+$ cp settings.py settings/__init__.py
+$ rm settings.py
+$ cd settings
+$ echo "from myproject.settings import *" &gt; staging.py
+$ echo "from myproject.settings import *" &gt; production.py
+</code></pre>
+
+<blockquote>
+  <p>This way we can call the adequate settings file in the server setup depending if we are in staging or production mode, while keeping all settings organised.</p>
+</blockquote>
+
+<h3 id="settings-configuration">Settings configuration</h3>
+
+<p>To facilitate our several path settings, we set the project path variable:</p>
+
+<pre><code>import os
+
+PROJECT_DIR = os.path.dirname(__file__) 
+</code></pre>
+
+<p>Setup the local database, we recommend to use sqlite locally but feel free to any other database type.</p>
+
+<pre><code>DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'dev/myproject.db',
+    }
+}
+</code></pre>
+
+<p>Set the folder to contain the database, and make sure your path are correct whichever one you choose.</p>
+
+<pre><code>$ mkdir dev
+</code></pre>
+
+<p>New in Django 1.5, setup a list ol allowed hosts for production environment:</p>
+
+<pre><code>ALLOWED_HOSTS = ['.mydomain.com']
+
+# .mydomain.com is a wildcard for mydomain.com and all its sub-domains
+</code></pre>
+
+<p>More info on Django’s website: <a href="https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts">https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts</a></p>
+
+<p>Setup the media folder and url (where all uploaded will go), if any.</p>
+
+<pre><code>MEDIA_ROOT = os.path.join(PROJECT_DIR, '../../media/')
+MEDIA_URL = '/media/'
+</code></pre>
+
+<p>We comment the STATIC_ROOT as we will using STATICFILES_DIRS instead.</p>
+
+<pre><code># Static root will be used for collecting static files for production deployment
+# Use the command: python manage.py collectstatic
+STATIC_ROOT = os.path.join(PROJECT_DIR, '../../static/')
+
+STATIC_URL = '/static/'
+
+# Here's where we save the project static files
+# Not be served in production mode
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_DIR, "../static"),
+)
+</code></pre>
+
+<p>We insert  <code>django.middleware.locale.LocaleMiddleware</code> in our middlewares, to support language changes.</p>
+
+<pre><code>MIDDLEWARE_CLASSES = (
+	'localeurl.middleware.LocaleURLMiddleware',
+
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+)
+</code></pre>
+
+<p>Our urls will automatically bear the prefix at the start using the following url pattern: <code>from django.conf.urls.i18n import i18n_patterns</code></p>
+
+<pre><code># Localised URLs
+urlpatterns = i18n_patterns('',
+    url(r'^', include('cmsbase.urls', namespace='cms')),
+)
+</code></pre>
+
+<p>Specify the SITE_ID, we require it to use Django sites:</p>
+
+<pre><code>SITE_ID = 1
+</code></pre>
+
+<h3 id="context-processor">Context processor</h3>
+
+<p>Create a default context processor, download a sample here <a href="https://gist.github.com/guillaumepiot/5338169">https://gist.github.com/guillaumepiot/5338169</a> or enter the following command in the app folder of the same name as the project:</p>
+
+<pre><code>$ curl https://gist.githubusercontent.com/guillaumepiot/5338169/raw/ &gt; context_processor.py
+</code></pre>
+
+<p>And add it to  TEMPLATE_CONTEXT_PROCESSORS</p>
+
+<pre><code>TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.core.context_processors.request",
+    "django.contrib.messages.context_processors.messages",
+
+    "myproject.context_processor.website_settings"
+)
+</code></pre>
+
+<blockquote>
+  <p>Please note that “django.core.context_processors.request” is necessary to pass the request to the admin tools template tags.</p>
+</blockquote>
+
+<h3 id="setup-the-templates-path">Setup the templates path</h3>
+
+<pre><code>TEMPLATE_DIRS = (
+    os.path.join(PROJECT_DIR, '../templates/'),
+)
+</code></pre>
+
+<h3 id="apps">Apps</h3>
+
+<p>Include the required apps.</p>
+
+<pre><code>INSTALLED_APPS = (
+
+    'admin_tools',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
+    'admin_tools.liststyle',
+
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.admin',
+    'django.contrib.sites',
+
+    'localeurl',
+
+    'cmsbase',
+    'reversion',
+    'mptt',
+    'south',
+    'redactor',
+    'filemanager'
+)
+</code></pre>
+
+<h3 id="admin-panel-settings">Admin panel settings</h3>
+
+<p>Is it recommended to set the following variables to create a copyright notice in the admin footer:</p>
+
+<pre><code>AUTHOR_URL = 'http://mydomain.com'
+AUTHOR = 'My project'
+#GOOGLE_SITE_VERIFICATION : Google webmaster verification code (optional)
+</code></pre>
+
+<p>Then, we must hook our menu and dashboard classes to generate the custom admin tools:</p>
+
+<pre><code>ADMIN_TOOLS_INDEX_DASHBOARD = 'myproject.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_MENU = 'myproject.menu.CustomMenu'
+</code></pre>
+
+<p>Pull the default files from GIST automatically:</p>
+
+<pre><code>$ curl https://gist.githubusercontent.com/guillaumepiot/5391705/raw/ &gt; menu.py
+$ curl https://gist.githubusercontent.com/guillaumepiot/5391722/raw/ &gt; dashboard.py
+</code></pre>
+
+<blockquote>
+  <p>You can follow the setup instructions for the admin tools here: <a href="https://bitbucket.org/guillaumepiot/cotidia-admin-tools">https://bitbucket.org/guillaumepiot/cotidia-admin-tools</a></p>
+</blockquote>
+
+<h3 id="multilingual-settings">Multilingual settings</h3>
+
+<p>Include a tuple of enabled languages.</p>
+
+<blockquote>
+  <p>Please note that if you include only one language, then the multilingual features will be disabled.</p>
+</blockquote>
+
+<pre><code>LANGUAGES = (
+    ('en', 'English'),
+    # ('nl', 'Dutch'),
+    # ('es', 'Spanish'),
+    # ('pt', 'Portuguese'),
+    # ('de', 'German'),
+)
+DEFAULT_LANGUAGE = LANGUAGES[0][0]
+
+# Set the django language code to the default language
+LANGUAGE_CODE = DEFAULT_LANGUAGE
+</code></pre>
+
+<p>Include a list of URLs that doesn’t require the language prefix</p>
+
+<pre><code>LOCALE_INDEPENDENT_PATHS = (
+    r'^/admin/',
+    r'^/uploads/',
+)
+
+# Define wether or not to display the url prefix
+# False if we have only one language supported
+PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) &lt;= 1 else True
+</code></pre>
+
+<h3 id="default-urls">Default URLS</h3>
+
+<p>We recommend to pull the default URLs file from this gist: <a href="https://gist.github.com/guillaumepiot/5392008/raw/">https://gist.github.com/guillaumepiot/5392008/raw/</a></p>
+
+<pre><code>$ curl https://gist.githubusercontent.com/guillaumepiot/5392008/raw/  &gt; urls.py
+</code></pre>
+
+<p>Or copy and paste the following code:</p>
+
+<pre><code>from django.conf.urls import patterns, include, url
+from django.conf import settings
+from django.contrib import admin
+admin.autodiscover()
+
+urlpatterns = patterns('',
+    # Language switcher management
+    (r'^localeurl/', include('localeurl.urls')),
+
+    # Password reset features
+    url(r'^admin/password_reset/$', 'django.contrib.auth.views.password_reset', name='admin_password_reset'),
+    url(r'^admin/password_reset/done/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done'),
+    url(r'^reset/(?P&lt;uidb64&gt;[0-9A-Za-z]+)-(?P&lt;token&gt;.+)/$', 'django.contrib.auth.views.password_reset_confirm', name="password_reset_confirm"),
+    url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete', name="password_reset_complete"),
+
+    # Admin
+    url(r'^admin/i18n/', include('django.conf.urls.i18n')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^uploads/', include('filemanager.urls')),
+
+    # Front
+    url(r'^', include('cmsbase.urls', namespace='cms')),
+)
+
+if settings.DEBUG:
+    urlpatterns = patterns('',
+        url(r'^media/(?P&lt;path&gt;.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+    ) + urlpatterns
+</code></pre>
+
+<h3 id="sync-the-database">Sync the database</h3>
+
+<pre><code>$ python manage.py syncdb
+$ python manage.py migrate --all
+</code></pre>
+
+<p>Set the site name and domain once logged in the admin.</p>
+
+<p>That’s it, now just start the site:</p>
+
+<pre><code>$ python manage.py runserver
+</code></pre>
+
+<h3 id="possible-issues">Possible issues</h3>
+
+<p>When saving the page model instance, you may encounter the following error:</p>
+
+<pre><code>reversion_version.object_repr may not be NULL
+</code></pre>
+
+<p>This will happen if the Django LANGUAGE_CODE settings is not the same as the first available LANGUAGES. For example you may have ‘en-us’ and ‘en’ which don’t match and will cause the page object to lack a unicode representation.</p>
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

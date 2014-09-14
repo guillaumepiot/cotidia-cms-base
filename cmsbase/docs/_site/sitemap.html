@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Sitemap</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li ><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li ><a href="/menu.html">Menus</a></li>
+					
+						<li ><a href="/usage.html">Usage</a></li>
+					
+						<li ><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li class="active"><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li ><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li ><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="sitemap">Sitemap</h1>
+
+<p>Cotidia CMS Base ships with a default xml sitemap generation, using the recommend Django way.</p>
+
+<p>CMSbase defines a <code>CMSSitemap</code> class in <code>sitemap.py</code>.</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>In <code>urls.py</code>, import the sitemap classes and build a sitemap dictionary:</p>
+
+<pre><code>from cmsbase.sitemap import CMSSitemap
+
+sitemaps = {
+	'cms': CMSSitemap,
+}
+</code></pre>
+
+<p>Then, add the following line in the <code>urlpatterns</code>:</p>
+
+<pre><code>(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+</code></pre>
+
+<h2 id="custom-sitemaps">Custom sitemaps</h2>
+
+<p>You can also define your own sitemap class, in the same way as CMS Base does it, and then simply add them to the sitemap dictionary.</p>
+
+<p>Example:</p>
+
+<pre><code>from cmsbase.sitemap import CMSSitemap
+from myapp.sitemap import AppSitemap
+
+sitemaps = {
+	'cms': CMSSitemap,
+	'myapp': AppSitemap,
+}
+</code></pre>
+
+<h2 id="template">Template</h2>
+
+<p>CMS Base is using a default template to render the sitemap located in <code>templates/sitemap.xml</code>.</p>
+
+<p>You can override this template on a project basis.</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

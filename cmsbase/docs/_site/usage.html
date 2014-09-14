@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Usage</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li ><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li ><a href="/menu.html">Menus</a></li>
+					
+						<li class="active"><a href="/usage.html">Usage</a></li>
+					
+						<li ><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li ><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li ><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li ><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="usage">Usage</h1>
+
+<h2 id="template">Template</h2>
+
+<p><strong>Retrieve the page url</strong></p>
+
+<p><code>{{page.get_absolute_url}}</code></p>
+
+<p>Generate the full page URL in the current language and including the language prefix (if multilingual)</p>
+
+<h3 id="retrieve-the-page-main-title">Retrieve the page main title</h3>
+
+<p><code>{{page.translated.title}}</code></p>
+
+<p>Please note that the ‘translated’ method retrieves the content associated to the current set language.</p>
+
+<h3 id="retrieve-the-article-content-from-the-data-set">Retrieve the article content from the data set</h3>
+
+<p>The article is using a dataset to manage the fields associated to it. Each field is contained within a fieldset. So the path to retrieve the content from the dataset will always be the fieldset name followed by the field name. Spaces are replaced with underscore.</p>
+
+<p>So for example, the field ‘body’ within the “page content” fieldset will be:</p>
+
+<p>Eg:
+<code>{{article.translated.page_content_body|safe}}</code></p>
+
+<blockquote>
+  <p>Please note that the ‘translated’ method retrieves the content associated to the current set language. The ‘safe’ filter must be used for content created using the ‘editorfield’ to render the HTML.</p>
+</blockquote>
+
+<h3 id="rendering-page-links">Rendering page links</h3>
+
+<p>The CMS saves the id of the page as a reference in the data set, so you will need to call the filter <code>page_id|get_page_url</code> to retrieve the url from the page id:</p>
+
+<pre><code>{% load cms_tags %}
+&lt;a href="{{page.translated.page_content_another_page_link|get_page_url}}"&gt;{{page.translated.page_content_another_page_text}}&lt;/a&gt;
+</code></pre>
+
+<h2 id="admin">Admin</h2>
+
+<h1 id="make-auto-complete-slug-field-from-another-field">Make auto-complete slug field from another field</h1>
+
+<p>You can set a field to pre-populated as a slug from another field. First you need to include the following Media class in your form:</p>
+
+<pre><code>class Media:
+    js = ('js/slugify.js',)
+</code></pre>
+
+<p>Then, on init the form or when declaring the field widget, you need to set the following attribute:</p>
+
+<pre><code>...
+def __init__(self, page, *args, **kwargs):
+
+    super(FormClass, self).__init__(*args, **kwargs)
+	
+	# Assign auto-slug from title to slug field
+    self.fields['title'].widget.attrs['data-slug'] = 'slug'
+</code></pre>
+
+<p>In the example above, the field ‘title’ will prepopulate the field ‘slug’ with a slug value generated from the title value.</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

@@ -1,0 +1,42 @@
+h1{
+	font-size: 32px;
+}
+h2{
+	font-size: 24px;
+	margin-top: 40px;
+	margin-bottom: 20px;
+}
+
+.navbar{
+	border-radius: 0;
+	border:none;
+	border-bottom: 1px solid #e7e7e7;
+}
+.navbar-default .navbar-brand{
+	color: #333;
+}
+
+.content{
+	max-width: 800px;
+}
+
+code.hljs{
+	background-color: transparent;	
+}
+pre code{
+	font-size: 12px;
+}
+
+.container-fluid{
+	/*padding:0;*/
+}
+
+.left-nav{
+	border-right: 1px solid #e7e7e7;
+	margin-left: -15px;
+}
+
+.left-nav li.active a{
+	background-color: #f8f8f8;
+	/*color:#fff;*/
+}

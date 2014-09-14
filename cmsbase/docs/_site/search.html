@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Search</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li ><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li ><a href="/menu.html">Menus</a></li>
+					
+						<li ><a href="/usage.html">Usage</a></li>
+					
+						<li class="active"><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li ><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li ><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li ><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="search">Search</h1>
+
+<h2 id="install-whoosh">Install Whoosh</h2>
+
+<p>CMS Base is using Whoosh to handle full text search and indexing.</p>
+
+<p>You will need to install Whoosh 2.4.1 to enable the search feature:</p>
+
+<pre><code>$ pip install Whoosh==2.4.1
+</code></pre>
+
+<h2 id="create-the-index">Create the index</h2>
+
+<p>First you will need to verify your index path setting:</p>
+
+<pre><code># The path to save the search index initial
+SEARCH_INDEX_PATH =  = getattr(settings, 'SEARCH_INDEX_PATH', 'indexes')
+</code></pre>
+
+<p><strong>Note: If you are using a git repository, it is advised to ignore that folder (in .gitignore), as it is representaive of the local database. A production version site will create its own index.</strong></p>
+
+<p>It is defaulted to ‘indexes’, but it is advised to set the path depending on your current project before creating the index.</p>
+
+<p>CMS Base comes with the following default command:</p>
+
+<pre><code>$ python manage.py update_search_index
+</code></pre>
+
+<p>This command will add the live pages to the index and also sort them by languages. This was way results should only be from the same language as the one current activated by the website user.</p>
+
+<h2 id="include-the-search-form">Include the search form</h2>
+
+<p>In your template, you will need to include a search form, example as follows:</p>
+
+<pre><code>&lt;form action="/search" method="get"&gt;
+	&lt;input type="text" placeholder="Search the site" name="query"&gt;
+	&lt;button type="button"&gt;Search&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+
+<p>In the default CMS Base search view, the GET parameter for the search query must be “query”. Though, you can create you own search view by replicating the code in <code>views.py</code> and write the search handling as required.</p>
+
+<h2 id="search-view-template">Search view template</h2>
+
+<p>The default search view is <code>cmsbase/search.html</code> which can be overriden on a project basis if required.</p>
+
+<h2 id="search-index-updating-automation">Search index updating automation</h2>
+
+<p>As generating the search index can be a process hungry task, it is recommend to run it daily as a scheduled task.</p>
+
+<p>Use the following cron command to run it daily in a virtualenv:</p>
+
+<pre><code>0 0 * * * /var/www/mysite/bin/python /var/www/mysite/myproject/manage.py update_search_index --settings=myproject.settings.staging
+</code></pre>
+
+<p>This command will run at 0:00 every day.</p>
+
+<p>Please note that is it calling the python command via the vitualenv python binary.</p>
+
+<p>The –settings argument is optional and depends on how your project is set up. Though, it will set in this way with a default CMS Base install.</p>
+
+<h2 id="customising-the-index">Customising the index</h2>
+
+<p>You can add more data to your index by copy update_search_index.py command to your project level and add the following code:</p>
+
+<pre><code>from blog.models import Article
+from event.models import Event
+
+# Blog data (from cotidia-blog app)
+for page in Article.objects.get_published_live():
+	content_type = ContentType.objects.get_for_model(Article)
+	for translation in page.get_translations():
+		writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
+            id=u"%s" % page.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
+
+# Events data (from cotidia-event app)
+for page in Event.objects.get_published_live():
+	content_type = ContentType.objects.get_for_model(Event)
+	for translation in page.get_translations():
+		writer.add_document(title=u"%s" % translation.title, content_type=u"%s" % content_type,
+            id=u"%s" % page.id, language=u"%s" % translation.language_code, content=u"%s %s" % (translation.title, translation.content))
+</code></pre>
+
+<p>Because Cotidia Blog and Cotidia Event inherit from the CMS Base Page classes, it is very easy to add those app to the search index. The view and template will require no update, as it recognise content-type for each app.</p>
+
+<p>If you require to include a different type of app to the index, you will need to assign the right attributes</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

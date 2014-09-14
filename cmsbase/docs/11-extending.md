@@ -1,3 +1,9 @@
+---
+layout: page
+title: Extending
+permalink: "extending.html"
+---
+
 Extending CMSBase
 =================
 

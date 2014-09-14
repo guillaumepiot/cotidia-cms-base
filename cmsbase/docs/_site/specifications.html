@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  		<title>Specifications</title>
+  		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  		<link href="assets/css/cmsbase.css" rel="stylesheet">
+    	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+	</head>
+	<body>
+		
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Cotidia CMS Base</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			   
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            
+							<li><a href="/index.html">About</a></li>
+						
+							<li><a href="/install.html">Installation</a></li>
+						
+							<li><a href="/settings.html">CMS settings</a></li>
+						
+							<li><a href="/template.html">Templates</a></li>
+						
+							<li><a href="/menu.html">Menus</a></li>
+						
+							<li><a href="/usage.html">Usage</a></li>
+						
+							<li><a href="/search.html">Search</a></li>
+						
+							<li><a href="/moderation.html">Moderation</a></li>
+						
+							<li><a href="/sitemap.html">Sitemap</a></li>
+						
+							<li><a href="/internationalisation.html">Internationalisation</a></li>
+						
+							<li><a href="/page-reference.html">Page reference</a></li>
+						
+							<li><a href="/extending.html">Extending</a></li>
+						
+							<li><a href="/specifications.html">Specifications</a></li>
+						
+			          </ul>
+			        </li>
+			      </ul>
+			      <!--
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			       -->
+					<div class="btn-group pull-right hidden-sm hidden-xs">
+				      <a href="https://github.com/Cotidia/cotidia-cms-base" class="btn btn-primary navbar-btn">GitHub repository</a>
+				      <a href="https://github.com/Cotidia/cotidia-cms-base/archive/1.0.zip" class="btn btn-default navbar-btn">Download source code</a>
+				     </div>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs">
+					<ul class="nav left-nav">
+					
+						<li ><a href="/index.html">About</a></li>
+					
+						<li ><a href="/install.html">Installation</a></li>
+					
+						<li ><a href="/settings.html">CMS settings</a></li>
+					
+						<li ><a href="/template.html">Templates</a></li>
+					
+						<li ><a href="/menu.html">Menus</a></li>
+					
+						<li ><a href="/usage.html">Usage</a></li>
+					
+						<li ><a href="/search.html">Search</a></li>
+					
+						<li ><a href="/moderation.html">Moderation</a></li>
+					
+						<li ><a href="/sitemap.html">Sitemap</a></li>
+					
+						<li ><a href="/internationalisation.html">Internationalisation</a></li>
+					
+						<li ><a href="/page-reference.html">Page reference</a></li>
+					
+						<li ><a href="/extending.html">Extending</a></li>
+					
+						<li class="active"><a href="/specifications.html">Specifications</a></li>
+					
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="content">
+						<h1 id="specifications">Specifications</h1>
+
+<h2 id="publishing">Publishing</h2>
+
+<p>The CMS must support a publishing workflow which maintain an original version of each entry and automatically generate a clone that will be used a published version.
+All related models (including inlines) should be cloned/removed accordingly.</p>
+
+<h2 id="moderation">Moderation</h2>
+
+<p>Each model includes a “can_publish” permission, which will be used to create moderators. Any user with the “can_publish” permission will be able to publish (clone) the original version to a published version, others will only be able to edit a non-publish version, which can then be moderated accordingly.</p>
+
+<h2 id="status">Status</h2>
+
+<p>Above the publishing workflow, each model should be able to get un-published by setting a active boolean to False, which will un-publish the “cloned” version.</p>
+
+<h2 id="internationalisation">Internationalisation</h2>
+
+<p>Each model should support internationalisation. Each translated content will be managed by a related object. If internationalisation is not required, then the translation should be hidden, leaving the option for a future internationalisation if required. </p>
+
+<h2 id="search">Search</h2>
+
+<p>The CMS should generate a search index made of a selection of models, and a management command sould be available to update the index via a schedule task.</p>
+
+<h2 id="media-management">Media management</h2>
+
+<p>To manage images, we will use Sorl-Tumbnail to generate images at different sizes.</p>
+
+<p>The system should support cloud files management by using django-cumulus.</p>
+
+<p>-e git+https://github.com/orpo/django-cumulus.git#egg=cumulus</p>
+
+<h2 id="text-editor">Text editor</h2>
+
+<p>All content text editor should be enabled with Redactor, the best wysiwyg I know out there.</p>
+
+<pre><code>$ -e git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git
+</code></pre>
+
+<h2 id="file-upload">File upload</h2>
+
+<p>All file upload within the wysiwyg should be handle by Filemanager which plugs nicely with Redactor</p>
+
+<pre><code>$ -e git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git 
+</code></pre>
+
+<h2 id="admin-ui">Admin UI</h2>
+
+<p>The admin UI should be extended with Cotidia Admin Tools, though the CMS Base should work without it as a fallback</p>
+
+<h2 id="deployment">Deployment</h2>
+
+<p>A fabfile in place should allow a complete new project generation executing the following:</p>
+
+<ul>
+  <li>Generate a Django project</li>
+  <li>Download and install all dependencies of CMS Base</li>
+  <li>Create a default settings environment for staging &amp; production, by pulling template setting files from GIST.
+    <ul>
+      <li>Regenerate a secret key</li>
+    </ul>
+  </li>
+  <li>Create a default URLs conf included the admin</li>
+  <li>Create a dev folder to hold local db if sqlite3</li>
+  <li>Sync the database as SQLlite</li>
+</ul>
+
+<p>Options should include</p>
+
+<ul>
+  <li>name (project name) ! Required</li>
+  <li>db (type of db: postgresql_psycopg2, mysql, sqlite3 or oracle) Default = sqlite3</li>
+  <li>multilingual (Boolean) Default = False</li>
+</ul>
+
+<p>A typical fab command would look like:</p>
+
+<pre><code>$ fab createproject:name=my_project,db=sqlite3,multilingual=False
+</code></pre>
+
+<h2 id="asset-management">Asset management</h2>
+
+<p>The deployment should use Bower to manage asset packages such as Twitter Bootstrap, jQuery</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>

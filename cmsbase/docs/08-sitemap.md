@@ -1,3 +1,9 @@
+---
+layout: page
+title: Sitemap
+permalink: "sitemap.html"
+---
+
 Sitemap
 =======
 
