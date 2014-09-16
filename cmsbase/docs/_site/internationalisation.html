@@ -159,7 +159,13 @@
 
 <p>The default settings:</p>
 
-<pre><code>LANGUAGES = (
+<pre><code>INSTALLED_APPS = (
+    ...
+    'localeurl',
+    ...
+)
+
+LANGUAGES = (
     ('en', 'English'),
     # ('nl', 'Dutch'),
     # ('es', 'Spanish'),
@@ -185,6 +191,14 @@ PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) == 1 else True
 </code></pre>
 
 <p>The LOCALE_INDEPENDENT_PATHS specify the urls that doesn’t require localeurl support. Useful for the admin or api call such as the ajax file upload the Redactor text editor.</p>
+
+<p>Add the url include for locale_url:</p>
+
+<pre><code>urlpatterns = patterns('',
+    # Language switcher management
+    (r'^localeurl/', include('localeurl.urls')),
+    ...
+</code></pre>
 
 <h2 id="translation-files">Translation files</h2>
 
