@@ -5,7 +5,7 @@ from django.utils.translation import ugettext
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils.text import slugify
-from django.core.urlresolvers import reverse
+from localeurl.models import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 from cmsbase import settings as cms_settings
@@ -336,7 +336,9 @@ class BasePage(MPTTModel):
 
                 url = reverse(self.CMSMeta.model_url_name, kwargs=reverse_args, prefix=CMS_PREFIX)
             else:
+                print self.CMSMeta.model_url_name, reverse_args
                 url = reverse(self.CMSMeta.model_url_name, kwargs=reverse_args)
+                print url
 
 
         # Add prefix if required. Not compatible with localeurl redirect
