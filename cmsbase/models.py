@@ -336,9 +336,7 @@ class BasePage(MPTTModel):
 
                 url = reverse(self.CMSMeta.model_url_name, kwargs=reverse_args, prefix=CMS_PREFIX)
             else:
-                print self.CMSMeta.model_url_name, reverse_args
                 url = reverse(self.CMSMeta.model_url_name, kwargs=reverse_args)
-                print url
 
 
         # Add prefix if required. Not compatible with localeurl redirect
@@ -550,7 +548,7 @@ class BasePageTranslation(models.Model, PublishTranslation):
             verbose_name=_('Content')
             verbose_name_plural=_('Content')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.title, dict(settings.LANGUAGES).get(self.language_code))
 
     @property
@@ -591,7 +589,7 @@ class BaseDataSet(models.Model):
         verbose_name_plural=_('Data sets')
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.name
 
     def get_fields(self):
