@@ -20,8 +20,11 @@ install_requires = [
     'pillow',
     'south',
     'django-codemirror-widget',
-    'git+https://github.com/carljm/django-form-utils.git',
-    'hg+https://bitbucket.org/carljm/django-localeurl',
+    # The following must be installed manually until they are packaged adequately
+    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
+    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',
+    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager',
+    #'-e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model',
 ]
 
 # taken from django-registration
@@ -55,7 +58,7 @@ for dirpath, dirnames, filenames in os.walk('cmsbase'):
             data_files.append(os.path.join(prefix, f))
 
 setup(
-    name="django-cms-base",
+    name="cotidia-cms-base",
     description="An extensible CMS based on Django, including dynamic page fields in JSON datasets, multilingual localisation and publishing workflow.",
     version=VERSION,
     author="Guillaume Piot",
