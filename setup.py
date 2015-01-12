@@ -17,16 +17,11 @@ install_requires = [
     'django==1.7',
     'django-mptt==0.6',
     'django-reversion==1.8',
-    'django-form-utils==1.0.1',
     'pillow',
     'south',
     'django-codemirror-widget',
-    'django-localeurl',
-    # The following must be installed manually until they are packaged adequately
-    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
-    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',
-    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager',
-    #'-e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model',
+    'git+https://github.com/carljm/django-form-utils.git',
+    'hg+https://bitbucket.org/carljm/django-localeurl',
 ]
 
 # taken from django-registration
