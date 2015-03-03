@@ -1,7 +1,6 @@
 import datetime, json, reversion
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils.text import slugify
@@ -115,7 +114,7 @@ class BasePage(MPTTModel):
         model_url_name = 'cms:page'
 
 
-    def unicode_wrapper(self, property, default=ugettext('Untitled')):
+    def unicode_wrapper(self, property, default=_('Untitled')):
         """
         Wrapper to allow for easy unicode representation of an object by
         the specified property. If this wrapper is not able to find the
