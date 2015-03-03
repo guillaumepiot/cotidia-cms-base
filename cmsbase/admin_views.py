@@ -19,7 +19,7 @@ def add_edit_translation(request, page_id, language_code, recover_id=False, mode
 
     if not language_code in [lang[0] for lang in settings.LANGUAGES]:
         raise ImproperlyConfigured('The language code "%s" is not included in the project settings.' % language_code)
-    if not request.user.has_perm('cmsbase.add_'+translation_class.__class__.__name__.lower()):
+    if not request.user.has_perm('cmsbase.add_pagetranslation'):
         raise PermissionDenied
     page = get_object_or_404(model_class, id=page_id)
 
@@ -47,7 +47,7 @@ def add_edit_translation(request, page_id, language_code, recover_id=False, mode
         form = translation_form_class(page=page, initial=initial)
     else:
         title = _('Edit translation')
-        if not request.user.has_perm('cmsbase.change_'+translation_class.__class__.__name__.lower()):
+        if not request.user.has_perm('cmsbase.change_pagetranslation'):
             raise PermissionDenied
 
         form = translation_form_class(instance=translation, page=page, initial=initial)
