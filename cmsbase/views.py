@@ -151,7 +151,7 @@ def page(request, page, slug, *args, **kwargs):
 	context = {'page':page}
 
 	# Process kwargs to be passed back to the page context
-	for key, value in kwargs.iteritems():
+	for key, value in iter(kwargs.items()):
 		context[key] = value
 
 	# Get the root page and then all its descendants, including self

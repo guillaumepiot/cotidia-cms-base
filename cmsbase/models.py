@@ -1,11 +1,10 @@
 import datetime, json, reversion
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils.text import slugify
-from django.core.urlresolvers import reverse
+from localeurl.models import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 from cmsbase import settings as cms_settings
@@ -115,7 +114,7 @@ class BasePage(MPTTModel):
         model_url_name = 'cms:page'
 
 
-    def unicode_wrapper(self, property, default=ugettext('Untitled')):
+    def unicode_wrapper(self, property, default=_('Untitled')):
         """
         Wrapper to allow for easy unicode representation of an object by
         the specified property. If this wrapper is not able to find the
@@ -548,7 +547,7 @@ class BasePageTranslation(models.Model, PublishTranslation):
             verbose_name=_('Content')
             verbose_name_plural=_('Content')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.title, dict(settings.LANGUAGES).get(self.language_code))
 
     @property
@@ -589,7 +588,7 @@ class BaseDataSet(models.Model):
         verbose_name_plural=_('Data sets')
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.name
 
     def get_fields(self):

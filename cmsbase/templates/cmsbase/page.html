@@ -1,6 +1,6 @@
 {% extends 'cmsbase/page_meta.html' %}
 {% block main %}
 	<h1>{{page.translated.title}}</h1>
-	{{page.translated.content|safe}}
+	{{page.translated.page_content_description|safe}}
 	
 {% endblock main %}

@@ -53,6 +53,12 @@ Settings
 
 The default settings:
 
+    INSTALLED_APPS = (
+        ...
+        'localeurl',
+        ...
+    )
+
     LANGUAGES = (
         ('en', 'English'),
         # ('nl', 'Dutch'),
@@ -78,6 +84,13 @@ If the list equals 1, there's only one language and therefore the site is not mu
     PREFIX_DEFAULT_LOCALE = False if len(LANGUAGES) == 1 else True
     
 The LOCALE_INDEPENDENT_PATHS specify the urls that doesn't require localeurl support. Useful for the admin or api call such as the ajax file upload the Redactor text editor.
+
+Add the url include for locale_url:
+
+    urlpatterns = patterns('',
+        # Language switcher management
+        (r'^localeurl/', include('localeurl.urls')),
+        ...
 
 
 Translation files
