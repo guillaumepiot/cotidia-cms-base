@@ -70,6 +70,22 @@ If you would like to display thumbnail, you can `sorl.thumbnail` to display them
 		</a>
 	{% endfor %}
 
+### Feature image
+
+You can retrieve a "feature image" for a page, being the first image in the list. If you need to change the first image, you can re-order them by drag and drop in the page content editor.
+
+Get the url of the feature image:
+
+	{{page.feature_image.get_file_url}}
+
+Create a thumbnail of the feature image
+	
+	{% load thumbnail %}
+	{% thumbnail page.feature_image.file "400x400" crop="center" as im %}
+		<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+	{% endthumbnail %}
+
+
 ## Tags
 
 ### Retrieve a page by unique identifier
@@ -83,18 +99,16 @@ You can retrieve a specific page using the template tag `get_page_by_unique_iden
 	{{page.translated.title}}
 
 
-### Retrieve links for a page
+### Retrieve a page link by id
 
-`links_for_page` populate the template context with a list of members related to a specific page.
+in the dataset, you can a field called `pagelinkfield`. This field will record the id of the page it is linking to.
 
-	{% links_for_page page as links %}
-	
-Eg:
+`get_page_url_by_id` will return the URL of a page from its ID.
 
-	{% links_for_page page as links %}
-	{% for link in links %}
-		{{link}}
-	{% endfor %}
+	<a href="{% get_page_url_by_id page.translated.page_content_link %}">
+		Link text
+	</a>
+
 
 ### Retrieve home page
 
