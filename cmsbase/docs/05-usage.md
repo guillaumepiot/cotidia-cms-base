@@ -53,7 +53,9 @@ When using the `imagefield` in the data set, all images will available against t
 To display the images, you can loop through them:
 
 	{% for image in page.images %}
-		<img src="{{image.get_file_url}}" alt="">
+		<a href="{{image.link_to_url}}">
+			<img src="{{image.get_file_url}}" alt="{{image.caption}}">
+		</a>
 	{% endfor %}
 
 If you would like to display thumbnail, you can `sorl.thumbnail` to display them:
@@ -114,3 +116,5 @@ Get the language name from the language code:
 Truncates by number of character without splitting whole words, and add '...' in the end if longer. 
 
 	{{var|smart_truncate_chars}}
+
+*Last updated by Guillaume Piot, 18 March 2015*
