@@ -14,17 +14,11 @@ CLASSIFIERS = [
 ]
 
 install_requires = [
-    'django==1.7',
-    'django-mptt==0.6',
+    'django==1.8',
+    'django-mptt==0.7',
     'django-reversion==1.8',
     'pillow',
-    'south',
     'django-codemirror-widget',
-    # The following must be installed manually until they are packaged adequately
-    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools',
-    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor',
-    #'-e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager',
-    #'-e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model',
 ]
 
 # taken from django-registration
