@@ -38,3 +38,13 @@ Enable to management of related pages.
 `CMS_HASH_FILE_NAMES` Default = True
 
 Decide whether or not to hash filename when uploaded.
+
+
+## Custom page templates
+
+You can add you own set of page templates by using the CMS_PAGE_TEMPLATES settings.
+
+	CMS_PAGE_TEMPLATES = (
+		('cmsbase/page.html', 'Default page'), # By default and mandatory, if no templates supplied, the page will not save
+		('cmsbase/home.html', 'Home page'), # Optional project specific template
+	)
