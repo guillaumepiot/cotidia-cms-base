@@ -283,6 +283,7 @@ class PageFormAdmin(forms.ModelForm):
     #images = forms.CharField(widget=MultipleFileWidget, required=False)
     class Meta:
         model = Page
+        exclude = ()
 
     class Media:
         js = ('js/slugify.js',)
@@ -358,6 +359,7 @@ class DocumentInlineForm(forms.ModelForm):
     document = forms.FileField(label=_('Document'), widget=AdminCustomFileWidget)
     class Meta:
         model=PageDocument
+        exclude = ()
 
 class PageDocumentInline(admin.TabularInline):
     form = DocumentInlineForm
@@ -475,6 +477,7 @@ class PageDataSetAdminForm(forms.ModelForm):
     config = forms.CharField(widget=CodeMirrorTextarea(mode="javascript", theme="cobalt", config={ 'fixedGutter': True, 'lineNumbers': True }), initial=initial)
     class Meta:
         model=PageDataSet
+        exclude = ()
 
     def clean_config(self):
 
