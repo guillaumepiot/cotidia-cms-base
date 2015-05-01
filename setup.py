@@ -16,7 +16,7 @@ CLASSIFIERS = [
 install_requires = [
     'django==1.8',
     'django-mptt==0.7',
-    'django-reversion==1.8',
+    'django-reversion==1.8.6',
     'pillow',
     'django-codemirror-widget',
 ]
