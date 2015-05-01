@@ -161,7 +161,7 @@ class BasePage(MPTTModel):
     def set_dynamic_attributes(self, translation):
         dynamic_attrs = []
         # Go through each fieldset
-        if self.dataset:
+        if hasattr(self, 'dataset') and self.dataset:
             for fieldset in self.dataset.get_fields():
                 fieldset_id = slugify(fieldset['fieldset']).replace('-','_')
                 for field in fieldset['fields']:
