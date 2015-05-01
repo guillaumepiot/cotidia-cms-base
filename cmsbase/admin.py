@@ -91,11 +91,11 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         return response
 
     # Custom result queryset
-    def queryset(self, request):
+    def get_queryset(self, request):
         """
         Remove the published version of the pages
         """
-        qs = super(PublishingWorkflowAdmin, self).queryset(request)
+        qs = super(PublishingWorkflowAdmin, self).get_queryset(request)
 
         return qs.filter(published_from=None)
 

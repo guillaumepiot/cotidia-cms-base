@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from localeurl.models import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
+from mptt.managers import TreeManager
 from cmsbase import settings as cms_settings
 from multilingual_model.models import MultilingualModel, MultilingualTranslation
 from filemanager.models import FileToObject
@@ -16,7 +17,7 @@ TARGET_CHOICES = (
     ('_blank', 'a new window'),
 )
 
-class BasePageManager(models.Manager):
+class BasePageManager(TreeManager):
 
     def get_published_live(self):
         return self.model.objects.filter(published=True).exclude(published_from=None)
@@ -267,7 +268,7 @@ class BasePage(MPTTModel):
         return obj
 
 
-    def get_absolute_url(self, current_language=False, urlargs=False):
+    def get_absolute_url(self, current_language=False, urlargs=False, preview=False):
 
         from django.utils import translation
         if not current_language:
@@ -314,12 +315,16 @@ class BasePage(MPTTModel):
                 if not ancestor.home:
                     slug = "%s%s/" % (slug, translation.slug)
 
+
+
             translation = self.CMSMeta.translation_class.objects.filter(parent=self.id, language_code=current_language)
             
-            if not translation.count()>0:
+            if not translation.count() > 0:
                 translation = self.CMSMeta.translation_class.objects.get(parent=self.id, language_code=settings.DEFAULT_LANGUAGE)
             else:
                 translation = translation[0]
+
+            print translation.slug, 'published from:', translation.parent.id
 
             slug = "%s%s" % (slug, translation.slug)
 

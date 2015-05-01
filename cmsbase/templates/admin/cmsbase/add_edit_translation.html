@@ -40,6 +40,7 @@
         {% blocktrans count counter=form.errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
         </p>
         {{ form.non_field_errors }}
+        {{ form.errors }}
       </div>
     {% endif %}
       <div class="inner">
