@@ -324,8 +324,6 @@ class BasePage(MPTTModel):
             else:
                 translation = translation[0]
 
-            print translation.slug, 'published from:', translation.parent.id
-
             slug = "%s%s" % (slug, translation.slug)
 
             # Add extra prefixes if required
