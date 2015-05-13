@@ -39,6 +39,11 @@ FIELD_CLASS_MAP = {
         'field_class':forms.CharField,
         'field_widget':MultipleFileWidget,
     },
+    'choicefield': {
+        'field_class':forms.ChoiceField,
+        'field_widget':forms.Select,
+        'choices': (('','No choices'),)
+    }
 }
 
 class TranslationForm(BetterModelForm):
@@ -100,10 +105,23 @@ class TranslationForm(BetterModelForm):
                         object_pk = self.instance.id
                     self.fields[field_name].widget.attrs.update({'content_type':content_type.id, 'object_pk':object_pk})
                 else:
+                    kwargs = {
+                        'required': field_required,
+                        'label': field_label
+                    }
+
                     if field_widget:
-                        self.fields[field_name] = field_class(max_length=FIELD_CLASS_MAP[field_type]['max_length'], required=field_required, label=field_label, widget=field_widget)
-                    else:
-                        self.fields[field_name] = field_class(max_length=FIELD_CLASS_MAP[field_type]['max_length'], required=field_required, label=field_label)
+                        kwargs['widget'] = field_widget
+
+                    if FIELD_CLASS_MAP[field_type].get('max_length'):
+                        kwargs['max_length'] = FIELD_CLASS_MAP[field_type]['max_length']
+
+                    if field.get('choices'):
+                        kwargs['choices'] = field['choices']
+                    elif FIELD_CLASS_MAP[field_type].get('choices'):
+                        kwargs['choices'] = FIELD_CLASS_MAP[field_type]['choices']
+
+                    self.fields[field_name] = field_class(**kwargs)
 
                 # Push the field name to the temporary field list
                 _fields.append(field_name)
