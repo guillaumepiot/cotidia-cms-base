@@ -14,7 +14,6 @@ from mptt.forms import TreeNodeChoiceField
 
 from multilingual_model.admin import TranslationStackedInline
 
-from redactor.widgets import RedactorEditor
 from filemanager.widgets import MultipleFileWidget
 
 from cmsbase.models import *

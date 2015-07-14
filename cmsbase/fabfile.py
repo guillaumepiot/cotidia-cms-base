@@ -23,15 +23,15 @@ def install(project_name='', mode='edit'):
 
     if mode=='edit':
         env.run('pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools')
-        env.run('pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-redactor.git#egg=redactor')
         env.run('pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager')
-        env.run('pip install -e git+https://github.com/dokterbob/django-multilingual-model.git#egg=multilingual_model')
+        env.run('pip install git+https://github.com/dokterbob/django-multilingual-model.git')
+        env.run('pip install django-form-utils==1.0.2)'
 
     elif mode=='production':
         env.run('pip install git+https://bitbucket.org/guillaumepiot/cotidia-admin-tools.git')
-        env.run('pip install git+https://bitbucket.org/guillaumepiot/cotidia-redactor.git')
         env.run('pip install git+https://bitbucket.org/guillaumepiot/cotidia-filemanager.git')
         env.run('pip install git+https://github.com/dokterbob/django-multilingual-model.git')
+        env.run('pip install django-form-utils==1.0.2')
 
 
     print "Setting up Django project"
@@ -75,7 +75,6 @@ def install(project_name='', mode='edit'):
         with settings(warn_only=True):
             if env.run("cd dev").failed:
                 env.run('mkdir dev')
-        env.run('python manage.py syncdb')
-        env.run('python manage.py migrate --all')
+        env.run('python manage.py migrate')
 
         print 'Installation complete!'

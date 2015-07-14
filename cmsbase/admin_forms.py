@@ -8,7 +8,6 @@ from mptt.forms import TreeNodeChoiceField
 
 from form_utils.forms import BetterModelForm
 
-from redactor.widgets import RedactorEditor
 
 from .models import Page, PageTranslation
 
@@ -27,7 +26,7 @@ FIELD_CLASS_MAP = {
     },
     'editorfield': {
         'field_class':forms.CharField,
-        'field_widget':RedactorEditor(redactor_css="/static/css/redactor-editor.css"),
+        'field_widget':forms.Textarea,#RedactorEditor(redactor_css="/static/css/redactor-editor.css"),
         'max_length':50000,
     },
     'pagelinkfield': {

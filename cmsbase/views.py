@@ -118,6 +118,7 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 				if not model_class.objects.filter(published=True):
 					# Show CMS setup congratulations
 					page = model_class()
+					page.empty = True
 					page.template = 'cmsbase/setup-complete.html'
 				else:
 					raise Http404('This page could not be retrieved by the CMS')
@@ -155,7 +156,9 @@ def page(request, page, slug, *args, **kwargs):
 		context[key] = value
 
 	# Get the root page and then all its descendants, including self
-	if page.published_from == None:
+	if page.empty:
+		nodes = []
+	elif page.published_from == None:
 		nodes = page.get_root().get_descendants(include_self=True)
 	else:
 		nodes = page.published_from.get_root().get_descendants(include_self=True)
