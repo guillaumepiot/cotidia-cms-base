@@ -25,7 +25,7 @@ def install(project_name='', mode='edit'):
         env.run('pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-admin-tools.git#egg=admin_tools')
         env.run('pip install -e git+https://guillaumepiot@bitbucket.org/guillaumepiot/cotidia-filemanager.git#egg=filemanager')
         env.run('pip install git+https://github.com/dokterbob/django-multilingual-model.git')
-        env.run('pip install django-form-utils==1.0.2)'
+        env.run('pip install django-form-utils==1.0.2')
 
     elif mode=='production':
         env.run('pip install git+https://bitbucket.org/guillaumepiot/cotidia-admin-tools.git')
@@ -76,5 +76,6 @@ def install(project_name='', mode='edit'):
             if env.run("cd dev").failed:
                 env.run('mkdir dev')
         env.run('python manage.py migrate')
+        env.run('python manage.py createsuperuser')
 
         print 'Installation complete!'

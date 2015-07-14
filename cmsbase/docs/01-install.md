@@ -29,10 +29,7 @@ Install
 Copy `fabfile.py` from the cmsbase package to your working directory (next to the virtualenv folders):
 
     eg:
-        bin/
-        include/
-        lib/
-        src/
+        venv/
         fabfile.py
         
 Run the installation command
