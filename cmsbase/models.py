@@ -179,7 +179,12 @@ class BasePage(MPTTModel):
         except:
             translation = self.CMSMeta.translation_class.objects.get(language_code=settings.LANGUAGE_CODE, parent=self)
 
+
         self.set_dynamic_attributes(translation)
+        try:
+            translation.live_content = json.loads(translation.live_content)
+        except:
+            pass
         return translation
 
     def get_translations(self):
@@ -535,10 +540,7 @@ class BasePageTranslation(models.Model, PublishTranslation):
         blank=False, null=False
     )
     content = models.TextField(blank=True)
-
-    #Meta data
-    # meta_title = models.CharField(max_length=100, blank=True)
-    # meta_description = models.TextField(blank=True)
+    live_content = models.TextField(blank=True)
 
     class Meta:
         unique_together = ('parent', 'language_code')

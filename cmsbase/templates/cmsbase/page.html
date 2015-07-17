@@ -1,6 +1,26 @@
 {% extends 'cmsbase/page_meta.html' %}
 {% block main %}
-	<h1>{{page.translated.title}}</h1>
-	{{page.translated.page_content_description|safe}}
-	
+	<div class="[ editable ]"  data-name="title">
+		{% if request.is_preview %}
+			{% if page.translated.live_content.title %}
+				{{page.translated.live_content.title|safe}}
+			{% else %}
+				<h1>Header title</h1>
+			{% endif %}
+		{% else %}
+			{{page.translated.live_content.title|safe}}
+		{% endif %}
+	</div>
+	<div class="[ editable ]"  data-name="description">
+		
+		{% if request.is_preview %}
+			{% if page.translated.live_content.description %}
+				{{page.translated.live_content.description|safe}}
+			{% else %}
+				<p>Paragraph goes here.</p>
+			{% endif %}
+		{% else %}
+			{{page.translated.live_content.description|safe}}
+		{% endif %}
+	</div>
 {% endblock main %}

@@ -176,3 +176,10 @@ class TranslationForm(BetterModelForm):
         self.instance.save()
 
         return self.instance
+
+class TranslationContentForm(BetterModelForm):
+    live_content = forms.CharField(widget=forms.Textarea, required=True)
+    class Meta:
+        model = PageTranslation
+        fields = ['live_content']
+

@@ -1,3 +1,4 @@
+import json
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect  
 from django.shortcuts import render_to_response, get_object_or_404
@@ -105,3 +106,48 @@ def translation_revision(request, page_id, language_code, translation_id, model_
     }
 
     return render_to_response(template, context, context_instance=RequestContext(request))
+
+@login_required
+@transaction.atomic()
+@reversion.create_revision()
+def save_translation(request, translation_id, model_class=Page, translation_class=PageTranslation, translation_content_form_class=TranslationContentForm):
+
+    try:
+        translation = translation_class.objects.get(id=translation_id)
+    except translation_class.DoesNotExist:
+        response_data = {
+            'message': 'This page does not exists',
+            'success': False 
+        }
+
+    if request.method == 'POST':
+        form = translation_content_form_class(data=request.POST)
+
+        if form.is_valid():
+            translation.live_content = form.cleaned_data['live_content']
+            translation.save()
+
+            reversion.set_user(request.user)
+
+            # Notify the parent page that new content needs to be approved
+            translation.parent.approval_needed = 1
+            translation.parent.save()
+
+            response_data = {
+                'message': 'Content has been saved',
+                'data': translation.live_content,
+                'success': True 
+            }
+        else:  
+            response_data = {
+                'message': form.errors,
+                'success': False 
+            }    
+
+    else:
+        response_data = {
+            'message': 'Only POST calls are accepted',
+            'success': False 
+        }
+
+    return HttpResponse(json.dumps(response_data), content_type="application/json")

@@ -29,9 +29,9 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request, obj=None):
         if not settings.PREFIX_DEFAULT_LOCALE:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'content', 'preview']
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'content', 'live_edit']
         else:
-            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'languages', 'preview']
+            return ['title', 'home_icon', 'is_published', 'approval', 'order_id', 'get_data_set', 'get_template_name', 'languages', 'live_edit']
 
     def save_model(self, request, obj, form, change):
         if not obj.id and obj.parent:
@@ -258,9 +258,9 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
     languages.allow_tags = True
     languages.short_description = 'Translations'
 
-    def preview(self, obj):
-        return '<a href="%s?preview" target="_blank">%s</a>' % (obj.get_absolute_url(), _('Preview'))
-    preview.allow_tags = True
+    def live_edit(self, obj):
+        return '<a href="%s?live-edit">%s</a>' % (obj.get_absolute_url(), _('Live edit'))
+    live_edit.allow_tags = True
 
 
     def get_urls(self):
@@ -268,9 +268,10 @@ class PublishingWorkflowAdmin(admin.ModelAdmin):
         urls = super(PublishingWorkflowAdmin, self).get_urls()
         translation_class_slug = self.model._meta.model_name
         my_urls = patterns('',
-            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/history/(?P<translation_id>[-\w]+)/', self.admin_site.admin_view(translation_revision), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class}, name='translation_revision_'+translation_class_slug),
-            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/recover/(?P<recover_id>[-\w]+)/', self.admin_site.admin_view(add_edit_translation),{'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_form_class':self.translation_form_class}, name='translation_recover_'+translation_class_slug),
-            url(r'translation/(?P<page_id>[-\w]+)/(?P<language_code>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_form_class':self.translation_form_class}, name='add_edit_translation_'+translation_class_slug ),
+            url(r'translation/(?P<page_id>[\d]+)/(?P<language_code>[-\w]+)/history/(?P<translation_id>[-\w]+)/', self.admin_site.admin_view(translation_revision), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class}, name='translation_revision_'+translation_class_slug),
+            url(r'translation/(?P<page_id>[\d]+)/(?P<language_code>[-\w]+)/recover/(?P<recover_id>[-\w]+)/', self.admin_site.admin_view(add_edit_translation),{'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_form_class':self.translation_form_class}, name='translation_recover_'+translation_class_slug),
+            url(r'translation/(?P<page_id>[\d]+)/(?P<language_code>[-\w]+)/', self.admin_site.admin_view(add_edit_translation), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_form_class':self.translation_form_class}, name='add_edit_translation_'+translation_class_slug ),
+            url(r'translation/save-content/(?P<translation_id>[\d]+)/', self.admin_site.admin_view(save_translation), {'model_class':self.model, 'translation_class':self.model.CMSMeta.translation_class, 'translation_content_form_class':self.translation_content_form_class}, name='save_translation_content_'+translation_class_slug ),
         )
         return my_urls + urls
 
@@ -383,6 +384,7 @@ class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin)
 
     form = PageFormAdmin
     translation_form_class = TranslationForm
+    translation_content_form_class = TranslationContentForm
 
     if cms_settings.CMS_PAGE_DOCUMENTS:
         inlines += (PageDocumentInline,)

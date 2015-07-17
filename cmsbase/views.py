@@ -96,7 +96,7 @@ def page_processor(model_class=Page, translation_class=PageTranslation):
 		def wrapper(request, slug=False, *args, **kwargs):
 
 			# Check if the preview variable is in the path
-			preview = request.GET.get('preview', False)
+			preview = request.GET.get('live-edit', False)
 
 			# Set preview to False by default
 			is_preview = False
@@ -156,7 +156,7 @@ def page(request, page, slug, *args, **kwargs):
 		context[key] = value
 
 	# Get the root page and then all its descendants, including self
-	if page.empty:
+	if hasattr(page, 'empty') and page.empty:
 		nodes = []
 	elif page.published_from == None:
 		nodes = page.get_root().get_descendants(include_self=True)
