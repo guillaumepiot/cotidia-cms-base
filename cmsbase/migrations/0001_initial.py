@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('name', models.CharField(blank=True, verbose_name='Name', max_length=250)),
-                ('document', models.FileField(upload_to=cmsbase.models.PageDocument.call_naming)),
+                ('document', models.FileField(upload_to=cmsbase.models.call_document_naming)),
                 ('order_id', models.IntegerField(blank=True, null=True)),
                 ('parent', models.ForeignKey(to='cmsbase.Page')),
             ],

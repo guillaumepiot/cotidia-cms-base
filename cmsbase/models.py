@@ -609,18 +609,19 @@ class PageDataSet(BaseDataSet):
         verbose_name_plural=_('Page data sets')
 
 
+def call_document_naming(instance=None):
+    from cmsbase.widgets import get_media_upload_to
+
+    # return get_media_upload_to(self.page.slug, 'pages')
+    location = "cms/documents%s/%s"%(self.parent.slug, instance)
+    return location
+
 class PageDocument(models.Model):
-
-    def call_naming(self, instance=None):
-        from cmsbase.widgets import get_media_upload_to
-
-        # return get_media_upload_to(self.page.slug, 'pages')
-        location = "cms/documents%s/%s"%(self.parent.slug, instance)
-        return location
 
     parent = models.ForeignKey('Page')
     name = models.CharField(_('Name'), max_length=250, blank=True)
-    document = models.FileField(upload_to=call_naming, max_length=100)
+    document = models.FileField(upload_to=call_document_naming, max_length=100)
+
     # Ordering
     order_id = models.IntegerField(blank=True, null=True)
 
