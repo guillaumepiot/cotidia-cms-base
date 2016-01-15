@@ -1,5 +1,6 @@
-import reversion, json
-
+import json
+from reversion import revisions as reversion
+from reversion.admin import VersionAdmin
 from django.contrib import admin, messages
 from django.contrib.admin.widgets import AdminFileWidget
 from django.utils.translation import ugettext as _
@@ -380,7 +381,7 @@ class PageLinkInline(admin.TabularInline):
 # Page admin #
 ##############
 
-class PageAdmin(reversion.VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin):
+class PageAdmin(VersionAdmin, PublishingWorkflowAdmin, MPTTModelAdmin):
 
     form = PageFormAdmin
     translation_form_class = TranslationForm
@@ -497,7 +498,7 @@ class PageDataSetAdminForm(forms.ModelForm):
 
         return config
 
-class PageDataSetAdmin(reversion.VersionAdmin):
+class PageDataSetAdmin(VersionAdmin):
     form = PageDataSetAdminForm
 
 
